@@ -360,8 +360,8 @@
      */
     const APP_CONFIG = {
       // Reemplazar con la URL real de Google Apps Script tras desplegar Codigo.gs
-      DEFAULT_API_URL: 'https://script.google.com/macros/s/AKfycbzzYQLrkSKtL_N8rwfifD6x31hSpI3-qfplGZWaJZb65jeJVTLcrnJgwOSMXc5RtSTR/exec',
-      DB_NAME: 'HuarmeyCosechaDB',
+      DEFAULT_API_URL: 'https://script.google.com/macros/s/AKfycbyHBAfeEUSikMI3x6y5CJZhf7bTou6dFgHgU8CfWnW0TZ9zAkL4QQQHqZICyZzD548/exec',
+      DB_NAME: 'REGISTRO-PRODUCCION-COSECHA',
       DB_VERSION: 1,
       BATCH_SIZE: 25,           // Registros máximos por paquete HTTP
       MAX_JITTER_MS: 8000,      // Dispersión aleatoria (0-8s) para evitar colisión de 200 usuarios
@@ -624,7 +624,14 @@
         const response = await fetch(url, { method: 'GET', redirect: 'follow' });
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
         
-        const result = await response.json();
+        const rawText = await response.text();
+        let result;
+        try {
+          result = JSON.parse(rawText);
+        } catch (parseErr) {
+          throw new Error('Google devolvió HTML en vez de JSON. Verifica que el despliegue tenga acceso para "Cualquier usuario" y termine en /exec.');
+        }
+
         if (result.status !== 'ok') throw new Error(result.message || 'Error al obtener maestros');
 
         await DB.saveMaestros(result.data);
@@ -632,7 +639,7 @@
         if (manual) showFeedback('Listas maestras actualizadas correctamente.', 'success');
       } catch (err) {
         console.error('Error cargando maestros:', err);
-        if (manual) showFeedback('No se pudieron descargar las listas. Se mantienen los datos locales.', 'error');
+        if (manual) showFeedback(`No se pudieron descargar las listas: ${err.message}`, 'error');
       } finally {
         btn.disabled = false;
         btn.classList.remove('opacity-50');
