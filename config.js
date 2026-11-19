@@ -4,7 +4,7 @@
 window.APP_CONFIG = {
   // URL de implementación de Apps Script (termina en /exec).
   // Se obtiene en: Apps Script > Implementar > Administrar implementaciones.
-  API_URL: 'PEGAR_AQUI_LA_URL_DE_IMPLEMENTACION_EXEC',
+  API_URL: 'https://script.google.com/macros/s/AKfycbxt3s2zzaR3cFvnrwui9ucmtGfHlyxm4fRugM76Mpt2zSIUi7xbSZLC3H-BaoBb_Jor/exec',
 
   // Clave de acceso compartida. Debe ser IGUAL a la de Código.gs (API_KEY).
   // OJO: al estar en el navegador NO es un secreto fuerte; solo filtra accesos casuales.
