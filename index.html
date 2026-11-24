@@ -1,1047 +1,529 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <meta name="theme-color" content="#78BE20" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-  <title>Reporte de Cosechadores - Agrícola Huarmey</title>
-  <link rel="manifest" href="manifest.json" id="manifest-link" />
-  
-  <!-- Tailwind CSS -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Lucide Icons -->
-  <script src="https://unpkg.com/lucide@latest"></script>
-  <!-- Google Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#DA291C">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Acopiadores">
+<title>Reporte de Cosechadores – Acopiadores(as)</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/png" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
 
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          colors: {
-            brandRed: '#DA291C',
-            brandRedLight: '#FDF2F2',
-            brandGreen: '#78BE20',
-            brandGreenLight: '#F3FAEB',
-            brandGray: '#8A8178',
-            brandGrayLight: '#F6F5F4',
-          },
-          fontFamily: {
-            sans: ['Inter', 'sans-serif'],
-          }
-        }
-      }
-    }
-  </script>
+<style>
+:root{
+  --rojo:#DA291C; --verde:#78BE20; --gris:#8A8178;
+  --rojo-claro:#FDECEA; --verde-claro:#F0F8E4; --gris-claro:#F4F2F0;
+  --rojo-osc:#B01E13; --verde-osc:#4F8A0E; --texto:#2E2A27; --borde:#DDD8D3;
+  --radio:14px;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;color:var(--texto);background:var(--gris-claro);
+  min-height:100vh;padding-bottom:calc(84px + env(safe-area-inset-bottom));font-size:17px;line-height:1.35}
+.wrap{max-width:560px;margin:0 auto;padding:0 14px}
 
-  <style>
-    body {
-      font-family: 'Inter', sans-serif;
-      background-color: #F6F5F4;
-      -webkit-tap-highlight-color: transparent;
-    }
-    /* Custom Scrollbar for mobile/desktop */
-    ::-webkit-scrollbar {
-      width: 6px;
-      height: 6px;
-    }
-    ::-webkit-scrollbar-track {
-      background: #f1f1f1;
-    }
-    ::-webkit-scrollbar-thumb {
-      background: #8A8178;
-      border-radius: 3px;
-    }
-    select, input {
-      font-size: 16px !important; /* Prevents iOS zoom on focus */
-    }
-    .pulse-dot {
-      animation: pulse 2s infinite;
-    }
-    @keyframes pulse {
-      0% { transform: scale(0.95); opacity: 0.8; }
-      50% { transform: scale(1.1); opacity: 1; }
-      100% { transform: scale(0.95); opacity: 0.8; }
-    }
-  </style>
+/* Membrete */
+.membrete{background:#fff;border-bottom:4px solid var(--verde);padding:calc(10px + env(safe-area-inset-top)) 14px 10px;text-align:center}
+.membrete img{height:84px;width:auto;display:block;margin:0 auto}
+.titulo{background:#fff;text-align:center;padding:8px 14px 14px;border-bottom:1px solid var(--borde)}
+.titulo h1{margin:0;font-size:1.35rem;font-weight:800;letter-spacing:.3px;color:var(--rojo)}
+.titulo p{margin:4px 0 0;font-style:italic;font-weight:600;color:var(--gris);font-size:1rem}
+
+/* Barra de estado */
+.estado{display:flex;gap:8px;align-items:center;justify-content:space-between;flex-wrap:wrap;padding:10px 0}
+.pill{display:inline-flex;align-items:center;gap:6px;padding:7px 12px;border-radius:999px;font-weight:700;font-size:.9rem;border:2px solid transparent}
+.pill svg{width:18px;height:18px}
+.pill.online{background:var(--verde-claro);color:var(--verde-osc);border-color:var(--verde)}
+.pill.offline{background:var(--rojo-claro);color:var(--rojo-osc);border-color:var(--rojo)}
+.pill.pend{background:#fff;color:var(--gris);border-color:var(--borde)}
+.pill.pend.hay{background:#FFF6E0;color:#8A5A00;border-color:#F0B429}
+.linea-act{font-size:.8rem;color:var(--gris);padding:0 0 6px}
+
+/* Tarjeta / formulario */
+.card{background:#fff;border-radius:var(--radio);box-shadow:0 1px 4px rgba(0,0,0,.08);padding:16px;margin-bottom:14px}
+.campo{margin-bottom:14px}
+.campo label{display:flex;align-items:center;gap:8px;font-weight:800;font-size:.9rem;color:var(--gris);text-transform:uppercase;letter-spacing:.4px;margin-bottom:6px}
+.campo label svg{width:20px;height:20px;color:var(--verde-osc);flex:none}
+select,input[type=date],input[type=text]{width:100%;height:56px;font-size:1.1rem;padding:0 14px;border:2px solid var(--borde);border-radius:12px;background:#fff;color:var(--texto);appearance:none;-webkit-appearance:none;font-family:inherit}
+select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%238A8178' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:44px}
+input#total{font-size:1.6rem;font-weight:800;text-align:center}
+select:focus,input:focus{outline:none;border-color:var(--verde);box-shadow:0 0 0 4px rgba(120,190,32,.25)}
+.campo.invalido select,.campo.invalido input{border-color:var(--rojo);background:var(--rojo-claro)}
+.err{display:none;color:var(--rojo-osc);font-weight:700;font-size:.85rem;margin-top:5px}
+.campo.invalido .err{display:block}
+
+.btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;min-height:60px;border:0;border-radius:14px;font-size:1.15rem;font-weight:800;cursor:pointer;font-family:inherit;transition:transform .05s}
+.btn:active{transform:scale(.98)}
+.btn svg{width:26px;height:26px}
+.btn-verde{background:var(--verde);color:#1d3300}
+.btn-rojo{background:var(--rojo);color:#fff}
+.btn-gris{background:#fff;color:var(--gris);border:2px solid var(--borde)}
+.btn-peq{min-height:44px;font-size:.95rem;border-radius:10px;width:auto;padding:0 14px}
+.btn[disabled]{opacity:.55}
+.fila{display:flex;gap:10px}
+.fila>*{flex:1}
+
+/* Historial */
+.chips{display:flex;gap:8px;overflow-x:auto;padding:4px 0 10px}
+.chip{flex:none;padding:10px 16px;border-radius:999px;border:2px solid var(--borde);background:#fff;font-weight:700;color:var(--gris);font-size:.95rem;cursor:pointer;font-family:inherit}
+.chip.act{background:var(--rojo);border-color:var(--rojo);color:#fff}
+.reg{background:#fff;border-radius:var(--radio);padding:12px 14px;margin-bottom:10px;box-shadow:0 1px 3px rgba(0,0,0,.07);border-left:6px solid var(--gris)}
+.reg.PENDIENTE{border-left-color:#F0B429}
+.reg.SINCRONIZADO{border-left-color:var(--verde)}
+.reg.ERROR{border-left-color:var(--rojo)}
+.reg .cab{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:6px}
+.reg .total{font-size:1.5rem;font-weight:800}
+.reg .det{font-size:.92rem;color:#5b544e;display:grid;gap:2px}
+.reg .msg{margin-top:6px;font-size:.85rem;color:var(--rojo-osc);font-weight:700}
+.reg .acc{margin-top:8px;display:flex;gap:8px}
+.badge{padding:4px 10px;border-radius:999px;font-size:.78rem;font-weight:800;letter-spacing:.3px}
+.badge.PENDIENTE{background:#FFF6E0;color:#8A5A00}
+.badge.SINCRONIZADO{background:var(--verde-claro);color:var(--verde-osc)}
+.badge.ERROR{background:var(--rojo-claro);color:var(--rojo-osc)}
+.vacio{text-align:center;color:var(--gris);padding:30px 10px}
+
+/* Navegación inferior */
+nav{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid var(--borde);display:flex;padding-bottom:env(safe-area-inset-bottom);z-index:20}
+nav button{flex:1;border:0;background:none;padding:10px 4px 8px;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:.82rem;font-weight:800;color:var(--gris);cursor:pointer;font-family:inherit;position:relative}
+nav button svg{width:28px;height:28px}
+nav button.act{color:var(--rojo)}
+nav button.act::before{content:"";position:absolute;top:0;left:25%;right:25%;height:4px;background:var(--rojo);border-radius:0 0 4px 4px}
+.contador{position:absolute;top:4px;left:calc(50% + 8px);background:var(--rojo);color:#fff;border-radius:999px;font-size:.7rem;min-width:20px;height:20px;line-height:20px;text-align:center;padding:0 5px}
+
+.vista{display:none}.vista.act{display:block}
+#toast{position:fixed;left:14px;right:14px;bottom:calc(96px + env(safe-area-inset-bottom));max-width:532px;margin:0 auto;background:#2E2A27;color:#fff;padding:14px 16px;border-radius:12px;font-weight:700;z-index:50;display:none;box-shadow:0 4px 16px rgba(0,0,0,.3)}
+#toast.ok{background:var(--verde-osc)}#toast.error{background:var(--rojo-osc)}
+#instalar{display:none;margin-bottom:12px}
+.spin{animation:g 1s linear infinite}@keyframes g{to{transform:rotate(360deg)}}
+</style>
 </head>
-<body class="text-gray-800 min-h-screen flex flex-col pb-24">
+<body>
 
-  <!-- TOP STATUS BAR (Connectivity & Sync) -->
-  <div id="status-banner" class="sticky top-0 z-40 px-4 py-2 text-xs font-semibold flex items-center justify-between transition-colors duration-300 bg-brandGreen text-white shadow-sm">
-    <div class="flex items-center gap-2">
-      <span id="status-dot" class="w-2.5 h-2.5 rounded-full bg-white pulse-dot"></span>
-      <span id="status-text">EN LÍNEA - Conectado</span>
-    </div>
-    <div class="flex items-center gap-3">
-      <span id="pending-badge" class="hidden bg-brandRed text-white px-2 py-0.5 rounded-full text-[11px] font-bold shadow">
-        0 Pendientes
-      </span>
-      <button onclick="openConfigModal()" class="p-1 hover:bg-white/20 rounded-lg transition" title="Configuración API">
-        <i data-lucide="settings" class="w-4 h-4"></i>
-      </button>
-    </div>
+<!-- SVG sprite (iconos) -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="i-cal" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></symbol>
+    <symbol id="i-mod" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22V10"/><path d="M12 10c0-4 3-6 7-6 0 4-3 6-7 6z"/><path d="M12 14c0-3-2.5-5-6-5 0 3 2.5 5 6 5z"/></symbol>
+    <symbol id="i-sup" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M9 12l2 2 4-4"/></symbol>
+    <symbol id="i-acop" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9h18l-2 11H5z"/><path d="M8 9a4 4 0 018 0"/></symbol>
+    <symbol id="i-cap" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></symbol>
+    <symbol id="i-tot" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 9h14M5 15h14M10 4L8 20M16 4l-2 16"/></symbol>
+    <symbol id="i-save" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></symbol>
+    <symbol id="i-sync" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 01-15.5 6.2L3 16"/><path d="M3 12a9 9 0 0115.5-6.2L21 8"/><path d="M21 3v5h-5M3 21v-5h5"/></symbol>
+    <symbol id="i-wifi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9a15 15 0 0120 0M5.5 12.5a10 10 0 0113 0M9 16a5 5 0 016 0"/><circle cx="12" cy="19.5" r="1" fill="currentColor"/></symbol>
+    <symbol id="i-nowifi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9a15 15 0 013-2.4M22 9a15 15 0 00-9-3.9M5.5 12.5a10 10 0 012-1.4M18.5 12.5a10 10 0 00-3.2-2M9 16a5 5 0 016 0"/><circle cx="12" cy="19.5" r="1" fill="currentColor"/><path d="M3 3l18 18"/></symbol>
+    <symbol id="i-form" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></symbol>
+    <symbol id="i-list" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 6h13M8 12h13M8 18h13"/><circle cx="3.5" cy="6" r="1"/><circle cx="3.5" cy="12" r="1"/><circle cx="3.5" cy="18" r="1"/></symbol>
+    <symbol id="i-dl" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 10l5 5 5-5M4 21h16"/></symbol>
+  </defs>
+</svg>
+
+<header class="membrete"><img src="logo.png" alt="Agrícola Huarmey"></header>
+<div class="titulo">
+  <h1>REPORTE DE COSECHADORES</h1>
+  <p>Registro para Acopiadores (as)</p>
+</div>
+
+<main class="wrap">
+  <div class="estado">
+    <span id="pConexion" class="pill online"><svg><use href="#i-wifi"/></svg><span>En línea</span></span>
+    <span id="pPend" class="pill pend"><svg><use href="#i-sync"/></svg><span>0 pendientes</span></span>
   </div>
+  <div class="linea-act" id="lineaAct"></div>
 
-  <!-- HEADER / MEMBRETE -->
-  <header class="bg-white border-b-4 border-brandGreen shadow-sm pt-4 pb-5 px-4 text-center">
-    <div class="max-w-lg mx-auto flex flex-col items-center">
-      <!-- Logo Image with SVG Fallback matching LOGO HUARMEY.png -->
-      <div class="mb-2 flex flex-col items-center justify-center">
-        <img 
-          src="LOGO HUARMEY.png" 
-          alt="Agrícola Huarmey" 
-          class="h-20 object-contain"
-          onerror="this.style.display='none'; document.getElementById('svg-logo-fallback').style.display='flex';"
-        />
-        <!-- High-precision SVG vector replica of LOGO HUARMEY.png if external file isn't in same folder -->
-        <div id="svg-logo-fallback" style="display:none;" class="flex-col items-center">
-          <svg width="74" height="72" viewBox="0 0 120 115" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <!-- Leaf -->
-            <path d="M62 32C62 16 76 5 92 6C91 22 78 33 62 32Z" fill="#4E9A1D"/>
-            <path d="M63 31C71 22 80 15 89 9" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round"/>
-            <!-- Green Outer Swooshes -->
-            <path d="M48 22C24 30 16 62 34 86C44 98 60 103 74 101C52 100 35 84 34 62C33 43 44 28 58 23L48 22Z" fill="#4E9A1D"/>
-            <path d="M35 16C12 32 10 68 32 88C18 66 22 36 42 20L35 16Z" fill="#78BE20"/>
-            <!-- Red Apple Body Segments -->
-            <path d="M52 38C64 46 82 44 88 33C92 42 84 54 68 54C55 54 48 45 52 38Z" fill="#DA291C"/>
-            <path d="M42 54C58 65 86 63 97 48C100 61 87 74 66 74C49 74 39 63 42 54Z" fill="#DA291C"/>
-            <path d="M47 75C63 85 86 83 96 71C94 84 80 94 63 93C50 92 43 82 47 75Z" fill="#DA291C"/>
-          </svg>
-          <span class="text-xl font-bold tracking-tight text-[#59534D] -mt-1">Agrícola Huarmey</span>
-        </div>
+  <button id="instalar" class="btn btn-gris"><svg><use href="#i-dl"/></svg>Instalar aplicación</button>
+
+  <!-- VISTA REGISTRAR -->
+  <section id="vRegistrar" class="vista act">
+    <form id="form" class="card" novalidate autocomplete="off">
+      <div class="campo" id="c-fecha">
+        <label for="fecha"><svg><use href="#i-cal"/></svg>Fecha registro</label>
+        <input type="date" id="fecha" required>
+        <div class="err">Seleccione la fecha del registro.</div>
       </div>
+      <div class="campo" id="c-modulo">
+        <label for="modulo"><svg><use href="#i-mod"/></svg>Módulo - Turno</label>
+        <select id="modulo" required></select>
+        <div class="err">Seleccione el módulo y turno.</div>
+      </div>
+      <div class="campo" id="c-supervisor">
+        <label for="supervisor"><svg><use href="#i-sup"/></svg>Supervisor</label>
+        <select id="supervisor" required></select>
+        <div class="err">Seleccione el supervisor.</div>
+      </div>
+      <div class="campo" id="c-acopiador">
+        <label for="acopiador"><svg><use href="#i-acop"/></svg>Datos acopiador</label>
+        <select id="acopiador" required></select>
+        <div class="err">Seleccione el acopiador(a).</div>
+      </div>
+      <div class="campo" id="c-caporal">
+        <label for="caporal"><svg><use href="#i-cap"/></svg>Datos caporal</label>
+        <select id="caporal" required></select>
+        <div class="err">Seleccione el caporal.</div>
+      </div>
+      <div class="campo" id="c-total">
+        <label for="total"><svg><use href="#i-tot"/></svg>Total</label>
+        <input type="text" id="total" inputmode="numeric" pattern="[0-9]*" maxlength="6" placeholder="0" required>
+        <div class="err" id="errTotal">Ingrese un número entero (0 o mayor).</div>
+      </div>
+      <button type="submit" class="btn btn-verde" id="btnGuardar"><svg><use href="#i-save"/></svg>GUARDAR REGISTRO</button>
+      <div style="height:10px"></div>
+      <button type="button" class="btn btn-gris btn-peq" id="btnLimpiar" style="width:100%">Limpiar formulario</button>
+    </form>
+  </section>
 
-      <!-- TÍTULO Y SUBTÍTULO -->
-      <h1 class="text-xl sm:text-2xl font-extrabold text-gray-900 text-center tracking-tight uppercase mt-1">
-        REPORTE DE COSECHADORES
-      </h1>
-      <p class="text-sm sm:text-base font-medium text-brandGray mt-0.5">
-        Registro para Acopiadores (as)
-      </p>
+  <!-- VISTA HISTORIAL -->
+  <section id="vHistorial" class="vista">
+    <div class="fila" style="margin-bottom:10px">
+      <button class="btn btn-rojo btn-peq" id="btnSync"><svg style="width:22px;height:22px"><use href="#i-sync"/></svg>Sincronizar ahora</button>
+      <button class="btn btn-gris btn-peq" id="btnLimpiarSync">Borrar sincronizados</button>
     </div>
-  </header>
-
-  <!-- MAIN CONTENT CONTAINER -->
-  <main class="flex-1 max-w-lg w-full mx-auto px-4 pt-5">
-
-    <!-- NAVIGATION TABS -->
-    <div class="grid grid-cols-2 gap-2 bg-white p-1.5 rounded-2xl shadow-sm border border-gray-200 mb-5">
-      <button id="tab-form-btn" onclick="switchTab('form')" class="flex items-center justify-center gap-2 py-3 px-4 rounded-xl font-bold text-sm transition-all bg-brandGreen text-white shadow-sm">
-        <i data-lucide="clipboard-plus" class="w-5 h-5"></i>
-        <span>Nuevo Registro</span>
-      </button>
-      <button id="tab-history-btn" onclick="switchTab('history')" class="flex items-center justify-center gap-2 py-3 px-4 rounded-xl font-bold text-sm transition-all text-brandGray hover:bg-brandGrayLight relative">
-        <i data-lucide="database" class="w-5 h-5"></i>
-        <span>Registros</span>
-        <span id="tab-count-badge" class="bg-gray-200 text-gray-700 text-xs px-2 py-0.5 rounded-full font-extrabold">0</span>
-      </button>
+    <div class="chips" id="chips">
+      <button class="chip act" data-f="TODOS">Todos</button>
+      <button class="chip" data-f="PENDIENTE">Pendientes</button>
+      <button class="chip" data-f="SINCRONIZADO">Sincronizados</button>
+      <button class="chip" data-f="ERROR">Con error</button>
     </div>
+    <div id="lista"></div>
+  </section>
+</main>
 
-    <!-- VIEW 1: DATA ENTRY FORM -->
-    <section id="view-form" class="space-y-4">
-      
-      <!-- Master Data Refresh Bar -->
-      <div class="bg-brandGreenLight border border-brandGreen/30 rounded-xl p-3 flex items-center justify-between">
-        <div class="flex items-center gap-2.5">
-          <div class="bg-brandGreen/20 p-2 rounded-lg text-brandGreen">
-            <i data-lucide="sheet" class="w-5 h-5"></i>
-          </div>
-          <div>
-            <p class="text-xs font-bold text-gray-800">Catálogos Google Sheets</p>
-            <p id="catalog-status" class="text-[11px] text-brandGray">Listos para uso en campo</p>
-          </div>
-        </div>
-        <button type="button" onclick="fetchMasterData(true)" id="btn-refresh-masters" class="flex items-center gap-1.5 bg-white border border-brandGreen text-brandGreen hover:bg-brandGreen hover:text-white active:scale-95 transition px-3 py-2 rounded-lg text-xs font-bold shadow-sm">
-          <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
-          <span>Actualizar</span>
-        </button>
-      </div>
+<nav>
+  <button id="navReg" class="act"><svg><use href="#i-form"/></svg>Registrar</button>
+  <button id="navHis"><svg><use href="#i-list"/></svg>Historial<span class="contador" id="contador" style="display:none">0</span></button>
+</nav>
+<div id="toast" role="status" aria-live="polite"></div>
 
-      <!-- FORM CARD -->
-      <form id="acopiador-form" novalidate class="bg-white rounded-2xl shadow-sm border border-gray-200 p-5 space-y-5">
-        
-        <!-- 1. FECHA REGISTRO -->
-        <div>
-          <label for="fecha_reg" class="flex items-center gap-2 text-sm font-bold text-gray-700 mb-1.5">
-            <i data-lucide="calendar" class="w-4 h-4 text-brandGreen"></i>
-            <span>FECHA REGISTRO <span class="text-brandRed">*</span></span>
-          </label>
-          <input 
-            type="date" 
-            id="fecha_reg" 
-            name="fecha_reg" 
-            required
-            class="w-full h-13 px-4 py-3 rounded-xl border-2 border-gray-200 bg-brandGrayLight/40 focus:bg-white focus:border-brandGreen focus:outline-none font-semibold text-gray-800 transition"
-          />
-          <p class="text-xs text-brandRed mt-1 hidden" id="err-fecha_reg">Seleccione una fecha válida.</p>
-        </div>
+<script>
+'use strict';
+/* =====================================================================
+ * CONFIGURACIÓN  –  EDITE SOLO ESTE BLOQUE
+ * ===================================================================== */
+const CONFIG = {
+  // URL de la aplicación web de Apps Script (termina en /exec)
+  API_URL: 'PEGUE_AQUI_LA_URL_DE_APPS_SCRIPT/exec',
+  // Clave de acceso: debe ser IGUAL a la propiedad de script API_TOKEN en Apps Script
+  API_TOKEN: 'CAMBIE_ESTA_CLAVE',
+  SUPERVISORES: ['Frank Farroñan', 'Roni Días'],
+  TOTAL_MAX: 100000,          // tope razonable para evitar errores de digitación
+  LOTE_SYNC: 20,              // registros por petición (reduce carga con muchos usuarios)
+  TIMEOUT_MS: 25000,
+  REFRESCO_LISTAS_MS: 10 * 60 * 1000,
+  REINTENTO_BASE_MS: 3000,
+  REINTENTO_MAX_MS: 90000
+};
 
-        <!-- 2. MODULO - TURNO -->
-        <div>
-          <label for="modulo_turno" class="flex items-center justify-between text-sm font-bold text-gray-700 mb-1.5">
-            <span class="flex items-center gap-2">
-              <i data-lucide="layers" class="w-4 h-4 text-brandGreen"></i>
-              <span>MÓDULO - TURNO <span class="text-brandRed">*</span></span>
-            </span>
-            <span class="text-[10px] font-normal text-brandGray bg-gray-100 px-2 py-0.5 rounded">maestro-modulos</span>
-          </label>
-          <div class="relative">
-            <select 
-              id="modulo_turno" 
-              name="modulo_turno" 
-              required
-              class="w-full h-13 px-4 py-3.5 rounded-xl border-2 border-gray-200 bg-brandGrayLight/40 focus:bg-white focus:border-brandGreen focus:outline-none font-semibold text-gray-800 appearance-none transition"
-            >
-              <option value="">-- Seleccione Módulo y Turno --</option>
-            </select>
-            <i data-lucide="chevron-down" class="w-5 h-5 text-brandGray absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none"></i>
-          </div>
-          <p class="text-xs text-brandRed mt-1 hidden" id="err-modulo_turno">Seleccione el Módulo - Turno.</p>
-        </div>
+/* =====================================================================
+ * UTILIDADES
+ * ===================================================================== */
+const $ = (s, r = document) => r.querySelector(s);
+const uuid = () => (crypto.randomUUID ? crypto.randomUUID()
+  : 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => { const r = Math.random() * 16 | 0; return (c === 'x' ? r : (r & 3 | 8)).toString(16); }));
+const hoy = () => { const d = new Date(); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); };
+const fmtFecha = iso => { const [y, m, d] = iso.split('-'); return `${d}/${m}/${y}`; };
+const fmtHora = ts => new Date(ts).toLocaleString('es-PE', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
+const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const dormir = ms => new Promise(r => setTimeout(r, ms));
 
-        <!-- 3. SUPERVISOR -->
-        <div>
-          <label for="supervisor" class="flex items-center gap-2 text-sm font-bold text-gray-700 mb-1.5">
-            <i data-lucide="user-check" class="w-4 h-4 text-brandRed"></i>
-            <span>SUPERVISOR <span class="text-brandRed">*</span></span>
-          </label>
-          <div class="relative">
-            <select 
-              id="supervisor" 
-              name="supervisor" 
-              required
-              class="w-full h-13 px-4 py-3.5 rounded-xl border-2 border-gray-200 bg-brandGrayLight/40 focus:bg-white focus:border-brandGreen focus:outline-none font-semibold text-gray-800 appearance-none transition"
-            >
-              <option value="">-- Seleccione Supervisor --</option>
-              <option value="Frank Farroñan">Frank Farroñan</option>
-              <option value="Roni Días">Roni Días</option>
-            </select>
-            <i data-lucide="chevron-down" class="w-5 h-5 text-brandGray absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none"></i>
-          </div>
-          <p class="text-xs text-brandRed mt-1 hidden" id="err-supervisor">Seleccione un supervisor.</p>
-        </div>
+let toastT;
+function toast(msg, tipo = '') {
+  const t = $('#toast'); t.textContent = msg; t.className = tipo; t.style.display = 'block';
+  clearTimeout(toastT); toastT = setTimeout(() => t.style.display = 'none', 3500);
+}
 
-        <!-- 4. DATOS ACOPIADOR -->
-        <div>
-          <label for="datos_acopiador" class="flex items-center justify-between text-sm font-bold text-gray-700 mb-1.5">
-            <span class="flex items-center gap-2">
-              <i data-lucide="clipboard-list" class="w-4 h-4 text-brandGreen"></i>
-              <span>DATOS ACOPIADOR <span class="text-brandRed">*</span></span>
-            </span>
-            <span class="text-[10px] font-normal text-brandGray bg-gray-100 px-2 py-0.5 rounded">maestro-acopiador</span>
-          </label>
-          <div class="relative">
-            <select 
-              id="datos_acopiador" 
-              name="datos_acopiador" 
-              required
-              class="w-full h-13 px-4 py-3.5 rounded-xl border-2 border-gray-200 bg-brandGrayLight/40 focus:bg-white focus:border-brandGreen focus:outline-none font-semibold text-gray-800 appearance-none transition"
-            >
-              <option value="">-- Seleccione Acopiador(a) --</option>
-            </select>
-            <i data-lucide="chevron-down" class="w-5 h-5 text-brandGray absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none"></i>
-          </div>
-          <p class="text-xs text-brandRed mt-1 hidden" id="err-datos_acopiador">Seleccione los datos del acopiador.</p>
-        </div>
-
-        <!-- 5. DATOS CAPORAL -->
-        <div>
-          <label for="datos_caporal" class="flex items-center justify-between text-sm font-bold text-gray-700 mb-1.5">
-            <span class="flex items-center gap-2">
-              <i data-lucide="hard-hat" class="w-4 h-4 text-brandRed"></i>
-              <span>DATOS CAPORAL <span class="text-brandRed">*</span></span>
-            </span>
-            <span class="text-[10px] font-normal text-brandGray bg-gray-100 px-2 py-0.5 rounded">maestro-caporal</span>
-          </label>
-          <div class="relative">
-            <select 
-              id="datos_caporal" 
-              name="datos_caporal" 
-              required
-              class="w-full h-13 px-4 py-3.5 rounded-xl border-2 border-gray-200 bg-brandGrayLight/40 focus:bg-white focus:border-brandGreen focus:outline-none font-semibold text-gray-800 appearance-none transition"
-            >
-              <option value="">-- Seleccione Caporal --</option>
-            </select>
-            <i data-lucide="chevron-down" class="w-5 h-5 text-brandGray absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none"></i>
-          </div>
-          <p class="text-xs text-brandRed mt-1 hidden" id="err-datos_caporal">Seleccione los datos del caporal.</p>
-        </div>
-
-        <!-- 6. TOTAL (Numérico entero) -->
-        <div class="bg-brandRedLight/60 p-4 rounded-xl border border-brandRed/20">
-          <label for="total" class="flex items-center gap-2 text-sm font-extrabold text-gray-800 mb-1.5">
-            <i data-lucide="hash" class="w-4 h-4 text-brandRed"></i>
-            <span>TOTAL COSECHADORES / JABAS <span class="text-brandRed">*</span></span>
-          </label>
-          <input 
-            type="number" 
-            id="total" 
-            name="total" 
-            inputmode="numeric"
-            pattern="[0-9]*"
-            min="1"
-            step="1"
-            placeholder="Ej. 25"
-            required
-            class="w-full h-14 px-4 py-3 rounded-xl border-2 border-brandRed/30 bg-white focus:border-brandRed focus:outline-none text-2xl font-extrabold text-center text-gray-900 transition"
-          />
-          <p class="text-xs text-brandRed font-medium mt-1.5 hidden text-center" id="err-total">Ingrese un número entero mayor a 0.</p>
-        </div>
-
-        <!-- ACTION BUTTONS -->
-        <div class="pt-2 space-y-3">
-          <button 
-            type="submit" 
-            id="btn-submit"
-            class="w-full py-4 px-6 rounded-2xl bg-brandGreen hover:bg-[#68a61b] active:scale-[0.98] text-white font-extrabold text-base shadow-lg shadow-brandGreen/30 flex items-center justify-center gap-3 transition-all"
-          >
-            <i data-lucide="save" class="w-6 h-6"></i>
-            <span>GUARDAR REGISTRO</span>
-          </button>
-
-          <button 
-            type="button" 
-            onclick="resetFormKeepContext()"
-            class="w-full py-3 px-4 rounded-xl bg-brandGrayLight hover:bg-gray-200 text-brandGray font-bold text-sm flex items-center justify-center gap-2 transition"
-          >
-            <i data-lucide="eraser" class="w-4 h-4"></i>
-            <span>Limpiar Campos</span>
-          </button>
-        </div>
-
-      </form>
-    </section>
-
-    <!-- VIEW 2: LOCAL RECORDS & SYNC QUEUE -->
-    <section id="view-history" class="hidden space-y-4">
-      
-      <!-- Summary Counters -->
-      <div class="grid grid-cols-3 gap-2.5">
-        <div class="bg-white p-3 rounded-xl border border-gray-200 text-center shadow-sm">
-          <span class="block text-xs font-bold text-amber-600">Pendientes</span>
-          <span id="stat-pending" class="text-2xl font-extrabold text-gray-900">0</span>
-        </div>
-        <div class="bg-white p-3 rounded-xl border border-gray-200 text-center shadow-sm">
-          <span class="block text-xs font-bold text-brandGreen">Sincronizados</span>
-          <span id="stat-synced" class="text-2xl font-extrabold text-gray-900">0</span>
-        </div>
-        <div class="bg-white p-3 rounded-xl border border-gray-200 text-center shadow-sm">
-          <span class="block text-xs font-bold text-brandRed">Con Error</span>
-          <span id="stat-error" class="text-2xl font-extrabold text-gray-900">0</span>
-        </div>
-      </div>
-
-      <!-- Manual Sync Button -->
-      <button 
-        onclick="syncPendingRecords()" 
-        id="btn-sync-now"
-        class="w-full py-3.5 px-5 rounded-xl bg-brandRed hover:bg-[#b82015] active:scale-[0.98] text-white font-bold text-sm shadow-md flex items-center justify-center gap-2 transition"
-      >
-        <i data-lucide="cloud-upload" class="w-5 h-5"></i>
-        <span>SINCRONIZAR PENDIENTES AHORA</span>
-      </button>
-
-      <!-- Records List Container -->
-      <div id="records-list" class="space-y-3">
-        <!-- Populated dynamically via JS -->
-      </div>
-
-    </section>
-
-  </main>
-
-  <!-- TOAST NOTIFICATION -->
-  <div id="toast" class="fixed bottom-5 left-1/2 -translate-x-1/2 z-50 max-w-sm w-[92%] pointer-events-none opacity-0 transition-all duration-300 translate-y-4">
-    <div id="toast-inner" class="bg-gray-900 text-white px-4 py-3.5 rounded-2xl shadow-xl flex items-center gap-3 border border-white/10">
-      <i id="toast-icon" data-lucide="check-circle" class="w-6 h-6 text-brandGreen shrink-0"></i>
-      <p id="toast-msg" class="text-sm font-semibold leading-snug">Mensaje</p>
-    </div>
-  </div>
-
-  <!-- CONFIGURATION MODAL (Google Apps Script URL & Token) -->
-  <div id="config-modal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs hidden items-center justify-center p-4">
-    <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-4">
-      <div class="flex items-center justify-between border-b pb-3">
-        <div class="flex items-center gap-2">
-          <i data-lucide="server" class="w-5 h-5 text-brandGreen"></i>
-          <h3 class="font-extrabold text-gray-900">Conexión Google Sheets API</h3>
-        </div>
-        <button onclick="closeConfigModal()" class="text-gray-400 hover:text-gray-700">
-          <i data-lucide="x" class="w-6 h-6"></i>
-        </button>
-      </div>
-
-      <div class="space-y-3 text-sm">
-        <div>
-          <label class="block font-bold text-gray-700 mb-1">URL Web App (Google Apps Script)</label>
-          <input type="url" id="cfg-api-url" placeholder="https://script.google.com/macros/s/.../exec" class="w-full px-3 py-2.5 rounded-xl border border-gray-300 focus:border-brandGreen focus:outline-none text-xs" />
-        </div>
-        <div>
-          <label class="block font-bold text-gray-700 mb-1">Token de Seguridad (API Key)</label>
-          <input type="password" id="cfg-api-token" placeholder="HUARMEY_2026_SECURE" class="w-full px-3 py-2.5 rounded-xl border border-gray-300 focus:border-brandGreen focus:outline-none text-xs" />
-        </div>
-        <p class="text-xs text-brandGray bg-brandGrayLight p-2.5 rounded-lg">
-          <strong>Nota:</strong> Mientras no configure una URL real de Apps Script, la aplicación operará con datos maestros de respaldo y simulará la sincronización local en IndexedDB.
-        </p>
-      </div>
-
-      <div class="flex gap-2 pt-2">
-        <button onclick="saveConfig()" class="flex-1 bg-brandGreen text-white font-bold py-3 rounded-xl hover:bg-[#68a61b] transition">
-          Guardar Conexión
-        </button>
-        <button onclick="closeConfigModal()" class="px-4 py-3 rounded-xl bg-gray-100 text-gray-700 font-bold">
-          Cerrar
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <!-- PWA INSTALL PROMPT BANNER -->
-  <div id="install-banner" class="hidden fixed bottom-20 left-4 right-4 max-w-lg mx-auto bg-white border-2 border-brandGreen rounded-2xl p-3.5 shadow-xl z-30 flex items-center justify-between gap-3">
-    <div class="flex items-center gap-3">
-      <div class="bg-brandGreenLight p-2 rounded-xl text-brandGreen">
-        <i data-lucide="smartphone" class="w-6 h-6"></i>
-      </div>
-      <div>
-        <p class="text-xs font-extrabold text-gray-900">Instalar App en Móvil</p>
-        <p class="text-[11px] text-brandGray">Acceso rápido sin conexión en campo</p>
-      </div>
-    </div>
-    <button id="btn-install-pwa" class="bg-brandGreen text-white text-xs font-bold px-3.5 py-2 rounded-xl shadow">
-      Instalar
-    </button>
-  </div>
-
-  <script>
-    /**
-     * ============================================================================
-     * CONFIGURACIÓN Y ESTADO GLOBAL - AGRÍCOLA HUARMEY
-     * ============================================================================
-     */
-    const DEFAULT_CONFIG = {
-      // Reemplazar con la URL desplegada de Google Apps Script (codigo.gs)
-      apiUrl: localStorage.getItem('ah_api_url') || '',
-      apiToken: localStorage.getItem('ah_api_token') || 'HUARMEY_COSECHA_2026'
+/* =====================================================================
+ * MÓDULO DB  (IndexedDB)
+ *   records: registros del usuario con estado  |  meta: listas maestras
+ * ===================================================================== */
+const DB = (() => {
+  let dbp;
+  const abrir = () => dbp || (dbp = new Promise((res, rej) => {
+    const r = indexedDB.open('acopiadores-db', 1);
+    r.onupgradeneeded = () => {
+      const d = r.result;
+      const s = d.createObjectStore('records', { keyPath: 'id' });
+      s.createIndex('status', 'status'); s.createIndex('createdAt', 'createdAt');
+      d.createObjectStore('meta', { keyPath: 'key' });
     };
+    r.onsuccess = () => res(r.result);
+    r.onerror = () => rej(r.error);
+  }));
+  const tx = (store, modo, fn) => abrir().then(d => new Promise((res, rej) => {
+    const t = d.transaction(store, modo); const out = fn(t.objectStore(store));
+    t.oncomplete = () => res(out && 'result' in out ? out.result : undefined);
+    t.onerror = t.onabort = () => rej(t.error);
+  }));
+  return {
+    put: r => tx('records', 'readwrite', s => s.put(r)),
+    putMany: arr => tx('records', 'readwrite', s => { arr.forEach(r => s.put(r)); }),
+    del: id => tx('records', 'readwrite', s => s.delete(id)),
+    all: () => tx('records', 'readonly', s => s.getAll()),
+    getMeta: k => tx('meta', 'readonly', s => s.get(k)).then(r => r && r.value),
+    setMeta: (k, v) => tx('meta', 'readwrite', s => s.put({ key: k, value: v }))
+  };
+})();
 
-    // Datos maestros de respaldo (basados en la imagen de referencia del Excel)
-    const FALLBACK_MASTERS = {
-      modulos: [
-        "MODULO 1 TURNO 1", "MODULO 1 TURNO 2", "MODULO 1 TURNO 3", "MODULO 1 TURNO 4", "MODULO 1 TURNO 5",
-        "MODULO 2 TURNO 1", "MODULO 2 TURNO 2", "MODULO 2 TURNO 3", "MODULO 2 TURNO 4", "MODULO 2 TURNO 5",
-        "MODULO 3 TURNO 1", "MODULO 3 TURNO 2", "MODULO 3 TURNO 3", "MODULO 3 TURNO 4", "MODULO 3 TURNO 5",
-        "MODULO 4 TURNO 1", "MODULO 4 TURNO 2", "MODULO 4 TURNO 3", "MODULO 4 TURNO 4", "MODULO 4 TURNO 5",
-        "MODULO 5 TURNO 1", "MODULO 5 TURNO 2"
-      ],
-      acopiadores: [
-        "ACOPIADOR 01 - JUAN PEREZ",
-        "ACOPIADOR 02 - MARIA GOMEZ",
-        "ACOPIADOR 03 - CARLOS RUIZ",
-        "ACOPIADOR 04 - ANA TORRES"
-      ],
-      caporales: [
-        "CAPORAL 01 - LUIS MENDOZA",
-        "CAPORAL 02 - PEDRO CASTILLO",
-        "CAPORAL 03 - ROSA FLORES",
-        "CAPORAL 04 - JORGE VARGAS"
-      ]
-    };
+/* =====================================================================
+ * MÓDULO API  (Google Apps Script)
+ *   - POST con Content-Type text/plain para evitar preflight CORS
+ *   - La clave viaja en el cuerpo (Apps Script no expone cabeceras)
+ * ===================================================================== */
+const API = (() => {
+  async function llamar(url, opts) {
+    const ctrl = new AbortController(); const to = setTimeout(() => ctrl.abort(), CONFIG.TIMEOUT_MS);
+    try {
+      const resp = await fetch(url, { ...opts, signal: ctrl.signal, redirect: 'follow' });
+      const txt = await resp.text();
+      try { return JSON.parse(txt); } catch { const e = new Error('Respuesta no válida del servidor'); e.red = true; throw e; }
+    } catch (e) { e.red = true; throw e; } finally { clearTimeout(to); }
+  }
+  return {
+    listas: () => llamar(`${CONFIG.API_URL}?action=masters&token=${encodeURIComponent(CONFIG.API_TOKEN)}`, { method: 'GET' }),
+    sincronizar: registros => llamar(CONFIG.API_URL, {
+      method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({ action: 'sync', token: CONFIG.API_TOKEN, records: registros })
+    })
+  };
+})();
+const apiConfigurada = () => /^https:\/\/script\.google(usercontent)?\.com\//.test(CONFIG.API_URL);
 
-    let isSyncing = false;
-    let deferredPrompt = null;
+/* =====================================================================
+ * MÓDULO LISTAS (maestros descargados de Google Sheets y cacheados)
+ * ===================================================================== */
+const Listas = {
+  datos: { modulos: [], acopiadores: [], caporales: [], ts: 0 },
+  async cargarLocal() { const d = await DB.getMeta('masters'); if (d) this.datos = d; },
+  async refrescar(silencioso = true) {
+    if (!navigator.onLine || !apiConfigurada()) return;
+    try {
+      const r = await API.listas();
+      if (!r.ok) throw new Error(r.error || 'No autorizado');
+      this.datos = { modulos: r.modulos || [], acopiadores: r.acopiadores || [], caporales: r.caporales || [], ts: Date.now() };
+      await DB.setMeta('masters', this.datos);
+      UI.pintarListas(); UI.pintarActualizacion();
+      if (!silencioso) toast('Listas actualizadas', 'ok');
+    } catch (e) { if (!silencioso) toast('No se pudieron actualizar las listas: ' + (e.message || 'error de red'), 'error'); }
+  }
+};
 
-    /**
-     * ============================================================================
-     * MÓDULO INDEXEDDB (OFFLINE-FIRST STORAGE)
-     * ============================================================================
-     */
-    const DB_NAME = 'AgricolaHuarmeyDB';
-    const DB_VERSION = 1;
+/* =====================================================================
+ * MÓDULO SYNC  (offline-first, lotes, reintento con backoff + jitter)
+ * ===================================================================== */
+const Sync = (() => {
+  let ocupado = false, intentos = 0, timer = null;
+  const aPayload = r => ({ id: r.id, fecha: r.fecha, moduloTurno: r.moduloTurno, acopiador: r.acopiador, caporal: r.caporal, total: r.total, supervisor: r.supervisor, creado: r.createdAt });
 
-    function openDB() {
-      return new Promise((resolve, reject) => {
-        const request = indexedDB.open(DB_NAME, DB_VERSION);
+  function programar(ms) {
+    clearTimeout(timer);
+    timer = setTimeout(() => Sync.ahora(false), ms);
+  }
+  function backoff() {
+    intentos++;
+    const base = Math.min(CONFIG.REINTENTO_MAX_MS, CONFIG.REINTENTO_BASE_MS * 2 ** (intentos - 1));
+    programar(base / 2 + Math.random() * base / 2);   // jitter: evita que 200 equipos reintenten a la vez
+  }
 
-        request.onupgradeneeded = (event) => {
-          const db = event.target.result;
-          // Store para registros de producción de acopiadores
-          if (!db.objectStoreNames.contains('registros')) {
-            const store = db.createObjectStore('registros', { keyPath: 'id' });
-            store.createIndex('estado', 'estado', { unique: false });
-            store.createIndex('timestamp', 'timestamp', { unique: false });
-          }
-          // Store para catálogos maestros cacheados
-          if (!db.objectStoreNames.contains('maestros')) {
-            db.createObjectStore('maestros', { keyPath: 'clave' });
-          }
-        };
-
-        request.onsuccess = () => resolve(request.result);
-        request.onerror = () => reject(request.error);
-      });
-    }
-
-    async function saveRecordLocal(record) {
-      const db = await openDB();
-      return new Promise((resolve, reject) => {
-        const tx = db.transaction('registros', 'readwrite');
-        tx.objectStore('registros').put(record);
-        tx.oncomplete = () => resolve(record);
-        tx.onerror = () => reject(tx.error);
-      });
-    }
-
-    async function getAllRecordsLocal() {
-      const db = await openDB();
-      return new Promise((resolve, reject) => {
-        const tx = db.transaction('registros', 'readonly');
-        const req = tx.objectStore('registros').getAll();
-        req.onsuccess = () => {
-          // Ordenar del más reciente al más antiguo
-          const sorted = (req.result || []).sort((a, b) => b.timestamp - a.timestamp);
-          resolve(sorted);
-        };
-        req.onerror = () => reject(req.error);
-      });
-    }
-
-    async function deleteRecordLocal(id) {
-      const db = await openDB();
-      return new Promise((resolve, reject) => {
-        const tx = db.transaction('registros', 'readwrite');
-        tx.objectStore('registros').delete(id);
-        tx.oncomplete = () => resolve();
-        tx.onerror = () => reject(tx.error);
-      });
-    }
-
-    async function saveMastersLocal(data) {
-      const db = await openDB();
-      return new Promise((resolve, reject) => {
-        const tx = db.transaction('maestros', 'readwrite');
-        const store = tx.objectStore('maestros');
-        store.put({ clave: 'catalogos', data, updatedAt: new Date().toISOString() });
-        tx.oncomplete = () => resolve();
-        tx.onerror = () => reject(tx.error);
-      });
-    }
-
-    async function getMastersLocal() {
-      const db = await openDB();
-      return new Promise((resolve, reject) => {
-        const tx = db.transaction('maestros', 'readonly');
-        const req = tx.objectStore('maestros').get('catalogos');
-        req.onsuccess = () => resolve(req.result ? req.result.data : null);
-        req.onerror = () => reject(req.error);
-      });
-    }
-
-    /**
-     * ============================================================================
-     * GESTIÓN DE CATÁLOGOS MAESTROS (GOOGLE SHEETS -> INDEXEDDB)
-     * ============================================================================
-     */
-    async function fetchMasterData(forceRemote = false) {
-      const btn = document.getElementById('btn-refresh-masters');
-      const statusEl = document.getElementById('catalog-status');
-      
-      // 1. Cargar inmediatamente desde IndexedDB para respuesta instantánea en campo
-      let cached = await getMastersLocal();
-      if (cached) {
-        populateDropdowns(cached);
-        statusEl.textContent = 'Catálogos cargados localmente';
-      } else {
-        populateDropdowns(FALLBACK_MASTERS);
-        await saveMastersLocal(FALLBACK_MASTERS);
-      }
-
-      // 2. Si hay internet y URL configurada, consultar Google Sheets
-      if (navigator.onLine && DEFAULT_CONFIG.apiUrl) {
-        try {
-          if (forceRemote) {
-            btn.disabled = true;
-            btn.innerHTML = `<i data-lucide="loader-2" class="w-3.5 h-3.5 animate-spin"></i><span>Cargando...</span>`;
-            lucide.createIcons();
-          }
-
-          const url = `${DEFAULT_CONFIG.apiUrl}?action=getMasters&token=${encodeURIComponent(DEFAULT_CONFIG.apiToken)}`;
-          const response = await fetch(url);
-          const result = await response.json();
-
-          if (result.status === 'success' && result.data) {
-            await saveMastersLocal(result.data);
-            populateDropdowns(result.data);
-            const hora = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-            statusEl.textContent = `Sincronizado con Excel (${hora})`;
-            if (forceRemote) showToast('Catálogos actualizados desde Google Sheets', 'success');
-          } else {
-            throw new Error(result.message || 'Respuesta inválida del servidor');
-          }
-        } catch (error) {
-          console.warn('Error obteniendo maestros:', error);
-          statusEl.textContent = 'Usando copia local (sin acceso a red)';
-          if (forceRemote) showToast('No se pudo conectar. Usando datos locales.', 'warning');
-        } finally {
-          btn.disabled = false;
-          btn.innerHTML = `<i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i><span>Actualizar</span>`;
-          lucide.createIcons();
+  async function ahora(manual) {
+    if (ocupado) return;
+    if (!navigator.onLine) { if (manual) toast('Sin conexión. Se enviará automáticamente al volver el internet.', 'error'); return; }
+    if (!apiConfigurada()) { if (manual) toast('Falta configurar la URL de Apps Script en index.html', 'error'); return; }
+    ocupado = true; UI.sincronizando(true);
+    let enviados = 0, errores = 0, falloRed = false;
+    try {
+      const pend = (await DB.all()).filter(r => r.status === 'PENDIENTE').sort((a, b) => a.createdAt - b.createdAt);
+      for (let i = 0; i < pend.length; i += CONFIG.LOTE_SYNC) {
+        const lote = pend.slice(i, i + CONFIG.LOTE_SYNC);
+        let resp;
+        try { resp = await API.sincronizar(lote.map(aPayload)); }
+        catch (e) { falloRed = true; break; }
+        if (!resp.ok) {
+          if (resp.code === 'BUSY') { falloRed = true; break; }       // servidor saturado → reintento con backoff
+          if (resp.code === 'AUTH') { toast('Clave de acceso inválida. Contacte al administrador.', 'error'); break; }
+          lote.forEach(r => { r.status = 'ERROR'; r.error = resp.error || 'Error del servidor'; });
+          await DB.putMany(lote); errores += lote.length; continue;
         }
-      } else if (forceRemote && !DEFAULT_CONFIG.apiUrl) {
-        showToast('Configure la URL de Google Apps Script en el ícono de engranaje', 'warning');
-      }
-    }
-
-    function populateDropdowns(data) {
-      fillSelect('modulo_turno', data.modulos || FALLBACK_MASTERS.modulos, '-- Seleccione Módulo y Turno --');
-      fillSelect('datos_acopiador', data.acopiadores || FALLBACK_MASTERS.acopiadores, '-- Seleccione Acopiador(a) --');
-      fillSelect('datos_caporal', data.caporales || FALLBACK_MASTERS.caporales, '-- Seleccione Caporal --');
-    }
-
-    function fillSelect(elementId, items, placeholder) {
-      const select = document.getElementById(elementId);
-      const currentVal = select.value;
-      select.innerHTML = `<option value="">${placeholder}</option>`;
-      items.forEach(item => {
-        if (item && String(item).trim() !== '') {
-          const opt = document.createElement('option');
-          opt.value = String(item).trim();
-          opt.textContent = String(item).trim();
-          select.appendChild(opt);
-        }
-      });
-      if (currentVal) select.value = currentVal;
-    }
-
-    /**
-     * ============================================================================
-     * VALIDACIÓN Y GUARDADO DE FORMULARIO (OFFLINE-FIRST)
-     * ============================================================================
-     */
-    function generateUUID() {
-      return 'AH-' + Date.now() + '-' + Math.random().toString(36).substring(2, 7).toUpperCase();
-    }
-
-    function validateForm() {
-      let isValid = true;
-      const fields = [
-        { id: 'fecha_reg', check: v => v.trim() !== '' },
-        { id: 'modulo_turno', check: v => v.trim() !== '' },
-        { id: 'supervisor', check: v => v.trim() !== '' },
-        { id: 'datos_acopiador', check: v => v.trim() !== '' },
-        { id: 'datos_caporal', check: v => v.trim() !== '' },
-        { id: 'total', check: v => /^\d+$/.test(v.trim()) && parseInt(v, 10) > 0 }
-      ];
-
-      fields.forEach(f => {
-        const el = document.getElementById(f.id);
-        const errEl = document.getElementById(`err-${f.id}`);
-        if (!f.check(el.value)) {
-          isValid = false;
-          el.classList.add('border-brandRed', 'bg-brandRedLight/30');
-          el.classList.remove('border-gray-200');
-          errEl.classList.remove('hidden');
-        } else {
-          el.classList.remove('border-brandRed', 'bg-brandRedLight/30');
-          el.classList.add('border-gray-200');
-          errEl.classList.add('hidden');
-        }
-      });
-
-      return isValid;
-    }
-
-    document.getElementById('acopiador-form').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      if (!validateForm()) {
-        showToast('Por favor complete todos los campos obligatorios.', 'error');
-        return;
-      }
-
-      const record = {
-        id: generateUUID(),
-        fecha_reg: document.getElementById('fecha_reg').value,
-        modulo_turno: document.getElementById('modulo_turno').value,
-        supervisor: document.getElementById('supervisor').value,
-        datos_acopiador: document.getElementById('datos_acopiador').value,
-        datos_caporal: document.getElementById('datos_caporal').value,
-        total: parseInt(document.getElementById('total').value, 10),
-        estado: 'Pendiente', // Estados: 'Pendiente' | 'Sincronizado' | 'Error'
-        errorMsg: '',
-        timestamp: Date.now()
-      };
-
-      // 1. Guardar inmediatamente en IndexedDB
-      await saveRecordLocal(record);
-      await renderRecordsList();
-
-      // 2. Limpiar solo el total y caporal para agilizar la captura continua en campo
-      document.getElementById('total').value = '';
-      document.getElementById('datos_caporal').value = '';
-
-      showToast('Registro guardado localmente.', 'success');
-
-      // 3. Intentar sincronizar automáticamente si hay internet
-      if (navigator.onLine) {
-        syncPendingRecords();
-      }
-    });
-
-    function resetFormKeepContext() {
-      document.getElementById('datos_caporal').value = '';
-      document.getElementById('total').value = '';
-      document.querySelectorAll('[id^="err-"]').forEach(el => el.classList.add('hidden'));
-      document.querySelectorAll('select, input').forEach(el => el.classList.remove('border-brandRed'));
-      showToast('Campos de captura limpiados', 'info');
-    }
-
-    /**
-     * ============================================================================
-     * MOTOR DE SINCRONIZACIÓN CON GOOGLE SHEETS (SOPORTE ALTA CONCURRENCIA)
-     * ============================================================================
-     */
-    async function syncPendingRecords() {
-      if (isSyncing) return;
-      if (!navigator.onLine) {
-        showToast('Sin conexión a internet. Los datos siguen seguros en el dispositivo.', 'warning');
-        return;
-      }
-
-      const allRecords = await getAllRecordsLocal();
-      const pending = allRecords.filter(r => r.estado === 'Pendiente' || r.estado === 'Error');
-
-      if (pending.length === 0) {
-        return;
-      }
-
-      isSyncing = true;
-      const syncBtn = document.getElementById('btn-sync-now');
-      if (syncBtn) {
-        syncBtn.disabled = true;
-        syncBtn.innerHTML = `<i data-lucide="loader-2" class="w-5 h-5 animate-spin"></i><span>SINCRONIZANDO (${pending.length})...</span>`;
-        lucide.createIcons();
-      }
-
-      try {
-        // Si no hay URL configurada, modo demostración local
-        if (!DEFAULT_CONFIG.apiUrl) {
-          await new Promise(r => setTimeout(r, 800));
-          for (const rec of pending) {
-            rec.estado = 'Sincronizado';
-            rec.errorMsg = '';
-            await saveRecordLocal(rec);
-          }
-          showToast(`${pending.length} registro(s) sincronizados (Modo Demo Local).`, 'success');
-        } else {
-          // Envío por lotes (Batch) para optimizar concurrencia de 200 usuarios
-          const payload = {
-            token: DEFAULT_CONFIG.apiToken,
-            action: 'syncRecords',
-            records: pending
-          };
-
-          const response = await fetch(DEFAULT_CONFIG.apiUrl, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'text/plain;charset=utf-8' // Evita preflight CORS OPTIONS en Apps Script
-            },
-            body: JSON.stringify(payload)
-          });
-
-          const result = await response.json();
-
-          if (result.status === 'success') {
-            const syncedIds = result.syncedIds || pending.map(p => p.id);
-            for (const rec of pending) {
-              if (syncedIds.includes(rec.id)) {
-                rec.estado = 'Sincronizado';
-                rec.errorMsg = '';
-              } else {
-                rec.estado = 'Error';
-                rec.errorMsg = 'No confirmado por el servidor';
-              }
-              await saveRecordLocal(rec);
-            }
-            showToast(`¡Éxito! ${syncedIds.length} registro(s) enviados a Google Sheets.`, 'success');
-          } else {
-            throw new Error(result.message || 'Error en servidor Google Sheets');
-          }
-        }
-      } catch (err) {
-        console.error('Error de sincronización:', err);
-        for (const rec of pending) {
-          rec.estado = 'Error';
-          rec.errorMsg = err.message || 'Fallo de red';
-          await saveRecordLocal(rec);
-        }
-        showToast('Error al sincronizar. Se reintentará automáticamente.', 'error');
-      } finally {
-        isSyncing = false;
-        if (syncBtn) {
-          syncBtn.disabled = false;
-          syncBtn.innerHTML = `<i data-lucide="cloud-upload" class="w-5 h-5"></i><span>SINCRONIZAR PENDIENTES AHORA</span>`;
-          lucide.createIcons();
-        }
-        await renderRecordsList();
-      }
-    }
-
-    /**
-     * ============================================================================
-     * RENDERIZADO DE UI Y LISTADO DE REGISTROS
-     * ============================================================================
-     */
-    async function renderRecordsList() {
-      const records = await getAllRecordsLocal();
-      const listEl = document.getElementById('records-list');
-
-      const pendingCount = records.filter(r => r.estado === 'Pendiente').length;
-      const syncedCount = records.filter(r => r.estado === 'Sincronizado').length;
-      const errorCount = records.filter(r => r.estado === 'Error').length;
-
-      // Actualizar contadores
-      document.getElementById('stat-pending').textContent = pendingCount;
-      document.getElementById('stat-synced').textContent = syncedCount;
-      document.getElementById('stat-error').textContent = errorCount;
-      document.getElementById('tab-count-badge').textContent = records.length;
-
-      const badge = document.getElementById('pending-badge');
-      const totalUnsynced = pendingCount + errorCount;
-      if (totalUnsynced > 0) {
-        badge.textContent = `${totalUnsynced} Pendiente${totalUnsynced > 1 ? 's' : ''}`;
-        badge.classList.remove('hidden');
-      } else {
-        badge.classList.add('hidden');
-      }
-
-      if (records.length === 0) {
-        listEl.innerHTML = `
-          <div class="bg-white rounded-2xl p-8 text-center border border-gray-200">
-            <i data-lucide="inbox" class="w-12 h-12 text-brandGray/50 mx-auto mb-2"></i>
-            <p class="font-bold text-gray-700">No hay registros guardados</p>
-            <p class="text-xs text-brandGray mt-1">Los reportes capturados en campo aparecerán aquí.</p>
-          </div>
-        `;
-        lucide.createIcons();
-        return;
-      }
-
-      listEl.innerHTML = records.map(rec => {
-        let statusBadge = '';
-        if (rec.estado === 'Sincronizado') {
-          statusBadge = `<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-brandGreenLight text-brandGreen border border-brandGreen/30">
-            <i data-lucide="check-circle-2" class="w-3.5 h-3.5"></i> Sincronizado
-          </span>`;
-        } else if (rec.estado === 'Error') {
-          statusBadge = `<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-brandRedLight text-brandRed border border-brandRed/30">
-            <i data-lucide="alert-circle" class="w-3.5 h-3.5"></i> Error
-          </span>`;
-        } else {
-          statusBadge = `<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-amber-50 text-amber-700 border border-amber-200">
-            <i data-lucide="clock" class="w-3.5 h-3.5"></i> Pendiente
-          </span>`;
-        }
-
-        return `
-          <div class="bg-white rounded-2xl p-4 border border-gray-200 shadow-xs space-y-2.5">
-            <div class="flex items-center justify-between border-b border-gray-100 pb-2">
-              <span class="text-xs font-extrabold text-brandGray">${rec.fecha_reg} • ${rec.modulo_turno}</span>
-              ${statusBadge}
-            </div>
-            <div class="grid grid-cols-3 gap-2 items-center">
-              <div class="col-span-2 space-y-1 text-xs">
-                <p class="text-gray-600"><strong class="text-gray-800">Acopiador:</strong> ${rec.datos_acopiador}</p>
-                <p class="text-gray-600"><strong class="text-gray-800">Caporal:</strong> ${rec.datos_caporal}</p>
-                <p class="text-gray-500 text-[11px]">Sup: ${rec.supervisor}</p>
-                ${rec.errorMsg ? `<p class="text-brandRed font-semibold text-[11px]">Detalle: ${rec.errorMsg}</p>` : ''}
-              </div>
-              <div class="bg-brandGrayLight rounded-xl p-2.5 text-center border border-gray-200">
-                <span class="block text-[10px] font-bold text-brandGray uppercase">Total</span>
-                <span class="text-2xl font-extrabold text-gray-900">${rec.total}</span>
-              </div>
-            </div>
-            ${rec.estado !== 'Sincronizado' ? `
-              <div class="pt-1 flex justify-end">
-                <button onclick="removeRecord('${rec.id}')" class="text-xs text-brandRed hover:underline font-semibold flex items-center gap-1">
-                  <i data-lucide="trash-2" class="w-3.5 h-3.5"></i> Eliminar
-                </button>
-              </div>
-            ` : ''}
-          </div>
-        `;
-      }).join('');
-
-      lucide.createIcons();
-    }
-
-    async function removeRecord(id) {
-      if (confirm('¿Eliminar este registro pendiente?')) {
-        await deleteRecordLocal(id);
-        await renderRecordsList();
-        showToast('Registro eliminado', 'info');
-      }
-    }
-
-    /**
-     * ============================================================================
-     * DETECCIÓN AUTOMÁTICA DE CONECTIVIDAD Y NAVEGACIÓN
-     * ============================================================================
-     */
-    function updateOnlineStatus() {
-      const banner = document.getElementById('status-banner');
-      const text = document.getElementById('status-text');
-      const dot = document.getElementById('status-dot');
-
-      if (navigator.onLine) {
-        banner.classList.remove('bg-brandRed');
-        banner.classList.add('bg-brandGreen');
-        text.textContent = 'EN LÍNEA - Conectado';
-        dot.classList.add('pulse-dot');
-        // Disparar sincronización automática al recuperar conexión
-        syncPendingRecords();
-      } else {
-        banner.classList.remove('bg-brandGreen');
-        banner.classList.add('bg-brandRed');
-        text.textContent = 'SIN CONEXIÓN - Modo Offline Activo';
-        dot.classList.remove('pulse-dot');
-      }
-    }
-
-    window.addEventListener('online', () => {
-      updateOnlineStatus();
-      showToast('Conexión recuperada. Sincronizando registros...', 'success');
-    });
-
-    window.addEventListener('offline', () => {
-      updateOnlineStatus();
-      showToast('Sin internet. Puedes seguir registrando sin problemas.', 'warning');
-    });
-
-    function switchTab(tab) {
-      const formView = document.getElementById('view-form');
-      const histView = document.getElementById('view-history');
-      const formBtn = document.getElementById('tab-form-btn');
-      const histBtn = document.getElementById('tab-history-btn');
-
-      if (tab === 'form') {
-        formView.classList.remove('hidden');
-        histView.classList.add('hidden');
-        formBtn.className = 'flex items-center justify-center gap-2 py-3 px-4 rounded-xl font-bold text-sm transition-all bg-brandGreen text-white shadow-sm';
-        histBtn.className = 'flex items-center justify-center gap-2 py-3 px-4 rounded-xl font-bold text-sm transition-all text-brandGray hover:bg-brandGrayLight relative';
-      } else {
-        formView.classList.add('hidden');
-        histView.classList.remove('hidden');
-        histBtn.className = 'flex items-center justify-center gap-2 py-3 px-4 rounded-xl font-bold text-sm transition-all bg-brandGreen text-white shadow-sm relative';
-        formBtn.className = 'flex items-center justify-center gap-2 py-3 px-4 rounded-xl font-bold text-sm transition-all text-brandGray hover:bg-brandGrayLight';
-        renderRecordsList();
-      }
-    }
-
-    function showToast(message, type = 'info') {
-      const toast = document.getElementById('toast');
-      const msgEl = document.getElementById('toast-msg');
-      const iconEl = document.getElementById('toast-icon');
-
-      msgEl.textContent = message;
-      
-      if (type === 'success') {
-        iconEl.setAttribute('data-lucide', 'check-circle');
-        iconEl.className = 'w-6 h-6 text-brandGreen shrink-0';
-      } else if (type === 'error') {
-        iconEl.setAttribute('data-lucide', 'alert-octagon');
-        iconEl.className = 'w-6 h-6 text-brandRed shrink-0';
-      } else if (type === 'warning') {
-        iconEl.setAttribute('data-lucide', 'wifi-off');
-        iconEl.className = 'w-6 h-6 text-amber-400 shrink-0';
-      } else {
-        iconEl.setAttribute('data-lucide', 'info');
-        iconEl.className = 'w-6 h-6 text-blue-400 shrink-0';
-      }
-
-      lucide.createIcons();
-      toast.classList.remove('opacity-0', 'translate-y-4');
-      
-      clearTimeout(window.toastTimer);
-      window.toastTimer = setTimeout(() => {
-        toast.classList.add('opacity-0', 'translate-y-4');
-      }, 3500);
-    }
-
-    // Modal Configuración
-    function openConfigModal() {
-      document.getElementById('cfg-api-url').value = DEFAULT_CONFIG.apiUrl;
-      document.getElementById('cfg-api-token').value = DEFAULT_CONFIG.apiToken;
-      document.getElementById('config-modal').classList.remove('hidden');
-      document.getElementById('config-modal').classList.add('flex');
-    }
-
-    function closeConfigModal() {
-      document.getElementById('config-modal').classList.add('hidden');
-      document.getElementById('config-modal').classList.remove('flex');
-    }
-
-    function saveConfig() {
-      const url = document.getElementById('cfg-api-url').value.trim();
-      const token = document.getElementById('cfg-api-token').value.trim();
-      localStorage.setItem('ah_api_url', url);
-      localStorage.setItem('ah_api_token', token);
-      DEFAULT_CONFIG.apiUrl = url;
-      DEFAULT_CONFIG.apiToken = token;
-      closeConfigModal();
-      showToast('Configuración guardada correctamente', 'success');
-      fetchMasterData(true);
-    }
-
-    /**
-     * ============================================================================
-     * REGISTRO DE SERVICE WORKER E INSTALACIÓN PWA
-     * ============================================================================
-     */
-    window.addEventListener('beforeinstallprompt', (e) => {
-      e.preventDefault();
-      deferredPrompt = e;
-      document.getElementById('install-banner').classList.remove('hidden');
-    });
-
-    document.getElementById('btn-install-pwa').addEventListener('click', async () => {
-      if (!deferredPrompt) return;
-      deferredPrompt.prompt();
-      const { outcome } = await deferredPrompt.userChoice;
-      if (outcome === 'accepted') {
-        document.getElementById('install-banner').classList.add('hidden');
-      }
-      deferredPrompt = null;
-    });
-
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('sw.js').catch(err => {
-          console.log('Registro SW estándar omitido en vista previa:', err.message);
+        const porId = {}; (resp.results || []).forEach(x => porId[x.id] = x);
+        const ahoraTs = Date.now();
+        lote.forEach(r => {
+          const x = porId[r.id]; r.intentos = (r.intentos || 0) + 1;
+          if (x && (x.status === 'OK' || x.status === 'DUPLICADO')) { r.status = 'SINCRONIZADO'; r.error = ''; r.syncedAt = ahoraTs; enviados++; }
+          else if (x && x.status === 'ERROR') { r.status = 'ERROR'; r.error = x.message || 'Rechazado por el servidor'; errores++; }
+          /* si no vino resultado, se mantiene PENDIENTE y se reintenta */
         });
-      });
-    }
+        await DB.putMany(lote);
+      }
+    } finally { ocupado = false; UI.sincronizando(false); }
+    await UI.refrescar();
+    if (falloRed) { backoff(); if (manual) toast('No se pudo conectar con el servidor. Se reintentará automáticamente.', 'error'); }
+    else { intentos = 0; if (manual || enviados || errores) toast(errores ? `${enviados} enviados, ${errores} con error` : (enviados ? `${enviados} registro(s) sincronizado(s)` : 'No hay registros pendientes'), errores ? 'error' : 'ok'); }
+  }
+  return { ahora, programar, reiniciar: () => { intentos = 0; } };
+})();
 
-    /**
-     * ============================================================================
-     * INICIALIZACIÓN DE LA APLICACIÓN
-     * ============================================================================
-     */
-    document.addEventListener('DOMContentLoaded', async () => {
-      lucide.createIcons();
-      
-      // Establecer fecha actual local por defecto
-      const today = new Date();
-      const yyyy = today.getFullYear();
-      const mm = String(today.getMonth() + 1).padStart(2, '0');
-      const dd = String(today.getDate()).padStart(2, '0');
-      document.getElementById('fecha_reg').value = `${yyyy}-${mm}-${dd}`;
+/* =====================================================================
+ * MÓDULO UI
+ * ===================================================================== */
+const UI = (() => {
+  let filtro = 'TODOS';
+  const campos = { fecha: $('#fecha'), modulo: $('#modulo'), supervisor: $('#supervisor'), acopiador: $('#acopiador'), caporal: $('#caporal'), total: $('#total') };
+  const ICON = { ok: '#i-wifi', off: '#i-nowifi' };
 
-      updateOnlineStatus();
-      await fetchMasterData(false);
-      await renderRecordsList();
+  function llenar(sel, items, ph, valorPrevio) {
+    sel.innerHTML = '';
+    const o = document.createElement('option'); o.value = ''; o.textContent = items.length ? ph : '(sin datos – conéctese una vez para descargar la lista)';
+    sel.appendChild(o);
+    items.forEach(t => { const op = document.createElement('option'); op.value = t; op.textContent = t; sel.appendChild(op); });
+    if (valorPrevio && items.includes(valorPrevio)) sel.value = valorPrevio;
+  }
+  function pintarListas() {
+    const d = Listas.datos;
+    llenar(campos.modulo, d.modulos, '— Seleccione módulo y turno —', campos.modulo.value);
+    llenar(campos.acopiador, d.acopiadores, '— Seleccione acopiador(a) —', campos.acopiador.value);
+    llenar(campos.caporal, d.caporales, '— Seleccione caporal —', campos.caporal.value);
+  }
+  function pintarSupervisores() { llenar(campos.supervisor, CONFIG.SUPERVISORES, '— Seleccione supervisor —', campos.supervisor.value); }
+  function pintarActualizacion() {
+    $('#lineaAct').textContent = Listas.datos.ts ? 'Listas actualizadas: ' + fmtHora(Listas.datos.ts) : 'Listas aún no descargadas';
+  }
+  function pintarConexion() {
+    const on = navigator.onLine, p = $('#pConexion');
+    p.className = 'pill ' + (on ? 'online' : 'offline');
+    p.innerHTML = `<svg><use href="${on ? ICON.ok : ICON.off}"/></svg><span>${on ? 'En línea' : 'Sin conexión'}</span>`;
+  }
+  async function refrescar() {
+    const todos = (await DB.all()).sort((a, b) => b.createdAt - a.createdAt);
+    const pend = todos.filter(r => r.status === 'PENDIENTE').length, err = todos.filter(r => r.status === 'ERROR').length;
+    const p = $('#pPend'); p.className = 'pill pend' + (pend + err ? ' hay' : '');
+    p.querySelector('span').textContent = `${pend} pendiente${pend === 1 ? '' : 's'}` + (err ? ` · ${err} con error` : '');
+    const c = $('#contador'); c.style.display = pend + err ? 'block' : 'none'; c.textContent = pend + err;
+    const vis = todos.filter(r => filtro === 'TODOS' || r.status === filtro).slice(0, 150);
+    const lista = $('#lista');
+    if (!vis.length) { lista.innerHTML = '<div class="vacio">No hay registros para mostrar.</div>'; return; }
+    lista.innerHTML = vis.map(r => `
+      <article class="reg ${r.status}" data-id="${esc(r.id)}">
+        <div class="cab"><span class="total">${r.total}</span><span class="badge ${r.status}">${r.status}</span></div>
+        <div class="det">
+          <span><b>${fmtFecha(r.fecha)}</b> · ${esc(r.moduloTurno)}</span>
+          <span>Acopiador: ${esc(r.acopiador)}</span>
+          <span>Caporal: ${esc(r.caporal)}</span>
+          <span>Supervisor: ${esc(r.supervisor)}</span>
+          <span style="color:#8A8178;font-size:.8rem">Guardado ${fmtHora(r.createdAt)}</span>
+        </div>
+        ${r.status === 'ERROR' ? `<div class="msg">${esc(r.error || 'Error')}</div>` : ''}
+        ${r.status !== 'SINCRONIZADO' ? `<div class="acc">
+          ${r.status === 'ERROR' ? '<button class="btn btn-verde btn-peq" data-a="reintentar">Reintentar</button>' : ''}
+          <button class="btn btn-gris btn-peq" data-a="borrar">Eliminar</button></div>` : ''}
+      </article>`).join('');
+  }
+  function sincronizando(on) {
+    const b = $('#btnSync'); b.disabled = on;
+    b.querySelector('svg').classList.toggle('spin', on);
+  }
+
+  /* ---- Validaciones del formulario ---- */
+  function marcar(id, ok) { $('#c-' + id).classList.toggle('invalido', !ok); return ok; }
+  function validar() {
+    const v = Object.fromEntries(Object.entries(campos).map(([k, el]) => [k, el.value.trim()]));
+    let ok = true;
+    ok = marcar('fecha', !!v.fecha) && ok;
+    ok = marcar('modulo', !!v.modulo) && ok;
+    ok = marcar('supervisor', !!v.supervisor) && ok;
+    ok = marcar('acopiador', !!v.acopiador) && ok;
+    ok = marcar('caporal', !!v.caporal) && ok;
+    let tOk = /^\d+$/.test(v.total) && Number(v.total) <= CONFIG.TOTAL_MAX;
+    $('#errTotal').textContent = v.total && /^\d+$/.test(v.total) && !tOk ? `El total no puede superar ${CONFIG.TOTAL_MAX}.` : 'Ingrese un número entero (0 o mayor).';
+    ok = marcar('total', tOk) && ok;
+    return ok ? v : null;
+  }
+  async function guardar(e) {
+    e.preventDefault();
+    const v = validar(); if (!v) { toast('Revise los campos marcados en rojo', 'error'); return; }
+    const existentes = await DB.all();
+    const dup = existentes.find(r => r.fecha === v.fecha && r.moduloTurno === v.modulo && r.acopiador === v.acopiador && r.caporal === v.caporal);
+    if (dup && !confirm('Ya registró este mismo caporal con el mismo acopiador, módulo y fecha (total ' + dup.total + ').\n¿Desea guardar otro registro igual?')) return;
+    const reg = { id: uuid(), fecha: v.fecha, moduloTurno: v.modulo, supervisor: v.supervisor, acopiador: v.acopiador, caporal: v.caporal,
+      total: parseInt(v.total, 10), status: 'PENDIENTE', error: '', intentos: 0, createdAt: Date.now() };
+    try { await DB.put(reg); }
+    catch { toast('No se pudo guardar en el teléfono. Verifique el espacio disponible.', 'error'); return; }
+    // Se conservan fecha, módulo, supervisor y acopiador para agilizar registros seguidos
+    campos.caporal.value = ''; campos.total.value = '';
+    toast(navigator.onLine ? 'Registro guardado ✔ Enviando…' : 'Registro guardado ✔ (se enviará al volver el internet)', 'ok');
+    await refrescar(); Sync.reiniciar(); Sync.ahora(false);
+    campos.caporal.focus();
+  }
+  function limpiar() {
+    campos.modulo.value = campos.supervisor.value = campos.acopiador.value = campos.caporal.value = campos.total.value = '';
+    campos.fecha.value = hoy();
+    document.querySelectorAll('.campo').forEach(c => c.classList.remove('invalido'));
+  }
+  function vista(id) {
+    ['vRegistrar', 'vHistorial'].forEach(v => $('#' + v).classList.toggle('act', v === id));
+    $('#navReg').classList.toggle('act', id === 'vRegistrar'); $('#navHis').classList.toggle('act', id === 'vHistorial');
+    if (id === 'vHistorial') refrescar();
+    window.scrollTo(0, 0);
+  }
+  function iniciar() {
+    campos.fecha.value = hoy();
+    pintarSupervisores(); pintarListas(); pintarActualizacion(); pintarConexion();
+    $('#form').addEventListener('submit', guardar);
+    $('#btnLimpiar').addEventListener('click', limpiar);
+    campos.total.addEventListener('input', () => { campos.total.value = campos.total.value.replace(/\D/g, ''); });
+    Object.keys(campos).forEach(k => campos[k].addEventListener('change', () => $('#c-' + k).classList.remove('invalido')));
+    $('#navReg').addEventListener('click', () => vista('vRegistrar'));
+    $('#navHis').addEventListener('click', () => vista('vHistorial'));
+    $('#btnSync').addEventListener('click', () => { Sync.reiniciar(); Sync.ahora(true); });
+    $('#chips').addEventListener('click', e => {
+      const b = e.target.closest('.chip'); if (!b) return;
+      filtro = b.dataset.f; document.querySelectorAll('.chip').forEach(c => c.classList.toggle('act', c === b)); refrescar();
     });
-  </script>
+    $('#lista').addEventListener('click', async e => {
+      const b = e.target.closest('button[data-a]'); if (!b) return;
+      const id = b.closest('.reg').dataset.id; const reg = (await DB.all()).find(r => r.id === id); if (!reg) return;
+      if (b.dataset.a === 'reintentar') { reg.status = 'PENDIENTE'; reg.error = ''; await DB.put(reg); await refrescar(); Sync.ahora(true); }
+      if (b.dataset.a === 'borrar' && confirm('¿Eliminar este registro? No se enviará a la hoja.')) { await DB.del(id); await refrescar(); }
+    });
+    $('#btnLimpiarSync').addEventListener('click', async () => {
+      const s = (await DB.all()).filter(r => r.status === 'SINCRONIZADO');
+      if (!s.length) { toast('No hay registros sincronizados para borrar'); return; }
+      if (confirm(`¿Borrar ${s.length} registro(s) ya sincronizados de este dispositivo? (Quedan en Google Sheets)`)) { await Promise.all(s.map(r => DB.del(r.id))); refrescar(); }
+    });
+    refrescar();
+  }
+  return { iniciar, refrescar, pintarListas, pintarActualizacion, pintarConexion, sincronizando };
+})();
+
+/* =====================================================================
+ * ARRANQUE: PWA, conexión, instalación
+ * ===================================================================== */
+(async function main() {
+  try { await Listas.cargarLocal(); } catch (e) { console.warn(e); }
+  UI.iniciar();
+
+  if ('serviceWorker' in navigator) navigator.serviceWorker.register('service-worker.js').catch(e => console.warn('SW:', e));
+  if (navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(() => {});
+
+  window.addEventListener('online', () => {
+    UI.pintarConexion(); Sync.reiniciar();
+    // espera aleatoria 0–4 s: evita que muchos equipos golpeen el servidor al mismo tiempo
+    setTimeout(() => { Listas.refrescar(); Sync.ahora(false); }, Math.random() * 4000);
+  });
+  window.addEventListener('offline', UI.pintarConexion);
+  document.addEventListener('visibilitychange', () => { if (!document.hidden && navigator.onLine) Sync.ahora(false); });
+
+  await Listas.refrescar();
+  await Sync.ahora(false);
+  setInterval(() => Listas.refrescar(), CONFIG.REFRESCO_LISTAS_MS);
+  setInterval(() => { if (navigator.onLine) Sync.ahora(false); }, 60000);
+
+  let evInst;
+  window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); evInst = e; $('#instalar').style.display = 'flex'; });
+  $('#instalar').addEventListener('click', async () => { if (!evInst) return; evInst.prompt(); await evInst.userChoice; evInst = null; $('#instalar').style.display = 'none'; });
+  window.addEventListener('appinstalled', () => { $('#instalar').style.display = 'none'; });
+})();
+</script>
 </body>
 </html>
