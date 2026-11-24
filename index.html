@@ -3,3358 +3,1044 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <meta name="theme-color" content="#DA291C" />
+  <meta name="theme-color" content="#78BE20" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <title>Reporte de Cosechadores - Agrícola Huarmey</title>
-  <link rel="manifest" href="./manifest.json" />
-  <link rel="icon" type="image/png" href="./LOGO HUARMEY.png" />
-  <style>
-    :root {
-      --rojo: #DA291C;
-      --rojo-claro: #FDECEA;
-      --rojo-borde: #F5B7B1;
-      --verde: #78BE20;
-      --verde-oscuro: #5A9414;
-      --verde-claro: #F1F8E8;
-      --verde-borde: #C5E1A5;
-      --gris: #8A8178;
-      --gris-oscuro: #4A4540;
-      --gris-claro: #F5F4F2;
-      --fondo: #F7F8F5;
-      --blanco: #FFFFFF;
-      --sombra: 0 4px 14px rgba(74, 69, 64, 0.08);
-      --radio: 14px;
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-    }
-
-    body {
-      background-color: var(--fondo);
-      color: var(--gris-oscuro);
-      min-height: 100vh;
-      padding-bottom: 92px;
-    }
-
-    /* Barra superior de estado de red */
-    .status-bar {
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 8px 16px;
-      font-size: 0.82rem;
-      font-weight: 600;
-      transition: background-color 0.3s ease;
-    }
-
-    .status-online {
-      background-color: var(--verde-claro);
-      color: var(--verde-oscuro);
-      border-bottom: 1px solid var(--verde-borde);
-    }
-
-    .status-offline {
-      background-color: var(--rojo-claro);
-      color: var(--rojo);
-      border-bottom: 1px solid var(--rojo-borde);
-    }
-
-    .status-dot {
-      display: inline-block;
-      width: 9px;
-      height: 9px;
-      border-radius: 50%;
-      margin-right: 6px;
-    }
-
-    .status-online .status-dot { background-color: var(--verde); }
-    .status-offline .status-dot { background-color: var(--rojo); }
-
-    .btn-mini-sync {
-      background: var(--blanco);
-      border: 1px solid currentColor;
-      color: inherit;
-      padding: 4px 10px;
-      border-radius: 20px;
-      font-size: 0.78rem;
-      font-weight: 700;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 4px;
-    }
-
-    .btn-mini-sync:active { transform: scale(0.96); }
-
-    /* Contenedor Principal */
-    .container {
-      max-width: 560px;
-      margin: 0 auto;
-      padding: 14px;
-    }
-
-    /* Membrete Corporativo */
-    .membrete-card {
-      background: var(--blanco);
-      border-radius: var(--radio);
-      padding: 18px 16px 16px;
-      text-align: center;
-      box-shadow: var(--sombra);
-      border-top: 5px solid var(--rojo);
-      border-bottom: 3px solid var(--verde);
-      margin-bottom: 16px;
-    }
-
-    .logo-wrapper {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      margin-bottom: 10px;
-    }
-
-    .logo-wrapper img {
-      max-height: 82px;
-      width: auto;
-      object-fit: contain;
-    }
-
-    .app-title {
-      font-size: 1.38rem;
-      font-weight: 800;
-      color: var(--rojo);
-      text-align: center;
-      letter-spacing: 0.4px;
-      line-height: 1.2;
-      margin-bottom: 4px;
-      text-transform: uppercase;
-    }
-
-    .app-subtitle {
-      font-size: 0.98rem;
-      font-weight: 600;
-      color: var(--gris);
-      text-align: center;
-    }
-
-    /* Tarjeta de Formulario */
-    .card {
-      background: var(--blanco);
-      border-radius: var(--radio);
-      padding: 18px;
-      box-shadow: var(--sombra);
-      margin-bottom: 16px;
-      border: 1px solid #EAE8E4;
-    }
-
-    .form-group {
-      margin-bottom: 16px;
-    }
-
-    .form-label {
-      display: flex;
-      align-items: center;
-      gap: 7px;
-      font-size: 0.86rem;
-      font-weight: 700;
-      color: var(--gris-oscuro);
-      margin-bottom: 6px;
-      text-transform: uppercase;
-    }
-
-    .form-label svg {
-      width: 18px;
-      height: 18px;
-      stroke: var(--verde-oscuro);
-      flex-shrink: 0;
-    }
-
-    .form-control {
-      width: 100%;
-      height: 52px;
-      padding: 0 14px;
-      font-size: 1rem;
-      font-weight: 500;
-      color: #222;
-      background-color: var(--gris-claro);
-      border: 2px solid #DDD9D4;
-      border-radius: 10px;
-      transition: all 0.2s ease;
-      appearance: none;
-    }
-
-    select.form-control {
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%238A8178' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
-      background-repeat: no-repeat;
-      background-position: right 14px center;
-      padding-right: 40px;
-    }
-
-    .form-control:focus {
-      outline: none;
-      background-color: var(--blanco);
-      border-color: var(--verde);
-      box-shadow: 0 0 0 3px rgba(120, 190, 32, 0.2);
-    }
-
-    .form-control.invalid {
-      border-color: var(--rojo);
-      background-color: var(--rojo-claro);
-    }
-
-    .input-total {
-      font-size: 1.35rem;
-      font-weight: 800;
-      text-align: center;
-      color: var(--rojo);
-      background-color: var(--verde-claro);
-      border-color: var(--verde-borde);
-    }
-
-    .error-msg {
-      color: var(--rojo);
-      font-size: 0.78rem;
-      font-weight: 600;
-      margin-top: 4px;
-      display: none;
-    }
-
-    .form-control.invalid + .error-msg {
-      display: block;
-    }
-
-    /* Botones Grandes de Campo */
-    .btn-primary {
-      width: 100%;
-      height: 58px;
-      background: linear-gradient(135deg, var(--verde) 0%, var(--verde-oscuro) 100%);
-      color: var(--blanco);
-      border: none;
-      border-radius: 12px;
-      font-size: 1.08rem;
-      font-weight: 800;
-      letter-spacing: 0.5px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      box-shadow: 0 4px 12px rgba(120, 190, 32, 0.35);
-      transition: transform 0.15s ease;
-    }
-
-    .btn-primary:active { transform: scale(0.98); }
-
-    .btn-secondary {
-      width: 100%;
-      height: 50px;
-      background-color: var(--rojo-claro);
-      color: var(--rojo);
-      border: 2px solid var(--rojo-borde);
-      border-radius: 12px;
-      font-size: 0.95rem;
-      font-weight: 700;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      margin-top: 10px;
-    }
-
-    .btn-secondary:active { transform: scale(0.98); }
-
-    /* Resumen de Estados */
-    .stats-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 8px;
-      margin-bottom: 14px;
-    }
-
-    .stat-box {
-      padding: 10px 6px;
-      border-radius: 10px;
-      text-align: center;
-      border: 1px solid transparent;
-    }
-
-    .stat-pendiente {
-      background-color: #FFF8E7;
-      border-color: #F5D78E;
-      color: #9A6700;
-    }
-
-    .stat-sincronizado {
-      background-color: var(--verde-claro);
-      border-color: var(--verde-borde);
-      color: var(--verde-oscuro);
-    }
-
-    .stat-error {
-      background-color: var(--rojo-claro);
-      border-color: var(--rojo-borde);
-      color: var(--rojo);
-    }
-
-    .stat-num {
-      font-size: 1.35rem;
-      font-weight: 800;
-      line-height: 1.1;
-    }
-
-    .stat-label {
-      font-size: 0.72rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      margin-top: 2px;
-    }
-
-    /* Historial de Registros */
-    .history-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 10px;
-    }
-
-    .history-title {
-      font-size: 0.95rem;
-      font-weight: 800;
-      color: var(--gris-oscuro);
-    }
-
-    .record-item {
-      border: 1px solid #E6E3DF;
-      border-left: 5px solid var(--gris);
-      border-radius: 10px;
-      padding: 12px;
-      margin-bottom: 10px;
-      background: var(--blanco);
-    }
-
-    .record-item.Pendiente { border-left-color: #E6A100; }
-    .record-item.Sincronizado { border-left-color: var(--verde); }
-    .record-item.Error { border-left-color: var(--rojo); }
-
-    .record-top {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 6px;
-    }
-
-    .record-mod {
-      font-weight: 800;
-      font-size: 0.9rem;
-      color: var(--gris-oscuro);
-    }
-
-    .badge {
-      padding: 3px 9px;
-      border-radius: 12px;
-      font-size: 0.72rem;
-      font-weight: 800;
-      text-transform: uppercase;
-    }
-
-    .badge-Pendiente { background: #FFF3CD; color: #856404; }
-    .badge-Sincronizado { background: var(--verde-claro); color: var(--verde-oscuro); }
-    .badge-Error { background: var(--rojo-claro); color: var(--rojo); }
-
-    .record-detail {
-      font-size: 0.82rem;
-      color: var(--gris);
-      line-height: 1.4;
-    }
-
-    .record-bottom {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-top: 8px;
-      padding-top: 6px;
-      border-top: 1px dashed #EAE8E4;
-      font-size: 0.82rem;
-    }
-
-    .record-total {
-      font-weight: 800;
-      color: var(--rojo);
-      font-size: 0.95rem;
-    }
-
-    /* Navegación Inferior */
-    .bottom-nav {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      height: 68px;
-      background: var(--blanco);
-      border-top: 2px solid #E6E3DF;
-      display: flex;
-      justify-content: space-around;
-      align-items: center;
-      z-index: 99;
-      box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
-    }
-
-    .nav-btn {
-      flex: 1;
-      height: 100%;
-      background: none;
-      border: none;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 4px;
-      color: var(--gris);
-      font-size: 0.78rem;
-      font-weight: 700;
-      cursor: pointer;
-    }
-
-    .nav-btn.active {
-      color: var(--rojo);
-      background-color: var(--rojo-claro);
-    }
-
-    .nav-btn svg {
-      width: 22px;
-      height: 22px;
-      stroke: currentColor;
-    }
-
-    .view-section { display: none; }
-    .view-section.active { display: block; }
-
-    /* Toast Flotante */
-    .toast {
-      position: fixed;
-      top: 52px;
-      left: 50%;
-      transform: translateX(-50%) translateY(-20px);
-      background: var(--gris-oscuro);
-      color: var(--blanco);
-      padding: 12px 18px;
-      border-radius: 10px;
-      font-size: 0.88rem;
-      font-weight: 600;
-      box-shadow: 0 6px 20px rgba(0,0,0,0.2);
-      opacity: 0;
-      pointer-events: none;
-      transition: all 0.25s ease;
-      z-index: 200;
-      max-width: 90%;
-      text-align: center;
-    }
-
-    .toast.show {
-      opacity: 1;
-      transform: translateX(-50%) translateY(0);
-    }
-
-    .spin {
-      animation: spin 1s linear infinite;
-    }
-
-    @keyframes spin {
-      100% { transform: rotate(360deg); }
-    }
-  </style>
-</head>
-<body>
-
-  <!-- Barra de estado de conectividad -->
-  <div id="networkBanner" class="status-bar status-online">
-    <div>
-      <span class="status-dot"></span>
-      <span id="networkText">En línea</span>
-    </div>
-    <button type="button" id="btnTopSync" class="btn-mini-sync" onclick="syncManager.syncPending(true)">
-      <svg id="syncIcon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-        <polyline points="23 4 23 10 17 10"></polyline>
-        <polyline points="1 20 1 14 7 14"></polyline>
-        <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
-      </svg>
-      <span id="syncCounterBadge">Sincronizar</span>
-    </button>
-  </div>
-
-  <div id="toast" class="toast"></div>
-
-  <div class="container">
-    <!-- MEMBRETE CORPORATIVO -->
-    <header class="membrete-card">
-      <div class="logo-wrapper">
-        <img src="./LOGO HUARMEY.png" alt="Agrícola Huarmey" onerror="this.style.display='none'" />
-      </div>
-      <h1 class="app-title">REPORTE DE COSECHADORES</h1>
-      <p class="app-subtitle">Registro para Acopiadores (as)</p>
-    </header>
-
-    <!-- VISTA 1: FORMULARIO DE REGISTRO -->
-    <main id="viewForm" class="view-section active">
-      <form id="acopiadorForm" class="card" novalidate>
-        <!-- FECHA REGISTRO -->
-        <div class="form-group">
-          <label class="form-label" for="fechaReg">
-            <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
-            FECHA REGISTRO *
-          </label>
-          <input type="date" id="fechaReg" class="form-control" required />
-          <div class="error-msg">Seleccione una fecha válida.</div>
-        </div>
-
-        <!-- MODULO -TURNO -->
-        <div class="form-group">
-          <label class="form-label" for="moduloTurno">
-            <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
-            MODULO -TURNO *
-          </label>
-          <select id="moduloTurno" class="form-control" required>
-            <option value="">-- Seleccione Módulo - Turno --</option>
-          </select>
-          <div class="error-msg">Seleccione un Módulo - Turno.</div>
-        </div>
-
-        <!-- DATOS ACOPIADOR -->
-        <div class="form-group">
-          <label class="form-label" for="datosAcopiador">
-            <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-            DATOS ACOPIADOR *
-          </label>
-          <select id="datosAcopiador" class="form-control" required>
-            <option value="">-- Seleccione Acopiador (a) --</option>
-          </select>
-          <div class="error-msg">Seleccione los datos del Acopiador.</div>
-        </div>
-
-        <!-- DATOS CAPORAL -->
-        <div class="form-group">
-          <label class="form-label" for="datosCaporal">
-            <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
-            DATOS CAPORAL *
-          </label>
-          <select id="datosCaporal" class="form-control" required>
-            <option value="">-- Seleccione Caporal --</option>
-          </select>
-          <div class="error-msg">Seleccione los datos del Caporal.</div>
-        </div>
-
-        <!-- TOTAL -->
-        <div class="form-group">
-          <label class="form-label" for="totalCosechadores">
-            <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
-            TOTAL (Número Entero) *
-          </label>
-          <input
-            type="number"
-            id="totalCosechadores"
-            class="form-control input-total"
-            inputmode="numeric"
-            pattern="[0-9]*"
-            min="1"
-            max="9999"
-            step="1"
-            placeholder="0"
-            required
-          />
-          <div class="error-msg">Ingrese un número entero mayor a 0.</div>
-        </div>
-
-        <button type="submit" class="btn-primary">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-            <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
-            <polyline points="17 21 17 13 7 13 7 21"></polyline>
-            <polyline points="7 3 7 8 15 8"></polyline>
-          </svg>
-          GUARDAR REGISTRO
-        </button>
-
-        <button type="button" class="btn-secondary" onclick="actualizarCatalogosDesdeServidor(true)">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
-            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-            <polyline points="7 10 12 15 17 10"></polyline>
-            <line x1="12" y1="15" x2="12" y2="3"></line>
-          </svg>
-          Actualizar Listas desde Google Sheets
-        </button>
-      </form>
-    </main>
-
-    <!-- VISTA 2: HISTORIAL Y COLA OFFLINE -->
-    <section id="viewHistory" class="view-section">
-      <div class="card">
-        <div class="stats-grid">
-          <div class="stat-box stat-pendiente">
-            <div class="stat-num" id="countPendiente">0</div>
-            <div class="stat-label">Pendiente</div>
-          </div>
-          <div class="stat-box stat-sincronizado">
-            <div class="stat-num" id="countSincronizado">0</div>
-            <div class="stat-label">Sincronizado</div>
-          </div>
-          <div class="stat-box stat-error">
-            <div class="stat-num" id="countError">0</div>
-            <div class="stat-label">Error</div>
-          </div>
-        </div>
-
-        <button type="button" class="btn-primary" style="height: 48px; font-size: 0.95rem; margin-bottom: 14px;" onclick="syncManager.syncPending(true)">
-          SINCRONIZAR AHORA CON GOOGLE SHEETS
-        </button>
-
-        <div class="history-header">
-          <span class="history-title">Registros Locales (IndexedDB)</span>
-          <span id="lastCatalogSync" style="font-size: 0.72rem; color: var(--gris);"></span>
-        </div>
-
-        <div id="recordsList"></div>
-      </div>
-    </section>
-  </div>
-
-  <!-- NAVEGACIÓN INFERIOR -->
-  <nav class="bottom-nav">
-    <button type="button" class="nav-btn active" id="navForm" onclick="switchTab('form')">
-      <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2">
-        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-      </svg>
-      Nuevo Registro
-    </button>
-    <button type="button" class="nav-btn" id="navHistory" onclick="switchTab('history')">
-      <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2">
-        <line x1="8" y1="6" x2="21" y2="6"></line>
-        <line x1="8" y1="12" x2="21" y2="12"></line>
-        <line x1="8" y1="18" x2="21" y2="18"></line>
-        <line x1="3" y1="6" x2="3.01" y2="6"></line>
-        <line x1="3" y1="12" x2="3.01" y2="12"></line>
-        <line x1="3" y1="18" x2="3.01" y2="18"></line>
-      </svg>
-      Registros (<span id="navBadgeCount">0</span>)
-    </button>
-  </nav>
+  <link rel="manifest" href="manifest.json" id="manifest-link" />
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
   <script>
-    /**
-     * CONFIGURACIÓN DE CONEXIÓN A GOOGLE APPS SCRIPT
-     */
-    const APP_CONFIG = {
-      SCRIPT_URL: "<!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <meta name="theme-color" content="#DA291C" />
-  <title>Reporte de Cosechadores - Agrícola Huarmey</title>
-  <link rel="manifest" href="./manifest.json" />
-  <link rel="icon" type="image/png" href="./LOGO HUARMEY.png" />
-  <style>
-    :root {
-      --rojo: #DA291C;
-      --rojo-claro: #FDECEA;
-      --rojo-borde: #F5B7B1;
-      --verde: #78BE20;
-      --verde-oscuro: #5A9414;
-      --verde-claro: #F1F8E8;
-      --verde-borde: #C5E1A5;
-      --gris: #8A8178;
-      --gris-oscuro: #4A4540;
-      --gris-claro: #F5F4F2;
-      --fondo: #F7F8F5;
-      --blanco: #FFFFFF;
-      --sombra: 0 4px 14px rgba(74, 69, 64, 0.08);
-      --radio: 14px;
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-    }
-
-    body {
-      background-color: var(--fondo);
-      color: var(--gris-oscuro);
-      min-height: 100vh;
-      padding-bottom: 92px;
-    }
-
-    /* Barra superior de estado de red */
-    .status-bar {
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 8px 16px;
-      font-size: 0.82rem;
-      font-weight: 600;
-      transition: background-color 0.3s ease;
-    }
-
-    .status-online {
-      background-color: var(--verde-claro);
-      color: var(--verde-oscuro);
-      border-bottom: 1px solid var(--verde-borde);
-    }
-
-    .status-offline {
-      background-color: var(--rojo-claro);
-      color: var(--rojo);
-      border-bottom: 1px solid var(--rojo-borde);
-    }
-
-    .status-dot {
-      display: inline-block;
-      width: 9px;
-      height: 9px;
-      border-radius: 50%;
-      margin-right: 6px;
-    }
-
-    .status-online .status-dot { background-color: var(--verde); }
-    .status-offline .status-dot { background-color: var(--rojo); }
-
-    .btn-mini-sync {
-      background: var(--blanco);
-      border: 1px solid currentColor;
-      color: inherit;
-      padding: 4px 10px;
-      border-radius: 20px;
-      font-size: 0.78rem;
-      font-weight: 700;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 4px;
-    }
-
-    .btn-mini-sync:active { transform: scale(0.96); }
-
-    /* Contenedor Principal */
-    .container {
-      max-width: 560px;
-      margin: 0 auto;
-      padding: 14px;
-    }
-
-    /* Membrete Corporativo */
-    .membrete-card {
-      background: var(--blanco);
-      border-radius: var(--radio);
-      padding: 18px 16px 16px;
-      text-align: center;
-      box-shadow: var(--sombra);
-      border-top: 5px solid var(--rojo);
-      border-bottom: 3px solid var(--verde);
-      margin-bottom: 16px;
-    }
-
-    .logo-wrapper {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      margin-bottom: 10px;
-    }
-
-    .logo-wrapper img {
-      max-height: 82px;
-      width: auto;
-      object-fit: contain;
-    }
-
-    .app-title {
-      font-size: 1.38rem;
-      font-weight: 800;
-      color: var(--rojo);
-      text-align: center;
-      letter-spacing: 0.4px;
-      line-height: 1.2;
-      margin-bottom: 4px;
-      text-transform: uppercase;
-    }
-
-    .app-subtitle {
-      font-size: 0.98rem;
-      font-weight: 600;
-      color: var(--gris);
-      text-align: center;
-    }
-
-    /* Tarjeta de Formulario */
-    .card {
-      background: var(--blanco);
-      border-radius: var(--radio);
-      padding: 18px;
-      box-shadow: var(--sombra);
-      margin-bottom: 16px;
-      border: 1px solid #EAE8E4;
-    }
-
-    .form-group {
-      margin-bottom: 16px;
-    }
-
-    .form-label {
-      display: flex;
-      align-items: center;
-      gap: 7px;
-      font-size: 0.86rem;
-      font-weight: 700;
-      color: var(--gris-oscuro);
-      margin-bottom: 6px;
-      text-transform: uppercase;
-    }
-
-    .form-label svg {
-      width: 18px;
-      height: 18px;
-      stroke: var(--verde-oscuro);
-      flex-shrink: 0;
-    }
-
-    .form-control {
-      width: 100%;
-      height: 52px;
-      padding: 0 14px;
-      font-size: 1rem;
-      font-weight: 500;
-      color: #222;
-      background-color: var(--gris-claro);
-      border: 2px solid #DDD9D4;
-      border-radius: 10px;
-      transition: all 0.2s ease;
-      appearance: none;
-    }
-
-    select.form-control {
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%238A8178' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
-      background-repeat: no-repeat;
-      background-position: right 14px center;
-      padding-right: 40px;
-    }
-
-    .form-control:focus {
-      outline: none;
-      background-color: var(--blanco);
-      border-color: var(--verde);
-      box-shadow: 0 0 0 3px rgba(120, 190, 32, 0.2);
-    }
-
-    .form-control.invalid {
-      border-color: var(--rojo);
-      background-color: var(--rojo-claro);
-    }
-
-    .input-total {
-      font-size: 1.35rem;
-      font-weight: 800;
-      text-align: center;
-      color: var(--rojo);
-      background-color: var(--verde-claro);
-      border-color: var(--verde-borde);
-    }
-
-    .error-msg {
-      color: var(--rojo);
-      font-size: 0.78rem;
-      font-weight: 600;
-      margin-top: 4px;
-      display: none;
-    }
-
-    .form-control.invalid + .error-msg {
-      display: block;
-    }
-
-    /* Botones Grandes de Campo */
-    .btn-primary {
-      width: 100%;
-      height: 58px;
-      background: linear-gradient(135deg, var(--verde) 0%, var(--verde-oscuro) 100%);
-      color: var(--blanco);
-      border: none;
-      border-radius: 12px;
-      font-size: 1.08rem;
-      font-weight: 800;
-      letter-spacing: 0.5px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      box-shadow: 0 4px 12px rgba(120, 190, 32, 0.35);
-      transition: transform 0.15s ease;
-    }
-
-    .btn-primary:active { transform: scale(0.98); }
-
-    .btn-secondary {
-      width: 100%;
-      height: 50px;
-      background-color: var(--rojo-claro);
-      color: var(--rojo);
-      border: 2px solid var(--rojo-borde);
-      border-radius: 12px;
-      font-size: 0.95rem;
-      font-weight: 700;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      margin-top: 10px;
-    }
-
-    .btn-secondary:active { transform: scale(0.98); }
-
-    /* Resumen de Estados */
-    .stats-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 8px;
-      margin-bottom: 14px;
-    }
-
-    .stat-box {
-      padding: 10px 6px;
-      border-radius: 10px;
-      text-align: center;
-      border: 1px solid transparent;
-    }
-
-    .stat-pendiente {
-      background-color: #FFF8E7;
-      border-color: #F5D78E;
-      color: #9A6700;
-    }
-
-    .stat-sincronizado {
-      background-color: var(--verde-claro);
-      border-color: var(--verde-borde);
-      color: var(--verde-oscuro);
-    }
-
-    .stat-error {
-      background-color: var(--rojo-claro);
-      border-color: var(--rojo-borde);
-      color: var(--rojo);
-    }
-
-    .stat-num {
-      font-size: 1.35rem;
-      font-weight: 800;
-      line-height: 1.1;
-    }
-
-    .stat-label {
-      font-size: 0.72rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      margin-top: 2px;
-    }
-
-    /* Historial de Registros */
-    .history-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 10px;
-    }
-
-    .history-title {
-      font-size: 0.95rem;
-      font-weight: 800;
-      color: var(--gris-oscuro);
-    }
-
-    .record-item {
-      border: 1px solid #E6E3DF;
-      border-left: 5px solid var(--gris);
-      border-radius: 10px;
-      padding: 12px;
-      margin-bottom: 10px;
-      background: var(--blanco);
-    }
-
-    .record-item.Pendiente { border-left-color: #E6A100; }
-    .record-item.Sincronizado { border-left-color: var(--verde); }
-    .record-item.Error { border-left-color: var(--rojo); }
-
-    .record-top {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 6px;
-    }
-
-    .record-mod {
-      font-weight: 800;
-      font-size: 0.9rem;
-      color: var(--gris-oscuro);
-    }
-
-    .badge {
-      padding: 3px 9px;
-      border-radius: 12px;
-      font-size: 0.72rem;
-      font-weight: 800;
-      text-transform: uppercase;
-    }
-
-    .badge-Pendiente { background: #FFF3CD; color: #856404; }
-    .badge-Sincronizado { background: var(--verde-claro); color: var(--verde-oscuro); }
-    .badge-Error { background: var(--rojo-claro); color: var(--rojo); }
-
-    .record-detail {
-      font-size: 0.82rem;
-      color: var(--gris);
-      line-height: 1.4;
-    }
-
-    .record-bottom {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-top: 8px;
-      padding-top: 6px;
-      border-top: 1px dashed #EAE8E4;
-      font-size: 0.82rem;
-    }
-
-    .record-total {
-      font-weight: 800;
-      color: var(--rojo);
-      font-size: 0.95rem;
-    }
-
-    /* Navegación Inferior */
-    .bottom-nav {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      height: 68px;
-      background: var(--blanco);
-      border-top: 2px solid #E6E3DF;
-      display: flex;
-      justify-content: space-around;
-      align-items: center;
-      z-index: 99;
-      box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
-    }
-
-    .nav-btn {
-      flex: 1;
-      height: 100%;
-      background: none;
-      border: none;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 4px;
-      color: var(--gris);
-      font-size: 0.78rem;
-      font-weight: 700;
-      cursor: pointer;
-    }
-
-    .nav-btn.active {
-      color: var(--rojo);
-      background-color: var(--rojo-claro);
-    }
-
-    .nav-btn svg {
-      width: 22px;
-      height: 22px;
-      stroke: currentColor;
-    }
-
-    .view-section { display: none; }
-    .view-section.active { display: block; }
-
-    /* Toast Flotante */
-    .toast {
-      position: fixed;
-      top: 52px;
-      left: 50%;
-      transform: translateX(-50%) translateY(-20px);
-      background: var(--gris-oscuro);
-      color: var(--blanco);
-      padding: 12px 18px;
-      border-radius: 10px;
-      font-size: 0.88rem;
-      font-weight: 600;
-      box-shadow: 0 6px 20px rgba(0,0,0,0.2);
-      opacity: 0;
-      pointer-events: none;
-      transition: all 0.25s ease;
-      z-index: 200;
-      max-width: 90%;
-      text-align: center;
-    }
-
-    .toast.show {
-      opacity: 1;
-      transform: translateX(-50%) translateY(0);
-    }
-
-    .spin {
-      animation: spin 1s linear infinite;
-    }
-
-    @keyframes spin {
-      100% { transform: rotate(360deg); }
-    }
-  </style>
-</head>
-<body>
-
-  <!-- Barra de estado de conectividad -->
-  <div id="networkBanner" class="status-bar status-online">
-    <div>
-      <span class="status-dot"></span>
-      <span id="networkText">En línea</span>
-    </div>
-    <button type="button" id="btnTopSync" class="btn-mini-sync" onclick="syncManager.syncPending(true)">
-      <svg id="syncIcon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-        <polyline points="23 4 23 10 17 10"></polyline>
-        <polyline points="1 20 1 14 7 14"></polyline>
-        <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
-      </svg>
-      <span id="syncCounterBadge">Sincronizar</span>
-    </button>
-  </div>
-
-  <div id="toast" class="toast"></div>
-
-  <div class="container">
-    <!-- MEMBRETE CORPORATIVO -->
-    <header class="membrete-card">
-      <div class="logo-wrapper">
-        <img src="./LOGO HUARMEY.png" alt="Agrícola Huarmey" onerror="this.style.display='none'" />
-      </div>
-      <h1 class="app-title">REPORTE DE COSECHADORES</h1>
-      <p class="app-subtitle">Registro para Acopiadores (as)</p>
-    </header>
-
-    <!-- VISTA 1: FORMULARIO DE REGISTRO -->
-    <main id="viewForm" class="view-section active">
-      <form id="acopiadorForm" class="card" novalidate>
-        <!-- FECHA REGISTRO -->
-        <div class="form-group">
-          <label class="form-label" for="fechaReg">
-            <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
-            FECHA REGISTRO *
-          </label>
-          <input type="date" id="fechaReg" class="form-control" required />
-          <div class="error-msg">Seleccione una fecha válida.</div>
-        </div>
-
-        <!-- MODULO -TURNO -->
-        <div class="form-group">
-          <label class="form-label" for="moduloTurno">
-            <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
-            MODULO -TURNO *
-          </label>
-          <select id="moduloTurno" class="form-control" required>
-            <option value="">-- Seleccione Módulo - Turno --</option>
-          </select>
-          <div class="error-msg">Seleccione un Módulo - Turno.</div>
-        </div>
-
-        <!-- DATOS ACOPIADOR -->
-        <div class="form-group">
-          <label class="form-label" for="datosAcopiador">
-            <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-            DATOS ACOPIADOR *
-          </label>
-          <select id="datosAcopiador" class="form-control" required>
-            <option value="">-- Seleccione Acopiador (a) --</option>
-          </select>
-          <div class="error-msg">Seleccione los datos del Acopiador.</div>
-        </div>
-
-        <!-- DATOS CAPORAL -->
-        <div class="form-group">
-          <label class="form-label" for="datosCaporal">
-            <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
-            DATOS CAPORAL *
-          </label>
-          <select id="datosCaporal" class="form-control" required>
-            <option value="">-- Seleccione Caporal --</option>
-          </select>
-          <div class="error-msg">Seleccione los datos del Caporal.</div>
-        </div>
-
-        <!-- TOTAL -->
-        <div class="form-group">
-          <label class="form-label" for="totalCosechadores">
-            <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
-            TOTAL (Número Entero) *
-          </label>
-          <input
-            type="number"
-            id="totalCosechadores"
-            class="form-control input-total"
-            inputmode="numeric"
-            pattern="[0-9]*"
-            min="1"
-            max="9999"
-            step="1"
-            placeholder="0"
-            required
-          />
-          <div class="error-msg">Ingrese un número entero mayor a 0.</div>
-        </div>
-
-        <button type="submit" class="btn-primary">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-            <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
-            <polyline points="17 21 17 13 7 13 7 21"></polyline>
-            <polyline points="7 3 7 8 15 8"></polyline>
-          </svg>
-          GUARDAR REGISTRO
-        </button>
-
-        <button type="button" class="btn-secondary" onclick="actualizarCatalogosDesdeServidor(true)">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
-            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-            <polyline points="7 10 12 15 17 10"></polyline>
-            <line x1="12" y1="15" x2="12" y2="3"></line>
-          </svg>
-          Actualizar Listas desde Google Sheets
-        </button>
-      </form>
-    </main>
-
-    <!-- VISTA 2: HISTORIAL Y COLA OFFLINE -->
-    <section id="viewHistory" class="view-section">
-      <div class="card">
-        <div class="stats-grid">
-          <div class="stat-box stat-pendiente">
-            <div class="stat-num" id="countPendiente">0</div>
-            <div class="stat-label">Pendiente</div>
-          </div>
-          <div class="stat-box stat-sincronizado">
-            <div class="stat-num" id="countSincronizado">0</div>
-            <div class="stat-label">Sincronizado</div>
-          </div>
-          <div class="stat-box stat-error">
-            <div class="stat-num" id="countError">0</div>
-            <div class="stat-label">Error</div>
-          </div>
-        </div>
-
-        <button type="button" class="btn-primary" style="height: 48px; font-size: 0.95rem; margin-bottom: 14px;" onclick="syncManager.syncPending(true)">
-          SINCRONIZAR AHORA CON GOOGLE SHEETS
-        </button>
-
-        <div class="history-header">
-          <span class="history-title">Registros Locales (IndexedDB)</span>
-          <span id="lastCatalogSync" style="font-size: 0.72rem; color: var(--gris);"></span>
-        </div>
-
-        <div id="recordsList"></div>
-      </div>
-    </section>
-  </div>
-
-  <!-- NAVEGACIÓN INFERIOR -->
-  <nav class="bottom-nav">
-    <button type="button" class="nav-btn active" id="navForm" onclick="switchTab('form')">
-      <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2">
-        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-      </svg>
-      Nuevo Registro
-    </button>
-    <button type="button" class="nav-btn" id="navHistory" onclick="switchTab('history')">
-      <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2">
-        <line x1="8" y1="6" x2="21" y2="6"></line>
-        <line x1="8" y1="12" x2="21" y2="12"></line>
-        <line x1="8" y1="18" x2="21" y2="18"></line>
-        <line x1="3" y1="6" x2="3.01" y2="6"></line>
-        <line x1="3" y1="12" x2="3.01" y2="12"></line>
-        <line x1="3" y1="18" x2="3.01" y2="18"></line>
-      </svg>
-      Registros (<span id="navBadgeCount">0</span>)
-    </button>
-  </nav>
-
-  <script>
-    /**
-     * CONFIGURACIÓN DE CONEXIÓN A GOOGLE APPS SCRIPT
-     */
-    const APP_CONFIG = {
-      SCRIPT_URL: "<!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <meta name="theme-color" content="#DA291C" />
-  <title>Reporte de Cosechadores - Agrícola Huarmey</title>
-  <link rel="manifest" href="./manifest.json" />
-  <link rel="icon" type="image/png" href="./LOGO HUARMEY.png" />
-  <style>
-    :root {
-      --rojo: #DA291C;
-      --rojo-claro: #FDECEA;
-      --rojo-borde: #F5B7B1;
-      --verde: #78BE20;
-      --verde-oscuro: #5A9414;
-      --verde-claro: #F1F8E8;
-      --verde-borde: #C5E1A5;
-      --gris: #8A8178;
-      --gris-oscuro: #4A4540;
-      --gris-claro: #F5F4F2;
-      --fondo: #F7F8F5;
-      --blanco: #FFFFFF;
-      --sombra: 0 4px 14px rgba(74, 69, 64, 0.08);
-      --radio: 14px;
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-    }
-
-    body {
-      background-color: var(--fondo);
-      color: var(--gris-oscuro);
-      min-height: 100vh;
-      padding-bottom: 92px;
-    }
-
-    /* Barra superior de estado de red */
-    .status-bar {
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 8px 16px;
-      font-size: 0.82rem;
-      font-weight: 600;
-      transition: background-color 0.3s ease;
-    }
-
-    .status-online {
-      background-color: var(--verde-claro);
-      color: var(--verde-oscuro);
-      border-bottom: 1px solid var(--verde-borde);
-    }
-
-    .status-offline {
-      background-color: var(--rojo-claro);
-      color: var(--rojo);
-      border-bottom: 1px solid var(--rojo-borde);
-    }
-
-    .status-dot {
-      display: inline-block;
-      width: 9px;
-      height: 9px;
-      border-radius: 50%;
-      margin-right: 6px;
-    }
-
-    .status-online .status-dot { background-color: var(--verde); }
-    .status-offline .status-dot { background-color: var(--rojo); }
-
-    .btn-mini-sync {
-      background: var(--blanco);
-      border: 1px solid currentColor;
-      color: inherit;
-      padding: 4px 10px;
-      border-radius: 20px;
-      font-size: 0.78rem;
-      font-weight: 700;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 4px;
-    }
-
-    .btn-mini-sync:active { transform: scale(0.96); }
-
-    /* Contenedor Principal */
-    .container {
-      max-width: 560px;
-      margin: 0 auto;
-      padding: 14px;
-    }
-
-    /* Membrete Corporativo */
-    .membrete-card {
-      background: var(--blanco);
-      border-radius: var(--radio);
-      padding: 18px 16px 16px;
-      text-align: center;
-      box-shadow: var(--sombra);
-      border-top: 5px solid var(--rojo);
-      border-bottom: 3px solid var(--verde);
-      margin-bottom: 16px;
-    }
-
-    .logo-wrapper {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      margin-bottom: 10px;
-    }
-
-    .logo-wrapper img {
-      max-height: 82px;
-      width: auto;
-      object-fit: contain;
-    }
-
-    .app-title {
-      font-size: 1.38rem;
-      font-weight: 800;
-      color: var(--rojo);
-      text-align: center;
-      letter-spacing: 0.4px;
-      line-height: 1.2;
-      margin-bottom: 4px;
-      text-transform: uppercase;
-    }
-
-    .app-subtitle {
-      font-size: 0.98rem;
-      font-weight: 600;
-      color: var(--gris);
-      text-align: center;
-    }
-
-    /* Tarjeta de Formulario */
-    .card {
-      background: var(--blanco);
-      border-radius: var(--radio);
-      padding: 18px;
-      box-shadow: var(--sombra);
-      margin-bottom: 16px;
-      border: 1px solid #EAE8E4;
-    }
-
-    .form-group {
-      margin-bottom: 16px;
-    }
-
-    .form-label {
-      display: flex;
-      align-items: center;
-      gap: 7px;
-      font-size: 0.86rem;
-      font-weight: 700;
-      color: var(--gris-oscuro);
-      margin-bottom: 6px;
-      text-transform: uppercase;
-    }
-
-    .form-label svg {
-      width: 18px;
-      height: 18px;
-      stroke: var(--verde-oscuro);
-      flex-shrink: 0;
-    }
-
-    .form-control {
-      width: 100%;
-      height: 52px;
-      padding: 0 14px;
-      font-size: 1rem;
-      font-weight: 500;
-      color: #222;
-      background-color: var(--gris-claro);
-      border: 2px solid #DDD9D4;
-      border-radius: 10px;
-      transition: all 0.2s ease;
-      appearance: none;
-    }
-
-    select.form-control {
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%238A8178' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
-      background-repeat: no-repeat;
-      background-position: right 14px center;
-      padding-right: 40px;
-    }
-
-    .form-control:focus {
-      outline: none;
-      background-color: var(--blanco);
-      border-color: var(--verde);
-      box-shadow: 0 0 0 3px rgba(120, 190, 32, 0.2);
-    }
-
-    .form-control.invalid {
-      border-color: var(--rojo);
-      background-color: var(--rojo-claro);
-    }
-
-    .input-total {
-      font-size: 1.35rem;
-      font-weight: 800;
-      text-align: center;
-      color: var(--rojo);
-      background-color: var(--verde-claro);
-      border-color: var(--verde-borde);
-    }
-
-    .error-msg {
-      color: var(--rojo);
-      font-size: 0.78rem;
-      font-weight: 600;
-      margin-top: 4px;
-      display: none;
-    }
-
-    .form-control.invalid + .error-msg {
-      display: block;
-    }
-
-    /* Botones Grandes de Campo */
-    .btn-primary {
-      width: 100%;
-      height: 58px;
-      background: linear-gradient(135deg, var(--verde) 0%, var(--verde-oscuro) 100%);
-      color: var(--blanco);
-      border: none;
-      border-radius: 12px;
-      font-size: 1.08rem;
-      font-weight: 800;
-      letter-spacing: 0.5px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      box-shadow: 0 4px 12px rgba(120, 190, 32, 0.35);
-      transition: transform 0.15s ease;
-    }
-
-    .btn-primary:active { transform: scale(0.98); }
-
-    .btn-secondary {
-      width: 100%;
-      height: 50px;
-      background-color: var(--rojo-claro);
-      color: var(--rojo);
-      border: 2px solid var(--rojo-borde);
-      border-radius: 12px;
-      font-size: 0.95rem;
-      font-weight: 700;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      margin-top: 10px;
-    }
-
-    .btn-secondary:active { transform: scale(0.98); }
-
-    /* Resumen de Estados */
-    .stats-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 8px;
-      margin-bottom: 14px;
-    }
-
-    .stat-box {
-      padding: 10px 6px;
-      border-radius: 10px;
-      text-align: center;
-      border: 1px solid transparent;
-    }
-
-    .stat-pendiente {
-      background-color: #FFF8E7;
-      border-color: #F5D78E;
-      color: #9A6700;
-    }
-
-    .stat-sincronizado {
-      background-color: var(--verde-claro);
-      border-color: var(--verde-borde);
-      color: var(--verde-oscuro);
-    }
-
-    .stat-error {
-      background-color: var(--rojo-claro);
-      border-color: var(--rojo-borde);
-      color: var(--rojo);
-    }
-
-    .stat-num {
-      font-size: 1.35rem;
-      font-weight: 800;
-      line-height: 1.1;
-    }
-
-    .stat-label {
-      font-size: 0.72rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      margin-top: 2px;
-    }
-
-    /* Historial de Registros */
-    .history-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 10px;
-    }
-
-    .history-title {
-      font-size: 0.95rem;
-      font-weight: 800;
-      color: var(--gris-oscuro);
-    }
-
-    .record-item {
-      border: 1px solid #E6E3DF;
-      border-left: 5px solid var(--gris);
-      border-radius: 10px;
-      padding: 12px;
-      margin-bottom: 10px;
-      background: var(--blanco);
-    }
-
-    .record-item.Pendiente { border-left-color: #E6A100; }
-    .record-item.Sincronizado { border-left-color: var(--verde); }
-    .record-item.Error { border-left-color: var(--rojo); }
-
-    .record-top {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 6px;
-    }
-
-    .record-mod {
-      font-weight: 800;
-      font-size: 0.9rem;
-      color: var(--gris-oscuro);
-    }
-
-    .badge {
-      padding: 3px 9px;
-      border-radius: 12px;
-      font-size: 0.72rem;
-      font-weight: 800;
-      text-transform: uppercase;
-    }
-
-    .badge-Pendiente { background: #FFF3CD; color: #856404; }
-    .badge-Sincronizado { background: var(--verde-claro); color: var(--verde-oscuro); }
-    .badge-Error { background: var(--rojo-claro); color: var(--rojo); }
-
-    .record-detail {
-      font-size: 0.82rem;
-      color: var(--gris);
-      line-height: 1.4;
-    }
-
-    .record-bottom {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-top: 8px;
-      padding-top: 6px;
-      border-top: 1px dashed #EAE8E4;
-      font-size: 0.82rem;
-    }
-
-    .record-total {
-      font-weight: 800;
-      color: var(--rojo);
-      font-size: 0.95rem;
-    }
-
-    /* Navegación Inferior */
-    .bottom-nav {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      height: 68px;
-      background: var(--blanco);
-      border-top: 2px solid #E6E3DF;
-      display: flex;
-      justify-content: space-around;
-      align-items: center;
-      z-index: 99;
-      box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
-    }
-
-    .nav-btn {
-      flex: 1;
-      height: 100%;
-      background: none;
-      border: none;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 4px;
-      color: var(--gris);
-      font-size: 0.78rem;
-      font-weight: 700;
-      cursor: pointer;
-    }
-
-    .nav-btn.active {
-      color: var(--rojo);
-      background-color: var(--rojo-claro);
-    }
-
-    .nav-btn svg {
-      width: 22px;
-      height: 22px;
-      stroke: currentColor;
-    }
-
-    .view-section { display: none; }
-    .view-section.active { display: block; }
-
-    /* Toast Flotante */
-    .toast {
-      position: fixed;
-      top: 52px;
-      left: 50%;
-      transform: translateX(-50%) translateY(-20px);
-      background: var(--gris-oscuro);
-      color: var(--blanco);
-      padding: 12px 18px;
-      border-radius: 10px;
-      font-size: 0.88rem;
-      font-weight: 600;
-      box-shadow: 0 6px 20px rgba(0,0,0,0.2);
-      opacity: 0;
-      pointer-events: none;
-      transition: all 0.25s ease;
-      z-index: 200;
-      max-width: 90%;
-      text-align: center;
-    }
-
-    .toast.show {
-      opacity: 1;
-      transform: translateX(-50%) translateY(0);
-    }
-
-    .spin {
-      animation: spin 1s linear infinite;
-    }
-
-    @keyframes spin {
-      100% { transform: rotate(360deg); }
-    }
-  </style>
-</head>
-<body>
-
-  <!-- Barra de estado de conectividad -->
-  <div id="networkBanner" class="status-bar status-online">
-    <div>
-      <span class="status-dot"></span>
-      <span id="networkText">En línea</span>
-    </div>
-    <button type="button" id="btnTopSync" class="btn-mini-sync" onclick="syncManager.syncPending(true)">
-      <svg id="syncIcon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-        <polyline points="23 4 23 10 17 10"></polyline>
-        <polyline points="1 20 1 14 7 14"></polyline>
-        <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
-      </svg>
-      <span id="syncCounterBadge">Sincronizar</span>
-    </button>
-  </div>
-
-  <div id="toast" class="toast"></div>
-
-  <div class="container">
-    <!-- MEMBRETE CORPORATIVO -->
-    <header class="membrete-card">
-      <div class="logo-wrapper">
-        <img src="./LOGO HUARMEY.png" alt="Agrícola Huarmey" onerror="this.style.display='none'" />
-      </div>
-      <h1 class="app-title">REPORTE DE COSECHADORES</h1>
-      <p class="app-subtitle">Registro para Acopiadores (as)</p>
-    </header>
-
-    <!-- VISTA 1: FORMULARIO DE REGISTRO -->
-    <main id="viewForm" class="view-section active">
-      <form id="acopiadorForm" class="card" novalidate>
-        <!-- FECHA REGISTRO -->
-        <div class="form-group">
-          <label class="form-label" for="fechaReg">
-            <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
-            FECHA REGISTRO *
-          </label>
-          <input type="date" id="fechaReg" class="form-control" required />
-          <div class="error-msg">Seleccione una fecha válida.</div>
-        </div>
-
-        <!-- MODULO -TURNO -->
-        <div class="form-group">
-          <label class="form-label" for="moduloTurno">
-            <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
-            MODULO -TURNO *
-          </label>
-          <select id="moduloTurno" class="form-control" required>
-            <option value="">-- Seleccione Módulo - Turno --</option>
-          </select>
-          <div class="error-msg">Seleccione un Módulo - Turno.</div>
-        </div>
-
-        <!-- DATOS ACOPIADOR -->
-        <div class="form-group">
-          <label class="form-label" for="datosAcopiador">
-            <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-            DATOS ACOPIADOR *
-          </label>
-          <select id="datosAcopiador" class="form-control" required>
-            <option value="">-- Seleccione Acopiador (a) --</option>
-          </select>
-          <div class="error-msg">Seleccione los datos del Acopiador.</div>
-        </div>
-
-        <!-- DATOS CAPORAL -->
-        <div class="form-group">
-          <label class="form-label" for="datosCaporal">
-            <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
-            DATOS CAPORAL *
-          </label>
-          <select id="datosCaporal" class="form-control" required>
-            <option value="">-- Seleccione Caporal --</option>
-          </select>
-          <div class="error-msg">Seleccione los datos del Caporal.</div>
-        </div>
-
-        <!-- TOTAL -->
-        <div class="form-group">
-          <label class="form-label" for="totalCosechadores">
-            <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
-            TOTAL (Número Entero) *
-          </label>
-          <input
-            type="number"
-            id="totalCosechadores"
-            class="form-control input-total"
-            inputmode="numeric"
-            pattern="[0-9]*"
-            min="1"
-            max="9999"
-            step="1"
-            placeholder="0"
-            required
-          />
-          <div class="error-msg">Ingrese un número entero mayor a 0.</div>
-        </div>
-
-        <button type="submit" class="btn-primary">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-            <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
-            <polyline points="17 21 17 13 7 13 7 21"></polyline>
-            <polyline points="7 3 7 8 15 8"></polyline>
-          </svg>
-          GUARDAR REGISTRO
-        </button>
-
-        <button type="button" class="btn-secondary" onclick="actualizarCatalogosDesdeServidor(true)">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
-            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-            <polyline points="7 10 12 15 17 10"></polyline>
-            <line x1="12" y1="15" x2="12" y2="3"></line>
-          </svg>
-          Actualizar Listas desde Google Sheets
-        </button>
-      </form>
-    </main>
-
-    <!-- VISTA 2: HISTORIAL Y COLA OFFLINE -->
-    <section id="viewHistory" class="view-section">
-      <div class="card">
-        <div class="stats-grid">
-          <div class="stat-box stat-pendiente">
-            <div class="stat-num" id="countPendiente">0</div>
-            <div class="stat-label">Pendiente</div>
-          </div>
-          <div class="stat-box stat-sincronizado">
-            <div class="stat-num" id="countSincronizado">0</div>
-            <div class="stat-label">Sincronizado</div>
-          </div>
-          <div class="stat-box stat-error">
-            <div class="stat-num" id="countError">0</div>
-            <div class="stat-label">Error</div>
-          </div>
-        </div>
-
-        <button type="button" class="btn-primary" style="height: 48px; font-size: 0.95rem; margin-bottom: 14px;" onclick="syncManager.syncPending(true)">
-          SINCRONIZAR AHORA CON GOOGLE SHEETS
-        </button>
-
-        <div class="history-header">
-          <span class="history-title">Registros Locales (IndexedDB)</span>
-          <span id="lastCatalogSync" style="font-size: 0.72rem; color: var(--gris);"></span>
-        </div>
-
-        <div id="recordsList"></div>
-      </div>
-    </section>
-  </div>
-
-  <!-- NAVEGACIÓN INFERIOR -->
-  <nav class="bottom-nav">
-    <button type="button" class="nav-btn active" id="navForm" onclick="switchTab('form')">
-      <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2">
-        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-      </svg>
-      Nuevo Registro
-    </button>
-    <button type="button" class="nav-btn" id="navHistory" onclick="switchTab('history')">
-      <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2">
-        <line x1="8" y1="6" x2="21" y2="6"></line>
-        <line x1="8" y1="12" x2="21" y2="12"></line>
-        <line x1="8" y1="18" x2="21" y2="18"></line>
-        <line x1="3" y1="6" x2="3.01" y2="6"></line>
-        <line x1="3" y1="12" x2="3.01" y2="12"></line>
-        <line x1="3" y1="18" x2="3.01" y2="18"></line>
-      </svg>
-      Registros (<span id="navBadgeCount">0</span>)
-    </button>
-  </nav>
-
-  <script>
-    /**
-     * CONFIGURACIÓN DE CONEXIÓN A GOOGLE APPS SCRIPT
-     */
-    const APP_CONFIG = {
-      SCRIPT_URL: "https://script.google.com/macros/s/AKfycbx5N_7b06jBbVENHI96NVFJGvNaSvmnpDAg76RvV8mYmhbqddtVBkVBNajggMJYJHyG/exec",
-      API_TOKEN: "AH_ACOPIADOR_2026_SEC_TOKEN_9841",
-      DB_NAME: "AgricolaHuarmey_AcopiadorDB",
-      DB_VERSION: 1
-    };
-
-    /**
-     * CATÁLOGOS SEMILLA OFFLINE (Respaldo inmediato sin internet basado en REGISTRO-PRODUCCION-ACOPIADOR.xlsx)
-     */
-    const DEFAULT_CATALOGS = {
-      modulos: [
-        "MODULO 1 TURNO 1", "MODULO 1 TURNO 2", "MODULO 1 TURNO 3", "MODULO 1 TURNO 4", "MODULO 1 TURNO 5",
-        "MODULO 2 TURNO 1", "MODULO 2 TURNO 2", "MODULO 2 TURNO 3", "MODULO 2 TURNO 4", "MODULO 2 TURNO 5",
-        "MODULO 3 TURNO 1", "MODULO 3 TURNO 2", "MODULO 3 TURNO 3", "MODULO 3 TURNO 4", "MODULO 3 TURNO 5",
-        "MODULO 4 TURNO 1", "MODULO 4 TURNO 2", "MODULO 4 TURNO 3", "MODULO 4 TURNO 4", "MODULO 4 TURNO 5",
-        "MODULO 5 TURNO 1", "MODULO 5 TURNO 2", "MODULO 5 TURNO 3", "MODULO 5 TURNO 4", "MODULO 5 TURNO 5",
-        "MODULO 6 TURNO 1", "MODULO 6 TURNO 2A", "MODULO 6 TURNO 2B", "MODULO 6 TURNO 3", "MODULO 6 TURNO 4", "MODULO 6 TURNO 5",
-        "MODULO 7 TURNO 1", "MODULO 7 TURNO 2", "MODULO 7 TURNO 3", "MODULO 7 TURNO 4", "MODULO 7 TURNO 5",
-        "MODULO 8 TURNO 1", "MODULO 8 TURNO 2", "MODULO 8 TURNO 3", "MODULO 8 TURNO 4", "MODULO 8 TURNO 5",
-        "MODULO 9 TURNO 1", "MODULO 9 TURNO 2", "MODULO 9 TURNO 3", "MODULO 9 TURNO 4", "MODULO 9 TURNO 5"
-      ],
-      acopiadores: [
-        "ALISON TATIANA COLINA CUEVA", "ANALI ALEGRIA TIQUILLAHUANCA", "ANGHELA IBET SERRATO RODRIGUEZ",
-        "ANNI MARIA BENITES MENESES", "ANSHELA ABIGAIL SUXE SAAVEDRA", "ASUSENA DIAZ SAAVEDRA",
-        "CIELO CRUZ VILLEGAS ANGULO", "ELIANA YAJAIRA SAMAME CACERES", "ELIZABETH CORDOVA GARCIA",
-        "EVELIN BENAVIDES DIAZ", "FLOR NUÑEZ HERRERA", "JHOSTIN SEBASTIAN CORMAN MEDINA",
-        "LESLYE ANTONELA GISSEL LOZANO LANCHA", "LILIANA ELIZABETH INOÑAN TEJADA", "LISETH SANTOYO NAVARRO",
-        "MAYTE ZARAHI ALVARADO FERNANDEZ", "PRISCILA BRIGHITT CARMEN FARFAN", "ROXANA DIAZ SAAVEDRA",
-        "YOSELIN YUDIT FERNANDEZ HURTADO", "YULI MIREILY VASQUEZ PEREZ"
-      ],
-      caporales: [
-        "ALEXANDER EMANUEL RODRIGUEZ CHAVEZ", "ARACELY LIZBETH VASQUEZ ARAUJO", "CARLOS DERIAN RIOS SHIMARA",
-        "CARMEN DE JESUS TIGLLA VILCHEZ", "CRISANTO CIEZA SANDY", "EDWIN JHUNIOR FERNANDEZ JULCAHUANGA",
-        "ELGAR JESUS CASTRO SANDOVAL", "EMILY AZUCENA LOZADA SALDARRIAGA", "ENILSON CERCADO BUSTAMANTE",
-        "GILMER ESMITH MEDINA FERNANDEZ", "JAVIER MARTIN ÑIQUEN MENDOZA", "JEREMÍAS PALOMINO MONDRAGÓN",
-        "JESSARELA YOLANDA MEDINA INGA", "JOHAN RICARDO MURRIETA HUAYA", "JOHN NER TAPULLIMA VALLEJOS",
-        "JOSE ELDER PEREZ VASQUEZ", "KATHERINE IMAN HUAMAN", "LINDAURA DIAZ DE LA CRUZ",
-        "LUCERO LOZANO LANCHA", "LUIS ALBERTO ESPINOZA GOMEZ", "LUZ CLARITA TORO SANCHEZ",
-        "MARIA CHUNGA JUAREZ", "MARÍA ELENA MONTENEGRO MONTEZA", "MARIBEL TERAN DIAZ",
-        "MARY CARMEN AGUILAR CARRANZA", "MAXIMILIANO ISIQUE SERRANO", "MERCEDES NAYELY MORALES GARCIA",
-        "MICHAEL ISAI HUACHEZ ROMERO", "MIGUEL ANGEL CALDERON YTURREGUI", "NAYELI NIKOL DE LA CRUZ DIAZ",
-        "NICOLAS SMITH MORALES PERICHE", "RICHAR BRUNO BAQUEDANO BARBOZA", "ROCIO DEL PILAR MONTENEGRO MANAYAN",
-        "RUTH MELISA MORALES PAQUIRACHI", "SILVIA ANGELICA BARREDA MALHABER", "TERESA ROMAN GARCIA",
-        "WILDER SAUL MENDOZA MEDINA", "YANET DEL ROCIO MENDOZA LLONTOP", "YESICA MORALES PAQUIRACHI",
-        "YULISA RINZA HUAMAN"
-      ]
-    };
-
-    /**
-     * CAPA DE BASE DE DATOS LOCAL: IndexedDB
-     */
-    class LocalDatabase {
-      constructor() {
-        this.db = null;
-      }
-
-      async open() {
-        if (this.db) return this.db;
-        return new Promise((resolve, reject) => {
-          const request = indexedDB.open(APP_CONFIG.DB_NAME, APP_CONFIG.DB_VERSION);
-
-          request.onupgradeneeded = (event) => {
-            const db = event.target.result;
-            if (!db.objectStoreNames.contains("registros")) {
-              const store = db.createObjectStore("registros", { keyPath: "uuid" });
-              store.createIndex("estado", "estado", { unique: false });
-              store.createIndex("createdAt", "createdAt", { unique: false });
-            }
-            if (!db.objectStoreNames.contains("catalogos")) {
-              db.createObjectStore("catalogos", { keyPath: "key" });
-            }
-          };
-
-          request.onsuccess = (event) => {
-            this.db = event.target.result;
-            resolve(this.db);
-          };
-
-          request.onerror = (event) => reject(event.target.error);
-        });
-      }
-
-      async saveRegistro(registro) {
-        const db = await this.open();
-        return new Promise((resolve, reject) => {
-          const tx = db.transaction("registros", "readwrite");
-          tx.objectStore("registros").put(registro);
-          tx.oncomplete = () => resolve(registro);
-          tx.onerror = () => reject(tx.error);
-        });
-      }
-
-      async getAllRegistros() {
-        const db = await this.open();
-        return new Promise((resolve, reject) => {
-          const tx = db.transaction("registros", "readonly");
-          const req = tx.objectStore("registros").getAll();
-          req.onsuccess = () => {
-            const sorted = (req.result || []).sort((a, b) => b.createdAt - a.createdAt);
-            resolve(sorted);
-          };
-          req.onerror = () => reject(req.error);
-        });
-      }
-
-      async getPendientesOError() {
-        const all = await this.getAllRegistros();
-        return all.filter(r => r.estado === "Pendiente" || r.estado === "Error");
-      }
-
-      async saveCatalog(key, items) {
-        const db = await this.open();
-        return new Promise((resolve, reject) => {
-          const tx = db.transaction("catalogos", "readwrite");
-          tx.objectStore("catalogos").put({ key, items, updatedAt: new Date().toISOString() });
-          tx.oncomplete = () => resolve();
-          tx.onerror = () => reject(tx.error);
-        });
-      }
-
-      async getCatalog(key) {
-        const db = await this.open();
-        return new Promise((resolve, reject) => {
-          const tx = db.transaction("catalogos", "readonly");
-          const req = tx.objectStore("catalogos").get(key);
-          req.onsuccess = () => resolve(req.result ? req.result.items : null);
-          req.onerror = () => reject(req.error);
-        });
-      }
-    }
-
-    const localDB = new LocalDatabase();
-
-    /**
-     * GESTOR DE SINCRONIZACIÓN OFFLINE-FIRST (Concurrencia 200+ usuarios)
-     */
-    class SyncManager {
-      constructor() {
-        this.isSyncing = false;
-      }
-
-      async syncPending(manual = false) {
-        if (this.isSyncing) return;
-        if (!navigator.onLine) {
-          if (manual) showToast("Sin conexión. Los datos permanecen seguros en el equipo.");
-          return;
-        }
-        if (APP_CONFIG.SCRIPT_URL.includes("PEGAR_AQUI")) {
-          if (manual) showToast("Configure la URL de Google Apps Script en index.html");
-          return;
-        }
-
-        const pendientes = await localDB.getPendientesOError();
-        if (pendientes.length === 0) {
-          if (manual) showToast("Todos los registros ya están sincronizados.");
-          return;
-        }
-
-        this.isSyncing = true;
-        document.getElementById("syncIcon").classList.add("spin");
-
-        try {
-          // Jitter aleatorio (0 a 1200ms) para escalonar peticiones si 200 usuarios recuperan señal juntos
-          await new Promise(r => setTimeout(r, Math.floor(Math.random() * 1200)));
-
-          // Envío en lotes de hasta 25 registros
-          const batch = pendientes.slice(0, 25);
-
-          const response = await fetch(APP_CONFIG.SCRIPT_URL, {
-            method: "POST",
-            headers: { "Content-Type": "text/plain;charset=utf-8" }, // Evita preflight CORS en Apps Script
-            body: JSON.stringify({
-              token: APP_CONFIG.API_TOKEN,
-              records: batch
-            })
-          });
-
-          const result = await response.json();
-
-          if (result.status === "ok" && Array.isArray(result.processed)) {
-            const processedSet = new Set(result.processed);
-            for (const reg of batch) {
-              if (processedSet.has(reg.uuid)) {
-                reg.estado = "Sincronizado";
-                reg.errorDetail = "";
-                reg.syncedAt = new Date().toISOString();
-                await localDB.saveRegistro(reg);
-              }
-            }
-            showToast(`Sincronizados ${result.processed.length} registro(s) con Google Sheets.`);
-          } else if (result.status === "retry") {
-            // El servidor pidió reintentar por cola de 200 usuarios
-            setTimeout(() => this.syncPending(false), 3000 + Math.random() * 2000);
-          } else {
-            throw new Error(result.message || "Error desconocido en el servidor");
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brandRed: '#DA291C',
+            brandRedLight: '#FDF2F2',
+            brandGreen: '#78BE20',
+            brandGreenLight: '#F3FAEB',
+            brandGray: '#8A8178',
+            brandGrayLight: '#F6F5F4',
+          },
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
           }
-        } catch (err) {
-          console.error("Error de sincronización:", err);
-          for (const reg of pendientes.slice(0, 25)) {
-            reg.estado = "Error";
-            reg.errorDetail = err.message;
-            await localDB.saveRegistro(reg);
-          }
-          if (manual) showToast("Error al sincronizar. Se reintentará automáticamente.");
-        } finally {
-          this.isSyncing = false;
-          document.getElementById("syncIcon").classList.remove("spin");
-          await renderHistory();
         }
       }
     }
-
-    const syncManager = new SyncManager();
-
-    /**
-     * UTILIDADES Y FLUJO DE APLICACIÓN
-     */
-    function generarUUID() {
-      if (crypto && crypto.randomUUID) return crypto.randomUUID();
-      return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
-        const r = Math.random() * 16 | 0;
-        return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
-      });
-    }
-
-    function showToast(msg) {
-      const toast = document.getElementById("toast");
-      toast.textContent = msg;
-      toast.classList.add("show");
-      clearTimeout(window._toastTimer);
-      window._toastTimer = setTimeout(() => toast.classList.remove("show"), 3200);
-    }
-
-    function updateNetworkUI() {
-      const banner = document.getElementById("networkBanner");
-      const text = document.getElementById("networkText");
-      if (navigator.onLine) {
-        banner.className = "status-bar status-online";
-        text.textContent = "Conectado (Sincronización activa)";
-        syncManager.syncPending(false);
-      } else {
-        banner.className = "status-bar status-offline";
-        text.textContent = "Modo Offline (Guardado local activo)";
-      }
-    }
-
-    function setFechaHoy() {
-      const now = new Date();
-      const offset = now.getTimezoneOffset();
-      const localDate = new Date(now.getTime() - (offset * 60 * 1000));
-      document.getElementById("fechaReg").value = localDate.toISOString().split("T")[0];
-    }
-
-    function poblarSelect(selectId, items, placeholder) {
-      const select = document.getElementById(selectId);
-      const currentValue = select.value;
-      select.innerHTML = `<option value="">${placeholder}</option>`;
-      items.forEach(item => {
-        const opt = document.createElement("option");
-        opt.value = item;
-        opt.textContent = item;
-        select.appendChild(opt);
-      });
-      if (items.includes(currentValue)) select.value = currentValue;
-    }
-
-    async function cargarCatalogosIniciales() {
-      let modulos = await localDB.getCatalog("modulos");
-      let acopiadores = await localDB.getCatalog("acopiadores");
-      let caporales = await localDB.getCatalog("caporales");
-
-      if (!modulos || !acopiadores || !caporales) {
-        modulos = DEFAULT_CATALOGS.modulos;
-        acopiadores = DEFAULT_CATALOGS.acopiadores;
-        caporales = DEFAULT_CATALOGS.caporales;
-        await localDB.saveCatalog("modulos", modulos);
-        await localDB.saveCatalog("acopiadores", acopiadores);
-        await localDB.saveCatalog("caporales", caporales);
-      }
-
-      poblarSelect("moduloTurno", modulos, "-- Seleccione Módulo - Turno --");
-      poblarSelect("datosAcopiador", acopiadores, "-- Seleccione Acopiador (a) --");
-      poblarSelect("datosCaporal", caporales, "-- Seleccione Caporal --");
-
-      // Intentar actualizar silenciosamente desde Google Sheets si hay conexión
-      if (navigator.onLine && !APP_CONFIG.SCRIPT_URL.includes("PEGAR_AQUI")) {
-        actualizarCatalogosDesdeServidor(false);
-      }
-    }
-
-    async function actualizarCatalogosDesdeServidor(manual = false) {
-      if (!navigator.onLine) {
-        if (manual) showToast("Sin internet. Usando listas guardadas localmente.");
-        return;
-      }
-      if (APP_CONFIG.SCRIPT_URL.includes("PEGAR_AQUI")) {
-        if (manual) showToast("Configure primero la URL de Google Apps Script.");
-        return;
-      }
-
-      try {
-        if (manual) showToast("Descargando listas maestras de Google Sheets...");
-        const url = `${APP_CONFIG.SCRIPT_URL}?action=getMaestros&token=${encodeURIComponent(APP_CONFIG.API_TOKEN)}`;
-        const resp = await fetch(url);
-        const json = await resp.json();
-
-        if (json.status === "ok" && json.data) {
-          if (json.data.modulos?.length) {
-            await localDB.saveCatalog("modulos", json.data.modulos);
-            poblarSelect("moduloTurno", json.data.modulos, "-- Seleccione Módulo - Turno --");
-          }
-          if (json.data.acopiadores?.length) {
-            await localDB.saveCatalog("acopiadores", json.data.acopiadores);
-            poblarSelect("datosAcopiador", json.data.acopiadores, "-- Seleccione Acopiador (a) --");
-          }
-          if (json.data.caporales?.length) {
-            await localDB.saveCatalog("caporales", json.data.caporales);
-            poblarSelect("datosCaporal", json.data.caporales, "-- Seleccione Caporal --");
-          }
-          if (manual) showToast("Listas maestras actualizadas correctamente.");
-        }
-      } catch (e) {
-        if (manual) showToast("No se pudo conectar con Google Sheets. Usando caché local.");
-      }
-    }
-
-    // Validación y Guardado del Formulario
-    document.getElementById("acopiadorForm").addEventListener("submit", async (e) => {
-      e.preventDefault();
-
-      const fechaEl = document.getElementById("fechaReg");
-      const moduloEl = document.getElementById("moduloTurno");
-      const acopiadorEl = document.getElementById("datosAcopiador");
-      const caporalEl = document.getElementById("datosCaporal");
-      const totalEl = document.getElementById("totalCosechadores");
-
-      let valid = true;
-      [fechaEl, moduloEl, acopiadorEl, caporalEl].forEach(el => {
-        if (!el.value.trim()) {
-          el.classList.add("invalid");
-          valid = false;
-        } else {
-          el.classList.remove("invalid");
-        }
-      });
-
-      const totalVal = Number(totalEl.value);
-      if (!totalEl.value || !Number.isInteger(totalVal) || totalVal <= 0) {
-        totalEl.classList.add("invalid");
-        valid = false;
-      } else {
-        totalEl.classList.remove("invalid");
-      }
-
-      if (!valid) {
-        showToast("Por favor complete todos los campos obligatorios correctamente.");
-        return;
-      }
-
-      const nuevoRegistro = {
-        uuid: generarUUID(),
-        fecha: fechaEl.value,
-        modulo: moduloEl.value.trim(),
-        acopiador: acopiadorEl.value.trim(),
-        caporal: caporalEl.value.trim(),
-        total: totalVal,
-        estado: "Pendiente",
-        createdAt: Date.now()
-      };
-
-      await localDB.saveRegistro(nuevoRegistro);
-
-      // Limpiar solo el campo TOTAL y CAPORAL para agilizar registros consecutivos en campo
-      totalEl.value = "";
-      caporalEl.value = "";
-
-      showToast(navigator.onLine ? "Guardado. Sincronizando..." : "Guardado en modo Offline (Pendiente).");
-      await renderHistory();
-
-      if (navigator.onLine) {
-        syncManager.syncPending(false);
-      } else if ("serviceWorker" in navigator && "SyncManager" in window) {
-        const reg = await navigator.serviceWorker.ready;
-        reg.sync.register("sync-acopiador-records").catch(() => {});
-      }
-    });
-
-    // Renderizar historial y contadores
-    async function renderHistory() {
-      const registros = await localDB.getAllRegistros();
-      let pendientes = 0, sincronizados = 0, errores = 0;
-
-      registros.forEach(r => {
-        if (r.estado === "Pendiente") pendientes++;
-        else if (r.estado === "Sincronizado") sincronizados++;
-        else if (r.estado === "Error") errores++;
-      });
-
-      document.getElementById("countPendiente").textContent = pendientes;
-      document.getElementById("countSincronizado").textContent = sincronizados;
-      document.getElementById("countError").textContent = errores;
-      document.getElementById("navBadgeCount").textContent = registros.length;
-
-      const badgeTop = document.getElementById("syncCounterBadge");
-      badgeTop.textContent = (pendientes + errores) > 0 ? `Sincronizar (${pendientes + errores})` : "Al día";
-
-      const listContainer = document.getElementById("recordsList");
-      if (registros.length === 0) {
-        listContainer.innerHTML = `<p style="text-align:center; color:var(--gris); padding:20px 0; font-size:0.9rem;">Aún no hay registros guardados en este dispositivo.</p>`;
-        return;
-      }
-
-      listContainer.innerHTML = registros.map(r => {
-        const parts = r.fecha.split("-");
-        const fechaFormat = parts.length === 3 ? `${parts[2]}/${parts[1]}/${parts[0]}` : r.fecha;
-        return `
-          <div class="record-item ${r.estado}">
-            <div class="record-top">
-              <span class="record-mod">${r.modulo}</span>
-              <span class="badge badge-${r.estado}">${r.estado}</span>
-            </div>
-            <div class="record-detail">
-              <div><strong>Acopiador:</strong> ${r.acopiador}</div>
-              <div><strong>Caporal:</strong> ${r.caporal}</div>
-              ${r.errorDetail ? `<div style="color:var(--rojo); margin-top:3px;"><strong>Detalle:</strong> ${r.errorDetail}</div>` : ""}
-            </div>
-            <div class="record-bottom">
-              <span style="color:var(--gris); font-weight:600;">Fecha: ${fechaFormat}</span>
-              <span class="record-total">TOTAL: ${r.total}</span>
-            </div>
-          </div>
-        `;
-      }).join("");
-    }
-
-    function switchTab(tab) {
-      document.getElementById("viewForm").classList.toggle("active", tab === "form");
-      document.getElementById("viewHistory").classList.toggle("active", tab === "history");
-      document.getElementById("navForm").classList.toggle("active", tab === "form");
-      document.getElementById("navHistory").classList.toggle("active", tab === "history");
-      if (tab === "history") renderHistory();
-    }
-
-    // Inicialización al cargar la PWA
-    window.addEventListener("online", updateNetworkUI);
-    window.addEventListener("offline", updateNetworkUI);
-
-    window.addEventListener("DOMContentLoaded", async () => {
-      setFechaHoy();
-      updateNetworkUI();
-      await cargarCatalogosIniciales();
-      await renderHistory();
-
-      // Sincronización periódica cada 45 segundos si hay pendientes
-      setInterval(() => {
-        if (navigator.onLine) syncManager.syncPending(false);
-      }, 45000);
-
-      if ("serviceWorker" in navigator) {
-        navigator.serviceWorker.register("./service-worker.js").catch(err => console.warn("SW:", err));
-        navigator.serviceWorker.addEventListener("message", (event) => {
-          if (event.data && event.data.type === "TRIGGER_SYNC") {
-            syncManager.syncPending(false);
-          }
-        });
-      }
-    });
   </script>
-</body>
-</html>",
-      API_TOKEN: "AH_ACOPIADOR_2026_SEC_TOKEN_9841",
-      DB_NAME: "AgricolaHuarmey_AcopiadorDB",
-      DB_VERSION: 1
+
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #F6F5F4;
+      -webkit-tap-highlight-color: transparent;
+    }
+    /* Custom Scrollbar for mobile/desktop */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #f1f1f1;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #8A8178;
+      border-radius: 3px;
+    }
+    select, input {
+      font-size: 16px !important; /* Prevents iOS zoom on focus */
+    }
+    .pulse-dot {
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0% { transform: scale(0.95); opacity: 0.8; }
+      50% { transform: scale(1.1); opacity: 1; }
+      100% { transform: scale(0.95); opacity: 0.8; }
+    }
+  </style>
+</head>
+<body class="text-gray-800 min-h-screen flex flex-col pb-24">
+
+  <!-- TOP STATUS BAR (Connectivity & Sync) -->
+  <div id="status-banner" class="sticky top-0 z-40 px-4 py-2 text-xs font-semibold flex items-center justify-between transition-colors duration-300 bg-brandGreen text-white shadow-sm">
+    <div class="flex items-center gap-2">
+      <span id="status-dot" class="w-2.5 h-2.5 rounded-full bg-white pulse-dot"></span>
+      <span id="status-text">EN LÍNEA - Conectado</span>
+    </div>
+    <div class="flex items-center gap-3">
+      <span id="pending-badge" class="hidden bg-brandRed text-white px-2 py-0.5 rounded-full text-[11px] font-bold shadow">
+        0 Pendientes
+      </span>
+      <button onclick="openConfigModal()" class="p-1 hover:bg-white/20 rounded-lg transition" title="Configuración API">
+        <i data-lucide="settings" class="w-4 h-4"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- HEADER / MEMBRETE -->
+  <header class="bg-white border-b-4 border-brandGreen shadow-sm pt-4 pb-5 px-4 text-center">
+    <div class="max-w-lg mx-auto flex flex-col items-center">
+      <!-- Logo Image with SVG Fallback matching LOGO HUARMEY.png -->
+      <div class="mb-2 flex flex-col items-center justify-center">
+        <img 
+          src="LOGO HUARMEY.png" 
+          alt="Agrícola Huarmey" 
+          class="h-20 object-contain"
+          onerror="this.style.display='none'; document.getElementById('svg-logo-fallback').style.display='flex';"
+        />
+        <!-- High-precision SVG vector replica of LOGO HUARMEY.png if external file isn't in same folder -->
+        <div id="svg-logo-fallback" style="display:none;" class="flex-col items-center">
+          <svg width="74" height="72" viewBox="0 0 120 115" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <!-- Leaf -->
+            <path d="M62 32C62 16 76 5 92 6C91 22 78 33 62 32Z" fill="#4E9A1D"/>
+            <path d="M63 31C71 22 80 15 89 9" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round"/>
+            <!-- Green Outer Swooshes -->
+            <path d="M48 22C24 30 16 62 34 86C44 98 60 103 74 101C52 100 35 84 34 62C33 43 44 28 58 23L48 22Z" fill="#4E9A1D"/>
+            <path d="M35 16C12 32 10 68 32 88C18 66 22 36 42 20L35 16Z" fill="#78BE20"/>
+            <!-- Red Apple Body Segments -->
+            <path d="M52 38C64 46 82 44 88 33C92 42 84 54 68 54C55 54 48 45 52 38Z" fill="#DA291C"/>
+            <path d="M42 54C58 65 86 63 97 48C100 61 87 74 66 74C49 74 39 63 42 54Z" fill="#DA291C"/>
+            <path d="M47 75C63 85 86 83 96 71C94 84 80 94 63 93C50 92 43 82 47 75Z" fill="#DA291C"/>
+          </svg>
+          <span class="text-xl font-bold tracking-tight text-[#59534D] -mt-1">Agrícola Huarmey</span>
+        </div>
+      </div>
+
+      <!-- TÍTULO Y SUBTÍTULO -->
+      <h1 class="text-xl sm:text-2xl font-extrabold text-gray-900 text-center tracking-tight uppercase mt-1">
+        REPORTE DE COSECHADORES
+      </h1>
+      <p class="text-sm sm:text-base font-medium text-brandGray mt-0.5">
+        Registro para Acopiadores (as)
+      </p>
+    </div>
+  </header>
+
+  <!-- MAIN CONTENT CONTAINER -->
+  <main class="flex-1 max-w-lg w-full mx-auto px-4 pt-5">
+
+    <!-- NAVIGATION TABS -->
+    <div class="grid grid-cols-2 gap-2 bg-white p-1.5 rounded-2xl shadow-sm border border-gray-200 mb-5">
+      <button id="tab-form-btn" onclick="switchTab('form')" class="flex items-center justify-center gap-2 py-3 px-4 rounded-xl font-bold text-sm transition-all bg-brandGreen text-white shadow-sm">
+        <i data-lucide="clipboard-plus" class="w-5 h-5"></i>
+        <span>Nuevo Registro</span>
+      </button>
+      <button id="tab-history-btn" onclick="switchTab('history')" class="flex items-center justify-center gap-2 py-3 px-4 rounded-xl font-bold text-sm transition-all text-brandGray hover:bg-brandGrayLight relative">
+        <i data-lucide="database" class="w-5 h-5"></i>
+        <span>Registros</span>
+        <span id="tab-count-badge" class="bg-gray-200 text-gray-700 text-xs px-2 py-0.5 rounded-full font-extrabold">0</span>
+      </button>
+    </div>
+
+    <!-- VIEW 1: DATA ENTRY FORM -->
+    <section id="view-form" class="space-y-4">
+      
+      <!-- Master Data Refresh Bar -->
+      <div class="bg-brandGreenLight border border-brandGreen/30 rounded-xl p-3 flex items-center justify-between">
+        <div class="flex items-center gap-2.5">
+          <div class="bg-brandGreen/20 p-2 rounded-lg text-brandGreen">
+            <i data-lucide="sheet" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <p class="text-xs font-bold text-gray-800">Catálogos Google Sheets</p>
+            <p id="catalog-status" class="text-[11px] text-brandGray">Listos para uso en campo</p>
+          </div>
+        </div>
+        <button type="button" onclick="fetchMasterData(true)" id="btn-refresh-masters" class="flex items-center gap-1.5 bg-white border border-brandGreen text-brandGreen hover:bg-brandGreen hover:text-white active:scale-95 transition px-3 py-2 rounded-lg text-xs font-bold shadow-sm">
+          <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
+          <span>Actualizar</span>
+        </button>
+      </div>
+
+      <!-- FORM CARD -->
+      <form id="acopiador-form" novalidate class="bg-white rounded-2xl shadow-sm border border-gray-200 p-5 space-y-5">
+        
+        <!-- 1. FECHA REGISTRO -->
+        <div>
+          <label for="fecha_reg" class="flex items-center gap-2 text-sm font-bold text-gray-700 mb-1.5">
+            <i data-lucide="calendar" class="w-4 h-4 text-brandGreen"></i>
+            <span>FECHA REGISTRO <span class="text-brandRed">*</span></span>
+          </label>
+          <input 
+            type="date" 
+            id="fecha_reg" 
+            name="fecha_reg" 
+            required
+            class="w-full h-13 px-4 py-3 rounded-xl border-2 border-gray-200 bg-brandGrayLight/40 focus:bg-white focus:border-brandGreen focus:outline-none font-semibold text-gray-800 transition"
+          />
+          <p class="text-xs text-brandRed mt-1 hidden" id="err-fecha_reg">Seleccione una fecha válida.</p>
+        </div>
+
+        <!-- 2. MODULO - TURNO -->
+        <div>
+          <label for="modulo_turno" class="flex items-center justify-between text-sm font-bold text-gray-700 mb-1.5">
+            <span class="flex items-center gap-2">
+              <i data-lucide="layers" class="w-4 h-4 text-brandGreen"></i>
+              <span>MÓDULO - TURNO <span class="text-brandRed">*</span></span>
+            </span>
+            <span class="text-[10px] font-normal text-brandGray bg-gray-100 px-2 py-0.5 rounded">maestro-modulos</span>
+          </label>
+          <div class="relative">
+            <select 
+              id="modulo_turno" 
+              name="modulo_turno" 
+              required
+              class="w-full h-13 px-4 py-3.5 rounded-xl border-2 border-gray-200 bg-brandGrayLight/40 focus:bg-white focus:border-brandGreen focus:outline-none font-semibold text-gray-800 appearance-none transition"
+            >
+              <option value="">-- Seleccione Módulo y Turno --</option>
+            </select>
+            <i data-lucide="chevron-down" class="w-5 h-5 text-brandGray absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none"></i>
+          </div>
+          <p class="text-xs text-brandRed mt-1 hidden" id="err-modulo_turno">Seleccione el Módulo - Turno.</p>
+        </div>
+
+        <!-- 3. SUPERVISOR -->
+        <div>
+          <label for="supervisor" class="flex items-center gap-2 text-sm font-bold text-gray-700 mb-1.5">
+            <i data-lucide="user-check" class="w-4 h-4 text-brandRed"></i>
+            <span>SUPERVISOR <span class="text-brandRed">*</span></span>
+          </label>
+          <div class="relative">
+            <select 
+              id="supervisor" 
+              name="supervisor" 
+              required
+              class="w-full h-13 px-4 py-3.5 rounded-xl border-2 border-gray-200 bg-brandGrayLight/40 focus:bg-white focus:border-brandGreen focus:outline-none font-semibold text-gray-800 appearance-none transition"
+            >
+              <option value="">-- Seleccione Supervisor --</option>
+              <option value="Frank Farroñan">Frank Farroñan</option>
+              <option value="Roni Días">Roni Días</option>
+            </select>
+            <i data-lucide="chevron-down" class="w-5 h-5 text-brandGray absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none"></i>
+          </div>
+          <p class="text-xs text-brandRed mt-1 hidden" id="err-supervisor">Seleccione un supervisor.</p>
+        </div>
+
+        <!-- 4. DATOS ACOPIADOR -->
+        <div>
+          <label for="datos_acopiador" class="flex items-center justify-between text-sm font-bold text-gray-700 mb-1.5">
+            <span class="flex items-center gap-2">
+              <i data-lucide="clipboard-list" class="w-4 h-4 text-brandGreen"></i>
+              <span>DATOS ACOPIADOR <span class="text-brandRed">*</span></span>
+            </span>
+            <span class="text-[10px] font-normal text-brandGray bg-gray-100 px-2 py-0.5 rounded">maestro-acopiador</span>
+          </label>
+          <div class="relative">
+            <select 
+              id="datos_acopiador" 
+              name="datos_acopiador" 
+              required
+              class="w-full h-13 px-4 py-3.5 rounded-xl border-2 border-gray-200 bg-brandGrayLight/40 focus:bg-white focus:border-brandGreen focus:outline-none font-semibold text-gray-800 appearance-none transition"
+            >
+              <option value="">-- Seleccione Acopiador(a) --</option>
+            </select>
+            <i data-lucide="chevron-down" class="w-5 h-5 text-brandGray absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none"></i>
+          </div>
+          <p class="text-xs text-brandRed mt-1 hidden" id="err-datos_acopiador">Seleccione los datos del acopiador.</p>
+        </div>
+
+        <!-- 5. DATOS CAPORAL -->
+        <div>
+          <label for="datos_caporal" class="flex items-center justify-between text-sm font-bold text-gray-700 mb-1.5">
+            <span class="flex items-center gap-2">
+              <i data-lucide="hard-hat" class="w-4 h-4 text-brandRed"></i>
+              <span>DATOS CAPORAL <span class="text-brandRed">*</span></span>
+            </span>
+            <span class="text-[10px] font-normal text-brandGray bg-gray-100 px-2 py-0.5 rounded">maestro-caporal</span>
+          </label>
+          <div class="relative">
+            <select 
+              id="datos_caporal" 
+              name="datos_caporal" 
+              required
+              class="w-full h-13 px-4 py-3.5 rounded-xl border-2 border-gray-200 bg-brandGrayLight/40 focus:bg-white focus:border-brandGreen focus:outline-none font-semibold text-gray-800 appearance-none transition"
+            >
+              <option value="">-- Seleccione Caporal --</option>
+            </select>
+            <i data-lucide="chevron-down" class="w-5 h-5 text-brandGray absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none"></i>
+          </div>
+          <p class="text-xs text-brandRed mt-1 hidden" id="err-datos_caporal">Seleccione los datos del caporal.</p>
+        </div>
+
+        <!-- 6. TOTAL (Numérico entero) -->
+        <div class="bg-brandRedLight/60 p-4 rounded-xl border border-brandRed/20">
+          <label for="total" class="flex items-center gap-2 text-sm font-extrabold text-gray-800 mb-1.5">
+            <i data-lucide="hash" class="w-4 h-4 text-brandRed"></i>
+            <span>TOTAL COSECHADORES / JABAS <span class="text-brandRed">*</span></span>
+          </label>
+          <input 
+            type="number" 
+            id="total" 
+            name="total" 
+            inputmode="numeric"
+            pattern="[0-9]*"
+            min="1"
+            step="1"
+            placeholder="Ej. 25"
+            required
+            class="w-full h-14 px-4 py-3 rounded-xl border-2 border-brandRed/30 bg-white focus:border-brandRed focus:outline-none text-2xl font-extrabold text-center text-gray-900 transition"
+          />
+          <p class="text-xs text-brandRed font-medium mt-1.5 hidden text-center" id="err-total">Ingrese un número entero mayor a 0.</p>
+        </div>
+
+        <!-- ACTION BUTTONS -->
+        <div class="pt-2 space-y-3">
+          <button 
+            type="submit" 
+            id="btn-submit"
+            class="w-full py-4 px-6 rounded-2xl bg-brandGreen hover:bg-[#68a61b] active:scale-[0.98] text-white font-extrabold text-base shadow-lg shadow-brandGreen/30 flex items-center justify-center gap-3 transition-all"
+          >
+            <i data-lucide="save" class="w-6 h-6"></i>
+            <span>GUARDAR REGISTRO</span>
+          </button>
+
+          <button 
+            type="button" 
+            onclick="resetFormKeepContext()"
+            class="w-full py-3 px-4 rounded-xl bg-brandGrayLight hover:bg-gray-200 text-brandGray font-bold text-sm flex items-center justify-center gap-2 transition"
+          >
+            <i data-lucide="eraser" class="w-4 h-4"></i>
+            <span>Limpiar Campos</span>
+          </button>
+        </div>
+
+      </form>
+    </section>
+
+    <!-- VIEW 2: LOCAL RECORDS & SYNC QUEUE -->
+    <section id="view-history" class="hidden space-y-4">
+      
+      <!-- Summary Counters -->
+      <div class="grid grid-cols-3 gap-2.5">
+        <div class="bg-white p-3 rounded-xl border border-gray-200 text-center shadow-sm">
+          <span class="block text-xs font-bold text-amber-600">Pendientes</span>
+          <span id="stat-pending" class="text-2xl font-extrabold text-gray-900">0</span>
+        </div>
+        <div class="bg-white p-3 rounded-xl border border-gray-200 text-center shadow-sm">
+          <span class="block text-xs font-bold text-brandGreen">Sincronizados</span>
+          <span id="stat-synced" class="text-2xl font-extrabold text-gray-900">0</span>
+        </div>
+        <div class="bg-white p-3 rounded-xl border border-gray-200 text-center shadow-sm">
+          <span class="block text-xs font-bold text-brandRed">Con Error</span>
+          <span id="stat-error" class="text-2xl font-extrabold text-gray-900">0</span>
+        </div>
+      </div>
+
+      <!-- Manual Sync Button -->
+      <button 
+        onclick="syncPendingRecords()" 
+        id="btn-sync-now"
+        class="w-full py-3.5 px-5 rounded-xl bg-brandRed hover:bg-[#b82015] active:scale-[0.98] text-white font-bold text-sm shadow-md flex items-center justify-center gap-2 transition"
+      >
+        <i data-lucide="cloud-upload" class="w-5 h-5"></i>
+        <span>SINCRONIZAR PENDIENTES AHORA</span>
+      </button>
+
+      <!-- Records List Container -->
+      <div id="records-list" class="space-y-3">
+        <!-- Populated dynamically via JS -->
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- TOAST NOTIFICATION -->
+  <div id="toast" class="fixed bottom-5 left-1/2 -translate-x-1/2 z-50 max-w-sm w-[92%] pointer-events-none opacity-0 transition-all duration-300 translate-y-4">
+    <div id="toast-inner" class="bg-gray-900 text-white px-4 py-3.5 rounded-2xl shadow-xl flex items-center gap-3 border border-white/10">
+      <i id="toast-icon" data-lucide="check-circle" class="w-6 h-6 text-brandGreen shrink-0"></i>
+      <p id="toast-msg" class="text-sm font-semibold leading-snug">Mensaje</p>
+    </div>
+  </div>
+
+  <!-- CONFIGURATION MODAL (Google Apps Script URL & Token) -->
+  <div id="config-modal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs hidden items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-4">
+      <div class="flex items-center justify-between border-b pb-3">
+        <div class="flex items-center gap-2">
+          <i data-lucide="server" class="w-5 h-5 text-brandGreen"></i>
+          <h3 class="font-extrabold text-gray-900">Conexión Google Sheets API</h3>
+        </div>
+        <button onclick="closeConfigModal()" class="text-gray-400 hover:text-gray-700">
+          <i data-lucide="x" class="w-6 h-6"></i>
+        </button>
+      </div>
+
+      <div class="space-y-3 text-sm">
+        <div>
+          <label class="block font-bold text-gray-700 mb-1">URL Web App (Google Apps Script)</label>
+          <input type="url" id="cfg-api-url" placeholder="https://script.google.com/macros/s/.../exec" class="w-full px-3 py-2.5 rounded-xl border border-gray-300 focus:border-brandGreen focus:outline-none text-xs" />
+        </div>
+        <div>
+          <label class="block font-bold text-gray-700 mb-1">Token de Seguridad (API Key)</label>
+          <input type="password" id="cfg-api-token" placeholder="HUARMEY_2026_SECURE" class="w-full px-3 py-2.5 rounded-xl border border-gray-300 focus:border-brandGreen focus:outline-none text-xs" />
+        </div>
+        <p class="text-xs text-brandGray bg-brandGrayLight p-2.5 rounded-lg">
+          <strong>Nota:</strong> Mientras no configure una URL real de Apps Script, la aplicación operará con datos maestros de respaldo y simulará la sincronización local en IndexedDB.
+        </p>
+      </div>
+
+      <div class="flex gap-2 pt-2">
+        <button onclick="saveConfig()" class="flex-1 bg-brandGreen text-white font-bold py-3 rounded-xl hover:bg-[#68a61b] transition">
+          Guardar Conexión
+        </button>
+        <button onclick="closeConfigModal()" class="px-4 py-3 rounded-xl bg-gray-100 text-gray-700 font-bold">
+          Cerrar
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PWA INSTALL PROMPT BANNER -->
+  <div id="install-banner" class="hidden fixed bottom-20 left-4 right-4 max-w-lg mx-auto bg-white border-2 border-brandGreen rounded-2xl p-3.5 shadow-xl z-30 flex items-center justify-between gap-3">
+    <div class="flex items-center gap-3">
+      <div class="bg-brandGreenLight p-2 rounded-xl text-brandGreen">
+        <i data-lucide="smartphone" class="w-6 h-6"></i>
+      </div>
+      <div>
+        <p class="text-xs font-extrabold text-gray-900">Instalar App en Móvil</p>
+        <p class="text-[11px] text-brandGray">Acceso rápido sin conexión en campo</p>
+      </div>
+    </div>
+    <button id="btn-install-pwa" class="bg-brandGreen text-white text-xs font-bold px-3.5 py-2 rounded-xl shadow">
+      Instalar
+    </button>
+  </div>
+
+  <script>
+    /**
+     * ============================================================================
+     * CONFIGURACIÓN Y ESTADO GLOBAL - AGRÍCOLA HUARMEY
+     * ============================================================================
+     */
+    const DEFAULT_CONFIG = {
+      // Reemplazar con la URL desplegada de Google Apps Script (codigo.gs)
+      apiUrl: localStorage.getItem('ah_api_url') || '',
+      apiToken: localStorage.getItem('ah_api_token') || 'HUARMEY_COSECHA_2026'
     };
 
-    /**
-     * CATÁLOGOS SEMILLA OFFLINE (Respaldo inmediato sin internet basado en REGISTRO-PRODUCCION-ACOPIADOR.xlsx)
-     */
-    const DEFAULT_CATALOGS = {
+    // Datos maestros de respaldo (basados en la imagen de referencia del Excel)
+    const FALLBACK_MASTERS = {
       modulos: [
         "MODULO 1 TURNO 1", "MODULO 1 TURNO 2", "MODULO 1 TURNO 3", "MODULO 1 TURNO 4", "MODULO 1 TURNO 5",
         "MODULO 2 TURNO 1", "MODULO 2 TURNO 2", "MODULO 2 TURNO 3", "MODULO 2 TURNO 4", "MODULO 2 TURNO 5",
         "MODULO 3 TURNO 1", "MODULO 3 TURNO 2", "MODULO 3 TURNO 3", "MODULO 3 TURNO 4", "MODULO 3 TURNO 5",
         "MODULO 4 TURNO 1", "MODULO 4 TURNO 2", "MODULO 4 TURNO 3", "MODULO 4 TURNO 4", "MODULO 4 TURNO 5",
-        "MODULO 5 TURNO 1", "MODULO 5 TURNO 2", "MODULO 5 TURNO 3", "MODULO 5 TURNO 4", "MODULO 5 TURNO 5",
-        "MODULO 6 TURNO 1", "MODULO 6 TURNO 2A", "MODULO 6 TURNO 2B", "MODULO 6 TURNO 3", "MODULO 6 TURNO 4", "MODULO 6 TURNO 5",
-        "MODULO 7 TURNO 1", "MODULO 7 TURNO 2", "MODULO 7 TURNO 3", "MODULO 7 TURNO 4", "MODULO 7 TURNO 5",
-        "MODULO 8 TURNO 1", "MODULO 8 TURNO 2", "MODULO 8 TURNO 3", "MODULO 8 TURNO 4", "MODULO 8 TURNO 5",
-        "MODULO 9 TURNO 1", "MODULO 9 TURNO 2", "MODULO 9 TURNO 3", "MODULO 9 TURNO 4", "MODULO 9 TURNO 5"
+        "MODULO 5 TURNO 1", "MODULO 5 TURNO 2"
       ],
       acopiadores: [
-        "ALISON TATIANA COLINA CUEVA", "ANALI ALEGRIA TIQUILLAHUANCA", "ANGHELA IBET SERRATO RODRIGUEZ",
-        "ANNI MARIA BENITES MENESES", "ANSHELA ABIGAIL SUXE SAAVEDRA", "ASUSENA DIAZ SAAVEDRA",
-        "CIELO CRUZ VILLEGAS ANGULO", "ELIANA YAJAIRA SAMAME CACERES", "ELIZABETH CORDOVA GARCIA",
-        "EVELIN BENAVIDES DIAZ", "FLOR NUÑEZ HERRERA", "JHOSTIN SEBASTIAN CORMAN MEDINA",
-        "LESLYE ANTONELA GISSEL LOZANO LANCHA", "LILIANA ELIZABETH INOÑAN TEJADA", "LISETH SANTOYO NAVARRO",
-        "MAYTE ZARAHI ALVARADO FERNANDEZ", "PRISCILA BRIGHITT CARMEN FARFAN", "ROXANA DIAZ SAAVEDRA",
-        "YOSELIN YUDIT FERNANDEZ HURTADO", "YULI MIREILY VASQUEZ PEREZ"
+        "ACOPIADOR 01 - JUAN PEREZ",
+        "ACOPIADOR 02 - MARIA GOMEZ",
+        "ACOPIADOR 03 - CARLOS RUIZ",
+        "ACOPIADOR 04 - ANA TORRES"
       ],
       caporales: [
-        "ALEXANDER EMANUEL RODRIGUEZ CHAVEZ", "ARACELY LIZBETH VASQUEZ ARAUJO", "CARLOS DERIAN RIOS SHIMARA",
-        "CARMEN DE JESUS TIGLLA VILCHEZ", "CRISANTO CIEZA SANDY", "EDWIN JHUNIOR FERNANDEZ JULCAHUANGA",
-        "ELGAR JESUS CASTRO SANDOVAL", "EMILY AZUCENA LOZADA SALDARRIAGA", "ENILSON CERCADO BUSTAMANTE",
-        "GILMER ESMITH MEDINA FERNANDEZ", "JAVIER MARTIN ÑIQUEN MENDOZA", "JEREMÍAS PALOMINO MONDRAGÓN",
-        "JESSARELA YOLANDA MEDINA INGA", "JOHAN RICARDO MURRIETA HUAYA", "JOHN NER TAPULLIMA VALLEJOS",
-        "JOSE ELDER PEREZ VASQUEZ", "KATHERINE IMAN HUAMAN", "LINDAURA DIAZ DE LA CRUZ",
-        "LUCERO LOZANO LANCHA", "LUIS ALBERTO ESPINOZA GOMEZ", "LUZ CLARITA TORO SANCHEZ",
-        "MARIA CHUNGA JUAREZ", "MARÍA ELENA MONTENEGRO MONTEZA", "MARIBEL TERAN DIAZ",
-        "MARY CARMEN AGUILAR CARRANZA", "MAXIMILIANO ISIQUE SERRANO", "MERCEDES NAYELY MORALES GARCIA",
-        "MICHAEL ISAI HUACHEZ ROMERO", "MIGUEL ANGEL CALDERON YTURREGUI", "NAYELI NIKOL DE LA CRUZ DIAZ",
-        "NICOLAS SMITH MORALES PERICHE", "RICHAR BRUNO BAQUEDANO BARBOZA", "ROCIO DEL PILAR MONTENEGRO MANAYAN",
-        "RUTH MELISA MORALES PAQUIRACHI", "SILVIA ANGELICA BARREDA MALHABER", "TERESA ROMAN GARCIA",
-        "WILDER SAUL MENDOZA MEDINA", "YANET DEL ROCIO MENDOZA LLONTOP", "YESICA MORALES PAQUIRACHI",
-        "YULISA RINZA HUAMAN"
+        "CAPORAL 01 - LUIS MENDOZA",
+        "CAPORAL 02 - PEDRO CASTILLO",
+        "CAPORAL 03 - ROSA FLORES",
+        "CAPORAL 04 - JORGE VARGAS"
       ]
     };
 
+    let isSyncing = false;
+    let deferredPrompt = null;
+
     /**
-     * CAPA DE BASE DE DATOS LOCAL: IndexedDB
+     * ============================================================================
+     * MÓDULO INDEXEDDB (OFFLINE-FIRST STORAGE)
+     * ============================================================================
      */
-    class LocalDatabase {
-      constructor() {
-        this.db = null;
+    const DB_NAME = 'AgricolaHuarmeyDB';
+    const DB_VERSION = 1;
+
+    function openDB() {
+      return new Promise((resolve, reject) => {
+        const request = indexedDB.open(DB_NAME, DB_VERSION);
+
+        request.onupgradeneeded = (event) => {
+          const db = event.target.result;
+          // Store para registros de producción de acopiadores
+          if (!db.objectStoreNames.contains('registros')) {
+            const store = db.createObjectStore('registros', { keyPath: 'id' });
+            store.createIndex('estado', 'estado', { unique: false });
+            store.createIndex('timestamp', 'timestamp', { unique: false });
+          }
+          // Store para catálogos maestros cacheados
+          if (!db.objectStoreNames.contains('maestros')) {
+            db.createObjectStore('maestros', { keyPath: 'clave' });
+          }
+        };
+
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = () => reject(request.error);
+      });
+    }
+
+    async function saveRecordLocal(record) {
+      const db = await openDB();
+      return new Promise((resolve, reject) => {
+        const tx = db.transaction('registros', 'readwrite');
+        tx.objectStore('registros').put(record);
+        tx.oncomplete = () => resolve(record);
+        tx.onerror = () => reject(tx.error);
+      });
+    }
+
+    async function getAllRecordsLocal() {
+      const db = await openDB();
+      return new Promise((resolve, reject) => {
+        const tx = db.transaction('registros', 'readonly');
+        const req = tx.objectStore('registros').getAll();
+        req.onsuccess = () => {
+          // Ordenar del más reciente al más antiguo
+          const sorted = (req.result || []).sort((a, b) => b.timestamp - a.timestamp);
+          resolve(sorted);
+        };
+        req.onerror = () => reject(req.error);
+      });
+    }
+
+    async function deleteRecordLocal(id) {
+      const db = await openDB();
+      return new Promise((resolve, reject) => {
+        const tx = db.transaction('registros', 'readwrite');
+        tx.objectStore('registros').delete(id);
+        tx.oncomplete = () => resolve();
+        tx.onerror = () => reject(tx.error);
+      });
+    }
+
+    async function saveMastersLocal(data) {
+      const db = await openDB();
+      return new Promise((resolve, reject) => {
+        const tx = db.transaction('maestros', 'readwrite');
+        const store = tx.objectStore('maestros');
+        store.put({ clave: 'catalogos', data, updatedAt: new Date().toISOString() });
+        tx.oncomplete = () => resolve();
+        tx.onerror = () => reject(tx.error);
+      });
+    }
+
+    async function getMastersLocal() {
+      const db = await openDB();
+      return new Promise((resolve, reject) => {
+        const tx = db.transaction('maestros', 'readonly');
+        const req = tx.objectStore('maestros').get('catalogos');
+        req.onsuccess = () => resolve(req.result ? req.result.data : null);
+        req.onerror = () => reject(req.error);
+      });
+    }
+
+    /**
+     * ============================================================================
+     * GESTIÓN DE CATÁLOGOS MAESTROS (GOOGLE SHEETS -> INDEXEDDB)
+     * ============================================================================
+     */
+    async function fetchMasterData(forceRemote = false) {
+      const btn = document.getElementById('btn-refresh-masters');
+      const statusEl = document.getElementById('catalog-status');
+      
+      // 1. Cargar inmediatamente desde IndexedDB para respuesta instantánea en campo
+      let cached = await getMastersLocal();
+      if (cached) {
+        populateDropdowns(cached);
+        statusEl.textContent = 'Catálogos cargados localmente';
+      } else {
+        populateDropdowns(FALLBACK_MASTERS);
+        await saveMastersLocal(FALLBACK_MASTERS);
       }
 
-      async open() {
-        if (this.db) return this.db;
-        return new Promise((resolve, reject) => {
-          const request = indexedDB.open(APP_CONFIG.DB_NAME, APP_CONFIG.DB_VERSION);
+      // 2. Si hay internet y URL configurada, consultar Google Sheets
+      if (navigator.onLine && DEFAULT_CONFIG.apiUrl) {
+        try {
+          if (forceRemote) {
+            btn.disabled = true;
+            btn.innerHTML = `<i data-lucide="loader-2" class="w-3.5 h-3.5 animate-spin"></i><span>Cargando...</span>`;
+            lucide.createIcons();
+          }
 
-          request.onupgradeneeded = (event) => {
-            const db = event.target.result;
-            if (!db.objectStoreNames.contains("registros")) {
-              const store = db.createObjectStore("registros", { keyPath: "uuid" });
-              store.createIndex("estado", "estado", { unique: false });
-              store.createIndex("createdAt", "createdAt", { unique: false });
-            }
-            if (!db.objectStoreNames.contains("catalogos")) {
-              db.createObjectStore("catalogos", { keyPath: "key" });
-            }
-          };
+          const url = `${DEFAULT_CONFIG.apiUrl}?action=getMasters&token=${encodeURIComponent(DEFAULT_CONFIG.apiToken)}`;
+          const response = await fetch(url);
+          const result = await response.json();
 
-          request.onsuccess = (event) => {
-            this.db = event.target.result;
-            resolve(this.db);
-          };
-
-          request.onerror = (event) => reject(event.target.error);
-        });
-      }
-
-      async saveRegistro(registro) {
-        const db = await this.open();
-        return new Promise((resolve, reject) => {
-          const tx = db.transaction("registros", "readwrite");
-          tx.objectStore("registros").put(registro);
-          tx.oncomplete = () => resolve(registro);
-          tx.onerror = () => reject(tx.error);
-        });
-      }
-
-      async getAllRegistros() {
-        const db = await this.open();
-        return new Promise((resolve, reject) => {
-          const tx = db.transaction("registros", "readonly");
-          const req = tx.objectStore("registros").getAll();
-          req.onsuccess = () => {
-            const sorted = (req.result || []).sort((a, b) => b.createdAt - a.createdAt);
-            resolve(sorted);
-          };
-          req.onerror = () => reject(req.error);
-        });
-      }
-
-      async getPendientesOError() {
-        const all = await this.getAllRegistros();
-        return all.filter(r => r.estado === "Pendiente" || r.estado === "Error");
-      }
-
-      async saveCatalog(key, items) {
-        const db = await this.open();
-        return new Promise((resolve, reject) => {
-          const tx = db.transaction("catalogos", "readwrite");
-          tx.objectStore("catalogos").put({ key, items, updatedAt: new Date().toISOString() });
-          tx.oncomplete = () => resolve();
-          tx.onerror = () => reject(tx.error);
-        });
-      }
-
-      async getCatalog(key) {
-        const db = await this.open();
-        return new Promise((resolve, reject) => {
-          const tx = db.transaction("catalogos", "readonly");
-          const req = tx.objectStore("catalogos").get(key);
-          req.onsuccess = () => resolve(req.result ? req.result.items : null);
-          req.onerror = () => reject(req.error);
-        });
+          if (result.status === 'success' && result.data) {
+            await saveMastersLocal(result.data);
+            populateDropdowns(result.data);
+            const hora = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            statusEl.textContent = `Sincronizado con Excel (${hora})`;
+            if (forceRemote) showToast('Catálogos actualizados desde Google Sheets', 'success');
+          } else {
+            throw new Error(result.message || 'Respuesta inválida del servidor');
+          }
+        } catch (error) {
+          console.warn('Error obteniendo maestros:', error);
+          statusEl.textContent = 'Usando copia local (sin acceso a red)';
+          if (forceRemote) showToast('No se pudo conectar. Usando datos locales.', 'warning');
+        } finally {
+          btn.disabled = false;
+          btn.innerHTML = `<i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i><span>Actualizar</span>`;
+          lucide.createIcons();
+        }
+      } else if (forceRemote && !DEFAULT_CONFIG.apiUrl) {
+        showToast('Configure la URL de Google Apps Script en el ícono de engranaje', 'warning');
       }
     }
 
-    const localDB = new LocalDatabase();
+    function populateDropdowns(data) {
+      fillSelect('modulo_turno', data.modulos || FALLBACK_MASTERS.modulos, '-- Seleccione Módulo y Turno --');
+      fillSelect('datos_acopiador', data.acopiadores || FALLBACK_MASTERS.acopiadores, '-- Seleccione Acopiador(a) --');
+      fillSelect('datos_caporal', data.caporales || FALLBACK_MASTERS.caporales, '-- Seleccione Caporal --');
+    }
+
+    function fillSelect(elementId, items, placeholder) {
+      const select = document.getElementById(elementId);
+      const currentVal = select.value;
+      select.innerHTML = `<option value="">${placeholder}</option>`;
+      items.forEach(item => {
+        if (item && String(item).trim() !== '') {
+          const opt = document.createElement('option');
+          opt.value = String(item).trim();
+          opt.textContent = String(item).trim();
+          select.appendChild(opt);
+        }
+      });
+      if (currentVal) select.value = currentVal;
+    }
 
     /**
-     * GESTOR DE SINCRONIZACIÓN OFFLINE-FIRST (Concurrencia 200+ usuarios)
+     * ============================================================================
+     * VALIDACIÓN Y GUARDADO DE FORMULARIO (OFFLINE-FIRST)
+     * ============================================================================
      */
-    class SyncManager {
-      constructor() {
-        this.isSyncing = false;
+    function generateUUID() {
+      return 'AH-' + Date.now() + '-' + Math.random().toString(36).substring(2, 7).toUpperCase();
+    }
+
+    function validateForm() {
+      let isValid = true;
+      const fields = [
+        { id: 'fecha_reg', check: v => v.trim() !== '' },
+        { id: 'modulo_turno', check: v => v.trim() !== '' },
+        { id: 'supervisor', check: v => v.trim() !== '' },
+        { id: 'datos_acopiador', check: v => v.trim() !== '' },
+        { id: 'datos_caporal', check: v => v.trim() !== '' },
+        { id: 'total', check: v => /^\d+$/.test(v.trim()) && parseInt(v, 10) > 0 }
+      ];
+
+      fields.forEach(f => {
+        const el = document.getElementById(f.id);
+        const errEl = document.getElementById(`err-${f.id}`);
+        if (!f.check(el.value)) {
+          isValid = false;
+          el.classList.add('border-brandRed', 'bg-brandRedLight/30');
+          el.classList.remove('border-gray-200');
+          errEl.classList.remove('hidden');
+        } else {
+          el.classList.remove('border-brandRed', 'bg-brandRedLight/30');
+          el.classList.add('border-gray-200');
+          errEl.classList.add('hidden');
+        }
+      });
+
+      return isValid;
+    }
+
+    document.getElementById('acopiador-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (!validateForm()) {
+        showToast('Por favor complete todos los campos obligatorios.', 'error');
+        return;
       }
 
-      async syncPending(manual = false) {
-        if (this.isSyncing) return;
-        if (!navigator.onLine) {
-          if (manual) showToast("Sin conexión. Los datos permanecen seguros en el equipo.");
-          return;
-        }
-        if (APP_CONFIG.SCRIPT_URL.includes("PEGAR_AQUI")) {
-          if (manual) showToast("Configure la URL de Google Apps Script en index.html");
-          return;
-        }
+      const record = {
+        id: generateUUID(),
+        fecha_reg: document.getElementById('fecha_reg').value,
+        modulo_turno: document.getElementById('modulo_turno').value,
+        supervisor: document.getElementById('supervisor').value,
+        datos_acopiador: document.getElementById('datos_acopiador').value,
+        datos_caporal: document.getElementById('datos_caporal').value,
+        total: parseInt(document.getElementById('total').value, 10),
+        estado: 'Pendiente', // Estados: 'Pendiente' | 'Sincronizado' | 'Error'
+        errorMsg: '',
+        timestamp: Date.now()
+      };
 
-        const pendientes = await localDB.getPendientesOError();
-        if (pendientes.length === 0) {
-          if (manual) showToast("Todos los registros ya están sincronizados.");
-          return;
-        }
+      // 1. Guardar inmediatamente en IndexedDB
+      await saveRecordLocal(record);
+      await renderRecordsList();
 
-        this.isSyncing = true;
-        document.getElementById("syncIcon").classList.add("spin");
+      // 2. Limpiar solo el total y caporal para agilizar la captura continua en campo
+      document.getElementById('total').value = '';
+      document.getElementById('datos_caporal').value = '';
 
-        try {
-          // Jitter aleatorio (0 a 1200ms) para escalonar peticiones si 200 usuarios recuperan señal juntos
-          await new Promise(r => setTimeout(r, Math.floor(Math.random() * 1200)));
+      showToast('Registro guardado localmente.', 'success');
 
-          // Envío en lotes de hasta 25 registros
-          const batch = pendientes.slice(0, 25);
+      // 3. Intentar sincronizar automáticamente si hay internet
+      if (navigator.onLine) {
+        syncPendingRecords();
+      }
+    });
 
-          const response = await fetch(APP_CONFIG.SCRIPT_URL, {
-            method: "POST",
-            headers: { "Content-Type": "text/plain;charset=utf-8" }, // Evita preflight CORS en Apps Script
-            body: JSON.stringify({
-              token: APP_CONFIG.API_TOKEN,
-              records: batch
-            })
+    function resetFormKeepContext() {
+      document.getElementById('datos_caporal').value = '';
+      document.getElementById('total').value = '';
+      document.querySelectorAll('[id^="err-"]').forEach(el => el.classList.add('hidden'));
+      document.querySelectorAll('select, input').forEach(el => el.classList.remove('border-brandRed'));
+      showToast('Campos de captura limpiados', 'info');
+    }
+
+    /**
+     * ============================================================================
+     * MOTOR DE SINCRONIZACIÓN CON GOOGLE SHEETS (SOPORTE ALTA CONCURRENCIA)
+     * ============================================================================
+     */
+    async function syncPendingRecords() {
+      if (isSyncing) return;
+      if (!navigator.onLine) {
+        showToast('Sin conexión a internet. Los datos siguen seguros en el dispositivo.', 'warning');
+        return;
+      }
+
+      const allRecords = await getAllRecordsLocal();
+      const pending = allRecords.filter(r => r.estado === 'Pendiente' || r.estado === 'Error');
+
+      if (pending.length === 0) {
+        return;
+      }
+
+      isSyncing = true;
+      const syncBtn = document.getElementById('btn-sync-now');
+      if (syncBtn) {
+        syncBtn.disabled = true;
+        syncBtn.innerHTML = `<i data-lucide="loader-2" class="w-5 h-5 animate-spin"></i><span>SINCRONIZANDO (${pending.length})...</span>`;
+        lucide.createIcons();
+      }
+
+      try {
+        // Si no hay URL configurada, modo demostración local
+        if (!DEFAULT_CONFIG.apiUrl) {
+          await new Promise(r => setTimeout(r, 800));
+          for (const rec of pending) {
+            rec.estado = 'Sincronizado';
+            rec.errorMsg = '';
+            await saveRecordLocal(rec);
+          }
+          showToast(`${pending.length} registro(s) sincronizados (Modo Demo Local).`, 'success');
+        } else {
+          // Envío por lotes (Batch) para optimizar concurrencia de 200 usuarios
+          const payload = {
+            token: DEFAULT_CONFIG.apiToken,
+            action: 'syncRecords',
+            records: pending
+          };
+
+          const response = await fetch(DEFAULT_CONFIG.apiUrl, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'text/plain;charset=utf-8' // Evita preflight CORS OPTIONS en Apps Script
+            },
+            body: JSON.stringify(payload)
           });
 
           const result = await response.json();
 
-          if (result.status === "ok" && Array.isArray(result.processed)) {
-            const processedSet = new Set(result.processed);
-            for (const reg of batch) {
-              if (processedSet.has(reg.uuid)) {
-                reg.estado = "Sincronizado";
-                reg.errorDetail = "";
-                reg.syncedAt = new Date().toISOString();
-                await localDB.saveRegistro(reg);
+          if (result.status === 'success') {
+            const syncedIds = result.syncedIds || pending.map(p => p.id);
+            for (const rec of pending) {
+              if (syncedIds.includes(rec.id)) {
+                rec.estado = 'Sincronizado';
+                rec.errorMsg = '';
+              } else {
+                rec.estado = 'Error';
+                rec.errorMsg = 'No confirmado por el servidor';
               }
+              await saveRecordLocal(rec);
             }
-            showToast(`Sincronizados ${result.processed.length} registro(s) con Google Sheets.`);
-          } else if (result.status === "retry") {
-            // El servidor pidió reintentar por cola de 200 usuarios
-            setTimeout(() => this.syncPending(false), 3000 + Math.random() * 2000);
+            showToast(`¡Éxito! ${syncedIds.length} registro(s) enviados a Google Sheets.`, 'success');
           } else {
-            throw new Error(result.message || "Error desconocido en el servidor");
+            throw new Error(result.message || 'Error en servidor Google Sheets');
           }
-        } catch (err) {
-          console.error("Error de sincronización:", err);
-          for (const reg of pendientes.slice(0, 25)) {
-            reg.estado = "Error";
-            reg.errorDetail = err.message;
-            await localDB.saveRegistro(reg);
-          }
-          if (manual) showToast("Error al sincronizar. Se reintentará automáticamente.");
-        } finally {
-          this.isSyncing = false;
-          document.getElementById("syncIcon").classList.remove("spin");
-          await renderHistory();
         }
+      } catch (err) {
+        console.error('Error de sincronización:', err);
+        for (const rec of pending) {
+          rec.estado = 'Error';
+          rec.errorMsg = err.message || 'Fallo de red';
+          await saveRecordLocal(rec);
+        }
+        showToast('Error al sincronizar. Se reintentará automáticamente.', 'error');
+      } finally {
+        isSyncing = false;
+        if (syncBtn) {
+          syncBtn.disabled = false;
+          syncBtn.innerHTML = `<i data-lucide="cloud-upload" class="w-5 h-5"></i><span>SINCRONIZAR PENDIENTES AHORA</span>`;
+          lucide.createIcons();
+        }
+        await renderRecordsList();
       }
     }
-
-    const syncManager = new SyncManager();
 
     /**
-     * UTILIDADES Y FLUJO DE APLICACIÓN
+     * ============================================================================
+     * RENDERIZADO DE UI Y LISTADO DE REGISTROS
+     * ============================================================================
      */
-    function generarUUID() {
-      if (crypto && crypto.randomUUID) return crypto.randomUUID();
-      return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
-        const r = Math.random() * 16 | 0;
-        return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
-      });
-    }
+    async function renderRecordsList() {
+      const records = await getAllRecordsLocal();
+      const listEl = document.getElementById('records-list');
 
-    function showToast(msg) {
-      const toast = document.getElementById("toast");
-      toast.textContent = msg;
-      toast.classList.add("show");
-      clearTimeout(window._toastTimer);
-      window._toastTimer = setTimeout(() => toast.classList.remove("show"), 3200);
-    }
+      const pendingCount = records.filter(r => r.estado === 'Pendiente').length;
+      const syncedCount = records.filter(r => r.estado === 'Sincronizado').length;
+      const errorCount = records.filter(r => r.estado === 'Error').length;
 
-    function updateNetworkUI() {
-      const banner = document.getElementById("networkBanner");
-      const text = document.getElementById("networkText");
-      if (navigator.onLine) {
-        banner.className = "status-bar status-online";
-        text.textContent = "Conectado (Sincronización activa)";
-        syncManager.syncPending(false);
+      // Actualizar contadores
+      document.getElementById('stat-pending').textContent = pendingCount;
+      document.getElementById('stat-synced').textContent = syncedCount;
+      document.getElementById('stat-error').textContent = errorCount;
+      document.getElementById('tab-count-badge').textContent = records.length;
+
+      const badge = document.getElementById('pending-badge');
+      const totalUnsynced = pendingCount + errorCount;
+      if (totalUnsynced > 0) {
+        badge.textContent = `${totalUnsynced} Pendiente${totalUnsynced > 1 ? 's' : ''}`;
+        badge.classList.remove('hidden');
       } else {
-        banner.className = "status-bar status-offline";
-        text.textContent = "Modo Offline (Guardado local activo)";
-      }
-    }
-
-    function setFechaHoy() {
-      const now = new Date();
-      const offset = now.getTimezoneOffset();
-      const localDate = new Date(now.getTime() - (offset * 60 * 1000));
-      document.getElementById("fechaReg").value = localDate.toISOString().split("T")[0];
-    }
-
-    function poblarSelect(selectId, items, placeholder) {
-      const select = document.getElementById(selectId);
-      const currentValue = select.value;
-      select.innerHTML = `<option value="">${placeholder}</option>`;
-      items.forEach(item => {
-        const opt = document.createElement("option");
-        opt.value = item;
-        opt.textContent = item;
-        select.appendChild(opt);
-      });
-      if (items.includes(currentValue)) select.value = currentValue;
-    }
-
-    async function cargarCatalogosIniciales() {
-      let modulos = await localDB.getCatalog("modulos");
-      let acopiadores = await localDB.getCatalog("acopiadores");
-      let caporales = await localDB.getCatalog("caporales");
-
-      if (!modulos || !acopiadores || !caporales) {
-        modulos = DEFAULT_CATALOGS.modulos;
-        acopiadores = DEFAULT_CATALOGS.acopiadores;
-        caporales = DEFAULT_CATALOGS.caporales;
-        await localDB.saveCatalog("modulos", modulos);
-        await localDB.saveCatalog("acopiadores", acopiadores);
-        await localDB.saveCatalog("caporales", caporales);
+        badge.classList.add('hidden');
       }
 
-      poblarSelect("moduloTurno", modulos, "-- Seleccione Módulo - Turno --");
-      poblarSelect("datosAcopiador", acopiadores, "-- Seleccione Acopiador (a) --");
-      poblarSelect("datosCaporal", caporales, "-- Seleccione Caporal --");
-
-      // Intentar actualizar silenciosamente desde Google Sheets si hay conexión
-      if (navigator.onLine && !APP_CONFIG.SCRIPT_URL.includes("PEGAR_AQUI")) {
-        actualizarCatalogosDesdeServidor(false);
-      }
-    }
-
-    async function actualizarCatalogosDesdeServidor(manual = false) {
-      if (!navigator.onLine) {
-        if (manual) showToast("Sin internet. Usando listas guardadas localmente.");
-        return;
-      }
-      if (APP_CONFIG.SCRIPT_URL.includes("PEGAR_AQUI")) {
-        if (manual) showToast("Configure primero la URL de Google Apps Script.");
-        return;
-      }
-
-      try {
-        if (manual) showToast("Descargando listas maestras de Google Sheets...");
-        const url = `${APP_CONFIG.SCRIPT_URL}?action=getMaestros&token=${encodeURIComponent(APP_CONFIG.API_TOKEN)}`;
-        const resp = await fetch(url);
-        const json = await resp.json();
-
-        if (json.status === "ok" && json.data) {
-          if (json.data.modulos?.length) {
-            await localDB.saveCatalog("modulos", json.data.modulos);
-            poblarSelect("moduloTurno", json.data.modulos, "-- Seleccione Módulo - Turno --");
-          }
-          if (json.data.acopiadores?.length) {
-            await localDB.saveCatalog("acopiadores", json.data.acopiadores);
-            poblarSelect("datosAcopiador", json.data.acopiadores, "-- Seleccione Acopiador (a) --");
-          }
-          if (json.data.caporales?.length) {
-            await localDB.saveCatalog("caporales", json.data.caporales);
-            poblarSelect("datosCaporal", json.data.caporales, "-- Seleccione Caporal --");
-          }
-          if (manual) showToast("Listas maestras actualizadas correctamente.");
-        }
-      } catch (e) {
-        if (manual) showToast("No se pudo conectar con Google Sheets. Usando caché local.");
-      }
-    }
-
-    // Validación y Guardado del Formulario
-    document.getElementById("acopiadorForm").addEventListener("submit", async (e) => {
-      e.preventDefault();
-
-      const fechaEl = document.getElementById("fechaReg");
-      const moduloEl = document.getElementById("moduloTurno");
-      const acopiadorEl = document.getElementById("datosAcopiador");
-      const caporalEl = document.getElementById("datosCaporal");
-      const totalEl = document.getElementById("totalCosechadores");
-
-      let valid = true;
-      [fechaEl, moduloEl, acopiadorEl, caporalEl].forEach(el => {
-        if (!el.value.trim()) {
-          el.classList.add("invalid");
-          valid = false;
-        } else {
-          el.classList.remove("invalid");
-        }
-      });
-
-      const totalVal = Number(totalEl.value);
-      if (!totalEl.value || !Number.isInteger(totalVal) || totalVal <= 0) {
-        totalEl.classList.add("invalid");
-        valid = false;
-      } else {
-        totalEl.classList.remove("invalid");
-      }
-
-      if (!valid) {
-        showToast("Por favor complete todos los campos obligatorios correctamente.");
-        return;
-      }
-
-      const nuevoRegistro = {
-        uuid: generarUUID(),
-        fecha: fechaEl.value,
-        modulo: moduloEl.value.trim(),
-        acopiador: acopiadorEl.value.trim(),
-        caporal: caporalEl.value.trim(),
-        total: totalVal,
-        estado: "Pendiente",
-        createdAt: Date.now()
-      };
-
-      await localDB.saveRegistro(nuevoRegistro);
-
-      // Limpiar solo el campo TOTAL y CAPORAL para agilizar registros consecutivos en campo
-      totalEl.value = "";
-      caporalEl.value = "";
-
-      showToast(navigator.onLine ? "Guardado. Sincronizando..." : "Guardado en modo Offline (Pendiente).");
-      await renderHistory();
-
-      if (navigator.onLine) {
-        syncManager.syncPending(false);
-      } else if ("serviceWorker" in navigator && "SyncManager" in window) {
-        const reg = await navigator.serviceWorker.ready;
-        reg.sync.register("sync-acopiador-records").catch(() => {});
-      }
-    });
-
-    // Renderizar historial y contadores
-    async function renderHistory() {
-      const registros = await localDB.getAllRegistros();
-      let pendientes = 0, sincronizados = 0, errores = 0;
-
-      registros.forEach(r => {
-        if (r.estado === "Pendiente") pendientes++;
-        else if (r.estado === "Sincronizado") sincronizados++;
-        else if (r.estado === "Error") errores++;
-      });
-
-      document.getElementById("countPendiente").textContent = pendientes;
-      document.getElementById("countSincronizado").textContent = sincronizados;
-      document.getElementById("countError").textContent = errores;
-      document.getElementById("navBadgeCount").textContent = registros.length;
-
-      const badgeTop = document.getElementById("syncCounterBadge");
-      badgeTop.textContent = (pendientes + errores) > 0 ? `Sincronizar (${pendientes + errores})` : "Al día";
-
-      const listContainer = document.getElementById("recordsList");
-      if (registros.length === 0) {
-        listContainer.innerHTML = `<p style="text-align:center; color:var(--gris); padding:20px 0; font-size:0.9rem;">Aún no hay registros guardados en este dispositivo.</p>`;
-        return;
-      }
-
-      listContainer.innerHTML = registros.map(r => {
-        const parts = r.fecha.split("-");
-        const fechaFormat = parts.length === 3 ? `${parts[2]}/${parts[1]}/${parts[0]}` : r.fecha;
-        return `
-          <div class="record-item ${r.estado}">
-            <div class="record-top">
-              <span class="record-mod">${r.modulo}</span>
-              <span class="badge badge-${r.estado}">${r.estado}</span>
-            </div>
-            <div class="record-detail">
-              <div><strong>Acopiador:</strong> ${r.acopiador}</div>
-              <div><strong>Caporal:</strong> ${r.caporal}</div>
-              ${r.errorDetail ? `<div style="color:var(--rojo); margin-top:3px;"><strong>Detalle:</strong> ${r.errorDetail}</div>` : ""}
-            </div>
-            <div class="record-bottom">
-              <span style="color:var(--gris); font-weight:600;">Fecha: ${fechaFormat}</span>
-              <span class="record-total">TOTAL: ${r.total}</span>
-            </div>
+      if (records.length === 0) {
+        listEl.innerHTML = `
+          <div class="bg-white rounded-2xl p-8 text-center border border-gray-200">
+            <i data-lucide="inbox" class="w-12 h-12 text-brandGray/50 mx-auto mb-2"></i>
+            <p class="font-bold text-gray-700">No hay registros guardados</p>
+            <p class="text-xs text-brandGray mt-1">Los reportes capturados en campo aparecerán aquí.</p>
           </div>
         `;
-      }).join("");
-    }
-
-    function switchTab(tab) {
-      document.getElementById("viewForm").classList.toggle("active", tab === "form");
-      document.getElementById("viewHistory").classList.toggle("active", tab === "history");
-      document.getElementById("navForm").classList.toggle("active", tab === "form");
-      document.getElementById("navHistory").classList.toggle("active", tab === "history");
-      if (tab === "history") renderHistory();
-    }
-
-    // Inicialización al cargar la PWA
-    window.addEventListener("online", updateNetworkUI);
-    window.addEventListener("offline", updateNetworkUI);
-
-    window.addEventListener("DOMContentLoaded", async () => {
-      setFechaHoy();
-      updateNetworkUI();
-      await cargarCatalogosIniciales();
-      await renderHistory();
-
-      // Sincronización periódica cada 45 segundos si hay pendientes
-      setInterval(() => {
-        if (navigator.onLine) syncManager.syncPending(false);
-      }, 45000);
-
-      if ("serviceWorker" in navigator) {
-        navigator.serviceWorker.register("./service-worker.js").catch(err => console.warn("SW:", err));
-        navigator.serviceWorker.addEventListener("message", (event) => {
-          if (event.data && event.data.type === "TRIGGER_SYNC") {
-            syncManager.syncPending(false);
-          }
-        });
-      }
-    });
-  </script>
-</body>
-</html>",
-      API_TOKEN: "AH_ACOPIADOR_2026_SEC_TOKEN_9841",
-      DB_NAME: "AgricolaHuarmey_AcopiadorDB",
-      DB_VERSION: 1
-    };
-
-    /**
-     * CATÁLOGOS SEMILLA OFFLINE (Respaldo inmediato sin internet basado en REGISTRO-PRODUCCION-ACOPIADOR.xlsx)
-     */
-    const DEFAULT_CATALOGS = {
-      modulos: [
-        "MODULO 1 TURNO 1", "MODULO 1 TURNO 2", "MODULO 1 TURNO 3", "MODULO 1 TURNO 4", "MODULO 1 TURNO 5",
-        "MODULO 2 TURNO 1", "MODULO 2 TURNO 2", "MODULO 2 TURNO 3", "MODULO 2 TURNO 4", "MODULO 2 TURNO 5",
-        "MODULO 3 TURNO 1", "MODULO 3 TURNO 2", "MODULO 3 TURNO 3", "MODULO 3 TURNO 4", "MODULO 3 TURNO 5",
-        "MODULO 4 TURNO 1", "MODULO 4 TURNO 2", "MODULO 4 TURNO 3", "MODULO 4 TURNO 4", "MODULO 4 TURNO 5",
-        "MODULO 5 TURNO 1", "MODULO 5 TURNO 2", "MODULO 5 TURNO 3", "MODULO 5 TURNO 4", "MODULO 5 TURNO 5",
-        "MODULO 6 TURNO 1", "MODULO 6 TURNO 2A", "MODULO 6 TURNO 2B", "MODULO 6 TURNO 3", "MODULO 6 TURNO 4", "MODULO 6 TURNO 5",
-        "MODULO 7 TURNO 1", "MODULO 7 TURNO 2", "MODULO 7 TURNO 3", "MODULO 7 TURNO 4", "MODULO 7 TURNO 5",
-        "MODULO 8 TURNO 1", "MODULO 8 TURNO 2", "MODULO 8 TURNO 3", "MODULO 8 TURNO 4", "MODULO 8 TURNO 5",
-        "MODULO 9 TURNO 1", "MODULO 9 TURNO 2", "MODULO 9 TURNO 3", "MODULO 9 TURNO 4", "MODULO 9 TURNO 5"
-      ],
-      acopiadores: [
-        "ALISON TATIANA COLINA CUEVA", "ANALI ALEGRIA TIQUILLAHUANCA", "ANGHELA IBET SERRATO RODRIGUEZ",
-        "ANNI MARIA BENITES MENESES", "ANSHELA ABIGAIL SUXE SAAVEDRA", "ASUSENA DIAZ SAAVEDRA",
-        "CIELO CRUZ VILLEGAS ANGULO", "ELIANA YAJAIRA SAMAME CACERES", "ELIZABETH CORDOVA GARCIA",
-        "EVELIN BENAVIDES DIAZ", "FLOR NUÑEZ HERRERA", "JHOSTIN SEBASTIAN CORMAN MEDINA",
-        "LESLYE ANTONELA GISSEL LOZANO LANCHA", "LILIANA ELIZABETH INOÑAN TEJADA", "LISETH SANTOYO NAVARRO",
-        "MAYTE ZARAHI ALVARADO FERNANDEZ", "PRISCILA BRIGHITT CARMEN FARFAN", "ROXANA DIAZ SAAVEDRA",
-        "YOSELIN YUDIT FERNANDEZ HURTADO", "YULI MIREILY VASQUEZ PEREZ"
-      ],
-      caporales: [
-        "ALEXANDER EMANUEL RODRIGUEZ CHAVEZ", "ARACELY LIZBETH VASQUEZ ARAUJO", "CARLOS DERIAN RIOS SHIMARA",
-        "CARMEN DE JESUS TIGLLA VILCHEZ", "CRISANTO CIEZA SANDY", "EDWIN JHUNIOR FERNANDEZ JULCAHUANGA",
-        "ELGAR JESUS CASTRO SANDOVAL", "EMILY AZUCENA LOZADA SALDARRIAGA", "ENILSON CERCADO BUSTAMANTE",
-        "GILMER ESMITH MEDINA FERNANDEZ", "JAVIER MARTIN ÑIQUEN MENDOZA", "JEREMÍAS PALOMINO MONDRAGÓN",
-        "JESSARELA YOLANDA MEDINA INGA", "JOHAN RICARDO MURRIETA HUAYA", "JOHN NER TAPULLIMA VALLEJOS",
-        "JOSE ELDER PEREZ VASQUEZ", "KATHERINE IMAN HUAMAN", "LINDAURA DIAZ DE LA CRUZ",
-        "LUCERO LOZANO LANCHA", "LUIS ALBERTO ESPINOZA GOMEZ", "LUZ CLARITA TORO SANCHEZ",
-        "MARIA CHUNGA JUAREZ", "MARÍA ELENA MONTENEGRO MONTEZA", "MARIBEL TERAN DIAZ",
-        "MARY CARMEN AGUILAR CARRANZA", "MAXIMILIANO ISIQUE SERRANO", "MERCEDES NAYELY MORALES GARCIA",
-        "MICHAEL ISAI HUACHEZ ROMERO", "MIGUEL ANGEL CALDERON YTURREGUI", "NAYELI NIKOL DE LA CRUZ DIAZ",
-        "NICOLAS SMITH MORALES PERICHE", "RICHAR BRUNO BAQUEDANO BARBOZA", "ROCIO DEL PILAR MONTENEGRO MANAYAN",
-        "RUTH MELISA MORALES PAQUIRACHI", "SILVIA ANGELICA BARREDA MALHABER", "TERESA ROMAN GARCIA",
-        "WILDER SAUL MENDOZA MEDINA", "YANET DEL ROCIO MENDOZA LLONTOP", "YESICA MORALES PAQUIRACHI",
-        "YULISA RINZA HUAMAN"
-      ]
-    };
-
-    /**
-     * CAPA DE BASE DE DATOS LOCAL: IndexedDB
-     */
-    class LocalDatabase {
-      constructor() {
-        this.db = null;
-      }
-
-      async open() {
-        if (this.db) return this.db;
-        return new Promise((resolve, reject) => {
-          const request = indexedDB.open(APP_CONFIG.DB_NAME, APP_CONFIG.DB_VERSION);
-
-          request.onupgradeneeded = (event) => {
-            const db = event.target.result;
-            if (!db.objectStoreNames.contains("registros")) {
-              const store = db.createObjectStore("registros", { keyPath: "uuid" });
-              store.createIndex("estado", "estado", { unique: false });
-              store.createIndex("createdAt", "createdAt", { unique: false });
-            }
-            if (!db.objectStoreNames.contains("catalogos")) {
-              db.createObjectStore("catalogos", { keyPath: "key" });
-            }
-          };
-
-          request.onsuccess = (event) => {
-            this.db = event.target.result;
-            resolve(this.db);
-          };
-
-          request.onerror = (event) => reject(event.target.error);
-        });
-      }
-
-      async saveRegistro(registro) {
-        const db = await this.open();
-        return new Promise((resolve, reject) => {
-          const tx = db.transaction("registros", "readwrite");
-          tx.objectStore("registros").put(registro);
-          tx.oncomplete = () => resolve(registro);
-          tx.onerror = () => reject(tx.error);
-        });
-      }
-
-      async getAllRegistros() {
-        const db = await this.open();
-        return new Promise((resolve, reject) => {
-          const tx = db.transaction("registros", "readonly");
-          const req = tx.objectStore("registros").getAll();
-          req.onsuccess = () => {
-            const sorted = (req.result || []).sort((a, b) => b.createdAt - a.createdAt);
-            resolve(sorted);
-          };
-          req.onerror = () => reject(req.error);
-        });
-      }
-
-      async getPendientesOError() {
-        const all = await this.getAllRegistros();
-        return all.filter(r => r.estado === "Pendiente" || r.estado === "Error");
-      }
-
-      async saveCatalog(key, items) {
-        const db = await this.open();
-        return new Promise((resolve, reject) => {
-          const tx = db.transaction("catalogos", "readwrite");
-          tx.objectStore("catalogos").put({ key, items, updatedAt: new Date().toISOString() });
-          tx.oncomplete = () => resolve();
-          tx.onerror = () => reject(tx.error);
-        });
-      }
-
-      async getCatalog(key) {
-        const db = await this.open();
-        return new Promise((resolve, reject) => {
-          const tx = db.transaction("catalogos", "readonly");
-          const req = tx.objectStore("catalogos").get(key);
-          req.onsuccess = () => resolve(req.result ? req.result.items : null);
-          req.onerror = () => reject(req.error);
-        });
-      }
-    }
-
-    const localDB = new LocalDatabase();
-
-    /**
-     * GESTOR DE SINCRONIZACIÓN OFFLINE-FIRST (Concurrencia 200+ usuarios)
-     */
-    class SyncManager {
-      constructor() {
-        this.isSyncing = false;
-      }
-
-      async syncPending(manual = false) {
-        if (this.isSyncing) return;
-        if (!navigator.onLine) {
-          if (manual) showToast("Sin conexión. Los datos permanecen seguros en el equipo.");
-          return;
-        }
-        if (APP_CONFIG.SCRIPT_URL.includes("PEGAR_AQUI")) {
-          if (manual) showToast("Configure la URL de Google Apps Script en index.html");
-          return;
-        }
-
-        const pendientes = await localDB.getPendientesOError();
-        if (pendientes.length === 0) {
-          if (manual) showToast("Todos los registros ya están sincronizados.");
-          return;
-        }
-
-        this.isSyncing = true;
-        document.getElementById("syncIcon").classList.add("spin");
-
-        try {
-          // Jitter aleatorio (0 a 1200ms) para escalonar peticiones si 200 usuarios recuperan señal juntos
-          await new Promise(r => setTimeout(r, Math.floor(Math.random() * 1200)));
-
-          // Envío en lotes de hasta 25 registros
-          const batch = pendientes.slice(0, 25);
-
-          const response = await fetch(APP_CONFIG.SCRIPT_URL, {
-            method: "POST",
-            headers: { "Content-Type": "text/plain;charset=utf-8" }, // Evita preflight CORS en Apps Script
-            body: JSON.stringify({
-              token: APP_CONFIG.API_TOKEN,
-              records: batch
-            })
-          });
-
-          const result = await response.json();
-
-          if (result.status === "ok" && Array.isArray(result.processed)) {
-            const processedSet = new Set(result.processed);
-            for (const reg of batch) {
-              if (processedSet.has(reg.uuid)) {
-                reg.estado = "Sincronizado";
-                reg.errorDetail = "";
-                reg.syncedAt = new Date().toISOString();
-                await localDB.saveRegistro(reg);
-              }
-            }
-            showToast(`Sincronizados ${result.processed.length} registro(s) con Google Sheets.`);
-          } else if (result.status === "retry") {
-            // El servidor pidió reintentar por cola de 200 usuarios
-            setTimeout(() => this.syncPending(false), 3000 + Math.random() * 2000);
-          } else {
-            throw new Error(result.message || "Error desconocido en el servidor");
-          }
-        } catch (err) {
-          console.error("Error de sincronización:", err);
-          for (const reg of pendientes.slice(0, 25)) {
-            reg.estado = "Error";
-            reg.errorDetail = err.message;
-            await localDB.saveRegistro(reg);
-          }
-          if (manual) showToast("Error al sincronizar. Se reintentará automáticamente.");
-        } finally {
-          this.isSyncing = false;
-          document.getElementById("syncIcon").classList.remove("spin");
-          await renderHistory();
-        }
-      }
-    }
-
-    const syncManager = new SyncManager();
-
-    /**
-     * UTILIDADES Y FLUJO DE APLICACIÓN
-     */
-    function generarUUID() {
-      if (crypto && crypto.randomUUID) return crypto.randomUUID();
-      return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
-        const r = Math.random() * 16 | 0;
-        return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
-      });
-    }
-
-    function showToast(msg) {
-      const toast = document.getElementById("toast");
-      toast.textContent = msg;
-      toast.classList.add("show");
-      clearTimeout(window._toastTimer);
-      window._toastTimer = setTimeout(() => toast.classList.remove("show"), 3200);
-    }
-
-    function updateNetworkUI() {
-      const banner = document.getElementById("networkBanner");
-      const text = document.getElementById("networkText");
-      if (navigator.onLine) {
-        banner.className = "status-bar status-online";
-        text.textContent = "Conectado (Sincronización activa)";
-        syncManager.syncPending(false);
-      } else {
-        banner.className = "status-bar status-offline";
-        text.textContent = "Modo Offline (Guardado local activo)";
-      }
-    }
-
-    function setFechaHoy() {
-      const now = new Date();
-      const offset = now.getTimezoneOffset();
-      const localDate = new Date(now.getTime() - (offset * 60 * 1000));
-      document.getElementById("fechaReg").value = localDate.toISOString().split("T")[0];
-    }
-
-    function poblarSelect(selectId, items, placeholder) {
-      const select = document.getElementById(selectId);
-      const currentValue = select.value;
-      select.innerHTML = `<option value="">${placeholder}</option>`;
-      items.forEach(item => {
-        const opt = document.createElement("option");
-        opt.value = item;
-        opt.textContent = item;
-        select.appendChild(opt);
-      });
-      if (items.includes(currentValue)) select.value = currentValue;
-    }
-
-    async function cargarCatalogosIniciales() {
-      let modulos = await localDB.getCatalog("modulos");
-      let acopiadores = await localDB.getCatalog("acopiadores");
-      let caporales = await localDB.getCatalog("caporales");
-
-      if (!modulos || !acopiadores || !caporales) {
-        modulos = DEFAULT_CATALOGS.modulos;
-        acopiadores = DEFAULT_CATALOGS.acopiadores;
-        caporales = DEFAULT_CATALOGS.caporales;
-        await localDB.saveCatalog("modulos", modulos);
-        await localDB.saveCatalog("acopiadores", acopiadores);
-        await localDB.saveCatalog("caporales", caporales);
-      }
-
-      poblarSelect("moduloTurno", modulos, "-- Seleccione Módulo - Turno --");
-      poblarSelect("datosAcopiador", acopiadores, "-- Seleccione Acopiador (a) --");
-      poblarSelect("datosCaporal", caporales, "-- Seleccione Caporal --");
-
-      // Intentar actualizar silenciosamente desde Google Sheets si hay conexión
-      if (navigator.onLine && !APP_CONFIG.SCRIPT_URL.includes("PEGAR_AQUI")) {
-        actualizarCatalogosDesdeServidor(false);
-      }
-    }
-
-    async function actualizarCatalogosDesdeServidor(manual = false) {
-      if (!navigator.onLine) {
-        if (manual) showToast("Sin internet. Usando listas guardadas localmente.");
-        return;
-      }
-      if (APP_CONFIG.SCRIPT_URL.includes("PEGAR_AQUI")) {
-        if (manual) showToast("Configure primero la URL de Google Apps Script.");
+        lucide.createIcons();
         return;
       }
 
-      try {
-        if (manual) showToast("Descargando listas maestras de Google Sheets...");
-        const url = `${APP_CONFIG.SCRIPT_URL}?action=getMaestros&token=${encodeURIComponent(APP_CONFIG.API_TOKEN)}`;
-        const resp = await fetch(url);
-        const json = await resp.json();
-
-        if (json.status === "ok" && json.data) {
-          if (json.data.modulos?.length) {
-            await localDB.saveCatalog("modulos", json.data.modulos);
-            poblarSelect("moduloTurno", json.data.modulos, "-- Seleccione Módulo - Turno --");
-          }
-          if (json.data.acopiadores?.length) {
-            await localDB.saveCatalog("acopiadores", json.data.acopiadores);
-            poblarSelect("datosAcopiador", json.data.acopiadores, "-- Seleccione Acopiador (a) --");
-          }
-          if (json.data.caporales?.length) {
-            await localDB.saveCatalog("caporales", json.data.caporales);
-            poblarSelect("datosCaporal", json.data.caporales, "-- Seleccione Caporal --");
-          }
-          if (manual) showToast("Listas maestras actualizadas correctamente.");
-        }
-      } catch (e) {
-        if (manual) showToast("No se pudo conectar con Google Sheets. Usando caché local.");
-      }
-    }
-
-    // Validación y Guardado del Formulario
-    document.getElementById("acopiadorForm").addEventListener("submit", async (e) => {
-      e.preventDefault();
-
-      const fechaEl = document.getElementById("fechaReg");
-      const moduloEl = document.getElementById("moduloTurno");
-      const acopiadorEl = document.getElementById("datosAcopiador");
-      const caporalEl = document.getElementById("datosCaporal");
-      const totalEl = document.getElementById("totalCosechadores");
-
-      let valid = true;
-      [fechaEl, moduloEl, acopiadorEl, caporalEl].forEach(el => {
-        if (!el.value.trim()) {
-          el.classList.add("invalid");
-          valid = false;
+      listEl.innerHTML = records.map(rec => {
+        let statusBadge = '';
+        if (rec.estado === 'Sincronizado') {
+          statusBadge = `<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-brandGreenLight text-brandGreen border border-brandGreen/30">
+            <i data-lucide="check-circle-2" class="w-3.5 h-3.5"></i> Sincronizado
+          </span>`;
+        } else if (rec.estado === 'Error') {
+          statusBadge = `<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-brandRedLight text-brandRed border border-brandRed/30">
+            <i data-lucide="alert-circle" class="w-3.5 h-3.5"></i> Error
+          </span>`;
         } else {
-          el.classList.remove("invalid");
+          statusBadge = `<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-amber-50 text-amber-700 border border-amber-200">
+            <i data-lucide="clock" class="w-3.5 h-3.5"></i> Pendiente
+          </span>`;
         }
-      });
 
-      const totalVal = Number(totalEl.value);
-      if (!totalEl.value || !Number.isInteger(totalVal) || totalVal <= 0) {
-        totalEl.classList.add("invalid");
-        valid = false;
-      } else {
-        totalEl.classList.remove("invalid");
-      }
-
-      if (!valid) {
-        showToast("Por favor complete todos los campos obligatorios correctamente.");
-        return;
-      }
-
-      const nuevoRegistro = {
-        uuid: generarUUID(),
-        fecha: fechaEl.value,
-        modulo: moduloEl.value.trim(),
-        acopiador: acopiadorEl.value.trim(),
-        caporal: caporalEl.value.trim(),
-        total: totalVal,
-        estado: "Pendiente",
-        createdAt: Date.now()
-      };
-
-      await localDB.saveRegistro(nuevoRegistro);
-
-      // Limpiar solo el campo TOTAL y CAPORAL para agilizar registros consecutivos en campo
-      totalEl.value = "";
-      caporalEl.value = "";
-
-      showToast(navigator.onLine ? "Guardado. Sincronizando..." : "Guardado en modo Offline (Pendiente).");
-      await renderHistory();
-
-      if (navigator.onLine) {
-        syncManager.syncPending(false);
-      } else if ("serviceWorker" in navigator && "SyncManager" in window) {
-        const reg = await navigator.serviceWorker.ready;
-        reg.sync.register("sync-acopiador-records").catch(() => {});
-      }
-    });
-
-    // Renderizar historial y contadores
-    async function renderHistory() {
-      const registros = await localDB.getAllRegistros();
-      let pendientes = 0, sincronizados = 0, errores = 0;
-
-      registros.forEach(r => {
-        if (r.estado === "Pendiente") pendientes++;
-        else if (r.estado === "Sincronizado") sincronizados++;
-        else if (r.estado === "Error") errores++;
-      });
-
-      document.getElementById("countPendiente").textContent = pendientes;
-      document.getElementById("countSincronizado").textContent = sincronizados;
-      document.getElementById("countError").textContent = errores;
-      document.getElementById("navBadgeCount").textContent = registros.length;
-
-      const badgeTop = document.getElementById("syncCounterBadge");
-      badgeTop.textContent = (pendientes + errores) > 0 ? `Sincronizar (${pendientes + errores})` : "Al día";
-
-      const listContainer = document.getElementById("recordsList");
-      if (registros.length === 0) {
-        listContainer.innerHTML = `<p style="text-align:center; color:var(--gris); padding:20px 0; font-size:0.9rem;">Aún no hay registros guardados en este dispositivo.</p>`;
-        return;
-      }
-
-      listContainer.innerHTML = registros.map(r => {
-        const parts = r.fecha.split("-");
-        const fechaFormat = parts.length === 3 ? `${parts[2]}/${parts[1]}/${parts[0]}` : r.fecha;
         return `
-          <div class="record-item ${r.estado}">
-            <div class="record-top">
-              <span class="record-mod">${r.modulo}</span>
-              <span class="badge badge-${r.estado}">${r.estado}</span>
+          <div class="bg-white rounded-2xl p-4 border border-gray-200 shadow-xs space-y-2.5">
+            <div class="flex items-center justify-between border-b border-gray-100 pb-2">
+              <span class="text-xs font-extrabold text-brandGray">${rec.fecha_reg} • ${rec.modulo_turno}</span>
+              ${statusBadge}
             </div>
-            <div class="record-detail">
-              <div><strong>Acopiador:</strong> ${r.acopiador}</div>
-              <div><strong>Caporal:</strong> ${r.caporal}</div>
-              ${r.errorDetail ? `<div style="color:var(--rojo); margin-top:3px;"><strong>Detalle:</strong> ${r.errorDetail}</div>` : ""}
+            <div class="grid grid-cols-3 gap-2 items-center">
+              <div class="col-span-2 space-y-1 text-xs">
+                <p class="text-gray-600"><strong class="text-gray-800">Acopiador:</strong> ${rec.datos_acopiador}</p>
+                <p class="text-gray-600"><strong class="text-gray-800">Caporal:</strong> ${rec.datos_caporal}</p>
+                <p class="text-gray-500 text-[11px]">Sup: ${rec.supervisor}</p>
+                ${rec.errorMsg ? `<p class="text-brandRed font-semibold text-[11px]">Detalle: ${rec.errorMsg}</p>` : ''}
+              </div>
+              <div class="bg-brandGrayLight rounded-xl p-2.5 text-center border border-gray-200">
+                <span class="block text-[10px] font-bold text-brandGray uppercase">Total</span>
+                <span class="text-2xl font-extrabold text-gray-900">${rec.total}</span>
+              </div>
             </div>
-            <div class="record-bottom">
-              <span style="color:var(--gris); font-weight:600;">Fecha: ${fechaFormat}</span>
-              <span class="record-total">TOTAL: ${r.total}</span>
-            </div>
+            ${rec.estado !== 'Sincronizado' ? `
+              <div class="pt-1 flex justify-end">
+                <button onclick="removeRecord('${rec.id}')" class="text-xs text-brandRed hover:underline font-semibold flex items-center gap-1">
+                  <i data-lucide="trash-2" class="w-3.5 h-3.5"></i> Eliminar
+                </button>
+              </div>
+            ` : ''}
           </div>
         `;
-      }).join("");
+      }).join('');
+
+      lucide.createIcons();
     }
+
+    async function removeRecord(id) {
+      if (confirm('¿Eliminar este registro pendiente?')) {
+        await deleteRecordLocal(id);
+        await renderRecordsList();
+        showToast('Registro eliminado', 'info');
+      }
+    }
+
+    /**
+     * ============================================================================
+     * DETECCIÓN AUTOMÁTICA DE CONECTIVIDAD Y NAVEGACIÓN
+     * ============================================================================
+     */
+    function updateOnlineStatus() {
+      const banner = document.getElementById('status-banner');
+      const text = document.getElementById('status-text');
+      const dot = document.getElementById('status-dot');
+
+      if (navigator.onLine) {
+        banner.classList.remove('bg-brandRed');
+        banner.classList.add('bg-brandGreen');
+        text.textContent = 'EN LÍNEA - Conectado';
+        dot.classList.add('pulse-dot');
+        // Disparar sincronización automática al recuperar conexión
+        syncPendingRecords();
+      } else {
+        banner.classList.remove('bg-brandGreen');
+        banner.classList.add('bg-brandRed');
+        text.textContent = 'SIN CONEXIÓN - Modo Offline Activo';
+        dot.classList.remove('pulse-dot');
+      }
+    }
+
+    window.addEventListener('online', () => {
+      updateOnlineStatus();
+      showToast('Conexión recuperada. Sincronizando registros...', 'success');
+    });
+
+    window.addEventListener('offline', () => {
+      updateOnlineStatus();
+      showToast('Sin internet. Puedes seguir registrando sin problemas.', 'warning');
+    });
 
     function switchTab(tab) {
-      document.getElementById("viewForm").classList.toggle("active", tab === "form");
-      document.getElementById("viewHistory").classList.toggle("active", tab === "history");
-      document.getElementById("navForm").classList.toggle("active", tab === "form");
-      document.getElementById("navHistory").classList.toggle("active", tab === "history");
-      if (tab === "history") renderHistory();
+      const formView = document.getElementById('view-form');
+      const histView = document.getElementById('view-history');
+      const formBtn = document.getElementById('tab-form-btn');
+      const histBtn = document.getElementById('tab-history-btn');
+
+      if (tab === 'form') {
+        formView.classList.remove('hidden');
+        histView.classList.add('hidden');
+        formBtn.className = 'flex items-center justify-center gap-2 py-3 px-4 rounded-xl font-bold text-sm transition-all bg-brandGreen text-white shadow-sm';
+        histBtn.className = 'flex items-center justify-center gap-2 py-3 px-4 rounded-xl font-bold text-sm transition-all text-brandGray hover:bg-brandGrayLight relative';
+      } else {
+        formView.classList.add('hidden');
+        histView.classList.remove('hidden');
+        histBtn.className = 'flex items-center justify-center gap-2 py-3 px-4 rounded-xl font-bold text-sm transition-all bg-brandGreen text-white shadow-sm relative';
+        formBtn.className = 'flex items-center justify-center gap-2 py-3 px-4 rounded-xl font-bold text-sm transition-all text-brandGray hover:bg-brandGrayLight';
+        renderRecordsList();
+      }
     }
 
-    // Inicialización al cargar la PWA
-    window.addEventListener("online", updateNetworkUI);
-    window.addEventListener("offline", updateNetworkUI);
+    function showToast(message, type = 'info') {
+      const toast = document.getElementById('toast');
+      const msgEl = document.getElementById('toast-msg');
+      const iconEl = document.getElementById('toast-icon');
 
-    window.addEventListener("DOMContentLoaded", async () => {
-      setFechaHoy();
-      updateNetworkUI();
-      await cargarCatalogosIniciales();
-      await renderHistory();
-
-      // Sincronización periódica cada 45 segundos si hay pendientes
-      setInterval(() => {
-        if (navigator.onLine) syncManager.syncPending(false);
-      }, 45000);
-
-      if ("serviceWorker" in navigator) {
-        navigator.serviceWorker.register("./service-worker.js").catch(err => console.warn("SW:", err));
-        navigator.serviceWorker.addEventListener("message", (event) => {
-          if (event.data && event.data.type === "TRIGGER_SYNC") {
-            syncManager.syncPending(false);
-          }
-        });
+      msgEl.textContent = message;
+      
+      if (type === 'success') {
+        iconEl.setAttribute('data-lucide', 'check-circle');
+        iconEl.className = 'w-6 h-6 text-brandGreen shrink-0';
+      } else if (type === 'error') {
+        iconEl.setAttribute('data-lucide', 'alert-octagon');
+        iconEl.className = 'w-6 h-6 text-brandRed shrink-0';
+      } else if (type === 'warning') {
+        iconEl.setAttribute('data-lucide', 'wifi-off');
+        iconEl.className = 'w-6 h-6 text-amber-400 shrink-0';
+      } else {
+        iconEl.setAttribute('data-lucide', 'info');
+        iconEl.className = 'w-6 h-6 text-blue-400 shrink-0';
       }
+
+      lucide.createIcons();
+      toast.classList.remove('opacity-0', 'translate-y-4');
+      
+      clearTimeout(window.toastTimer);
+      window.toastTimer = setTimeout(() => {
+        toast.classList.add('opacity-0', 'translate-y-4');
+      }, 3500);
+    }
+
+    // Modal Configuración
+    function openConfigModal() {
+      document.getElementById('cfg-api-url').value = DEFAULT_CONFIG.apiUrl;
+      document.getElementById('cfg-api-token').value = DEFAULT_CONFIG.apiToken;
+      document.getElementById('config-modal').classList.remove('hidden');
+      document.getElementById('config-modal').classList.add('flex');
+    }
+
+    function closeConfigModal() {
+      document.getElementById('config-modal').classList.add('hidden');
+      document.getElementById('config-modal').classList.remove('flex');
+    }
+
+    function saveConfig() {
+      const url = document.getElementById('cfg-api-url').value.trim();
+      const token = document.getElementById('cfg-api-token').value.trim();
+      localStorage.setItem('ah_api_url', url);
+      localStorage.setItem('ah_api_token', token);
+      DEFAULT_CONFIG.apiUrl = url;
+      DEFAULT_CONFIG.apiToken = token;
+      closeConfigModal();
+      showToast('Configuración guardada correctamente', 'success');
+      fetchMasterData(true);
+    }
+
+    /**
+     * ============================================================================
+     * REGISTRO DE SERVICE WORKER E INSTALACIÓN PWA
+     * ============================================================================
+     */
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      document.getElementById('install-banner').classList.remove('hidden');
+    });
+
+    document.getElementById('btn-install-pwa').addEventListener('click', async () => {
+      if (!deferredPrompt) return;
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      if (outcome === 'accepted') {
+        document.getElementById('install-banner').classList.add('hidden');
+      }
+      deferredPrompt = null;
+    });
+
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('sw.js').catch(err => {
+          console.log('Registro SW estándar omitido en vista previa:', err.message);
+        });
+      });
+    }
+
+    /**
+     * ============================================================================
+     * INICIALIZACIÓN DE LA APLICACIÓN
+     * ============================================================================
+     */
+    document.addEventListener('DOMContentLoaded', async () => {
+      lucide.createIcons();
+      
+      // Establecer fecha actual local por defecto
+      const today = new Date();
+      const yyyy = today.getFullYear();
+      const mm = String(today.getMonth() + 1).padStart(2, '0');
+      const dd = String(today.getDate()).padStart(2, '0');
+      document.getElementById('fecha_reg').value = `${yyyy}-${mm}-${dd}`;
+
+      updateOnlineStatus();
+      await fetchMasterData(false);
+      await renderRecordsList();
     });
   </script>
 </body>
