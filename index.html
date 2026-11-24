@@ -2,544 +2,2173 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <meta name="theme-color" content="#DA291C" />
-  <meta name="description" content="Reporte de Cosechadores - Registro offline-first para Acopiadores(as) de Agrícola Huarmey" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-  <meta name="apple-mobile-web-app-title" content="Cosechadores" />
-  <title>REPORTE DE COSECHADORES | Agrícola Huarmey</title>
-
-  <!-- Tailwind CSS para diseño responsivo y de alto contraste en campo -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  
-  <!-- Fuente Inter para máxima legibilidad bajo luz solar -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          fontFamily: {
-            sans: ['Inter', 'system-ui', 'sans-serif'],
-          },
-          colors: {
-            huarmey: {
-              red: '#DA291C',
-              redDark: '#B51F14',
-              green: '#78BE20',
-              greenDark: '#5E9816',
-              gray: '#8A8178',
-              grayDark: '#5C554F',
-              bg: '#F6F5F3',
-              card: '#FFFFFF'
-            }
-          }
-        }
-      }
-    }
-  </script>
-
+  <title>Reporte de Cosechadores - Agrícola Huarmey</title>
+  <link rel="manifest" href="./manifest.json" />
+  <link rel="icon" type="image/png" href="./LOGO HUARMEY.png" />
   <style>
-    /* Ajustes de accesibilidad y alto contraste para trabajo en campo */
-    body {
-      background-color: #F6F5F3;
-      color: #1F2937;
-      -webkit-tap-highlight-color: transparent;
-    }
-    
-    /* Estilizado de controles táctiles grandes */
-    select, input[type="date"], input[type="number"] {
-      min-height: 52px;
-      font-size: 16px; /* Evita zoom automático en iOS */
+    :root {
+      --rojo: #DA291C;
+      --rojo-claro: #FDECEA;
+      --rojo-borde: #F5B7B1;
+      --verde: #78BE20;
+      --verde-oscuro: #5A9414;
+      --verde-claro: #F1F8E8;
+      --verde-borde: #C5E1A5;
+      --gris: #8A8178;
+      --gris-oscuro: #4A4540;
+      --gris-claro: #F5F4F2;
+      --fondo: #F7F8F5;
+      --blanco: #FFFFFF;
+      --sombra: 0 4px 14px rgba(74, 69, 64, 0.08);
+      --radio: 14px;
     }
 
-    /* Animación suave para notificaciones */
-    @keyframes slideIn {
-      from { transform: translateY(-10px); opacity: 0; }
-      to { transform: translateY(0); opacity: 1; }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
     }
-    .toast-enter {
-      animation: slideIn 0.25s ease-out forwards;
+
+    body {
+      background-color: var(--fondo);
+      color: var(--gris-oscuro);
+      min-height: 100vh;
+      padding-bottom: 92px;
+    }
+
+    /* Barra superior de estado de red */
+    .status-bar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 16px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      transition: background-color 0.3s ease;
+    }
+
+    .status-online {
+      background-color: var(--verde-claro);
+      color: var(--verde-oscuro);
+      border-bottom: 1px solid var(--verde-borde);
+    }
+
+    .status-offline {
+      background-color: var(--rojo-claro);
+      color: var(--rojo);
+      border-bottom: 1px solid var(--rojo-borde);
+    }
+
+    .status-dot {
+      display: inline-block;
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      margin-right: 6px;
+    }
+
+    .status-online .status-dot { background-color: var(--verde); }
+    .status-offline .status-dot { background-color: var(--rojo); }
+
+    .btn-mini-sync {
+      background: var(--blanco);
+      border: 1px solid currentColor;
+      color: inherit;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .btn-mini-sync:active { transform: scale(0.96); }
+
+    /* Contenedor Principal */
+    .container {
+      max-width: 560px;
+      margin: 0 auto;
+      padding: 14px;
+    }
+
+    /* Membrete Corporativo */
+    .membrete-card {
+      background: var(--blanco);
+      border-radius: var(--radio);
+      padding: 18px 16px 16px;
+      text-align: center;
+      box-shadow: var(--sombra);
+      border-top: 5px solid var(--rojo);
+      border-bottom: 3px solid var(--verde);
+      margin-bottom: 16px;
+    }
+
+    .logo-wrapper {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .logo-wrapper img {
+      max-height: 82px;
+      width: auto;
+      object-fit: contain;
+    }
+
+    .app-title {
+      font-size: 1.38rem;
+      font-weight: 800;
+      color: var(--rojo);
+      text-align: center;
+      letter-spacing: 0.4px;
+      line-height: 1.2;
+      margin-bottom: 4px;
+      text-transform: uppercase;
+    }
+
+    .app-subtitle {
+      font-size: 0.98rem;
+      font-weight: 600;
+      color: var(--gris);
+      text-align: center;
+    }
+
+    /* Tarjeta de Formulario */
+    .card {
+      background: var(--blanco);
+      border-radius: var(--radio);
+      padding: 18px;
+      box-shadow: var(--sombra);
+      margin-bottom: 16px;
+      border: 1px solid #EAE8E4;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-label {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 0.86rem;
+      font-weight: 700;
+      color: var(--gris-oscuro);
+      margin-bottom: 6px;
+      text-transform: uppercase;
+    }
+
+    .form-label svg {
+      width: 18px;
+      height: 18px;
+      stroke: var(--verde-oscuro);
+      flex-shrink: 0;
+    }
+
+    .form-control {
+      width: 100%;
+      height: 52px;
+      padding: 0 14px;
+      font-size: 1rem;
+      font-weight: 500;
+      color: #222;
+      background-color: var(--gris-claro);
+      border: 2px solid #DDD9D4;
+      border-radius: 10px;
+      transition: all 0.2s ease;
+      appearance: none;
+    }
+
+    select.form-control {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%238A8178' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 14px center;
+      padding-right: 40px;
+    }
+
+    .form-control:focus {
+      outline: none;
+      background-color: var(--blanco);
+      border-color: var(--verde);
+      box-shadow: 0 0 0 3px rgba(120, 190, 32, 0.2);
+    }
+
+    .form-control.invalid {
+      border-color: var(--rojo);
+      background-color: var(--rojo-claro);
+    }
+
+    .input-total {
+      font-size: 1.35rem;
+      font-weight: 800;
+      text-align: center;
+      color: var(--rojo);
+      background-color: var(--verde-claro);
+      border-color: var(--verde-borde);
+    }
+
+    .error-msg {
+      color: var(--rojo);
+      font-size: 0.78rem;
+      font-weight: 600;
+      margin-top: 4px;
+      display: none;
+    }
+
+    .form-control.invalid + .error-msg {
+      display: block;
+    }
+
+    /* Botones Grandes de Campo */
+    .btn-primary {
+      width: 100%;
+      height: 58px;
+      background: linear-gradient(135deg, var(--verde) 0%, var(--verde-oscuro) 100%);
+      color: var(--blanco);
+      border: none;
+      border-radius: 12px;
+      font-size: 1.08rem;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      box-shadow: 0 4px 12px rgba(120, 190, 32, 0.35);
+      transition: transform 0.15s ease;
+    }
+
+    .btn-primary:active { transform: scale(0.98); }
+
+    .btn-secondary {
+      width: 100%;
+      height: 50px;
+      background-color: var(--rojo-claro);
+      color: var(--rojo);
+      border: 2px solid var(--rojo-borde);
+      border-radius: 12px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .btn-secondary:active { transform: scale(0.98); }
+
+    /* Resumen de Estados */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+
+    .stat-box {
+      padding: 10px 6px;
+      border-radius: 10px;
+      text-align: center;
+      border: 1px solid transparent;
+    }
+
+    .stat-pendiente {
+      background-color: #FFF8E7;
+      border-color: #F5D78E;
+      color: #9A6700;
+    }
+
+    .stat-sincronizado {
+      background-color: var(--verde-claro);
+      border-color: var(--verde-borde);
+      color: var(--verde-oscuro);
+    }
+
+    .stat-error {
+      background-color: var(--rojo-claro);
+      border-color: var(--rojo-borde);
+      color: var(--rojo);
+    }
+
+    .stat-num {
+      font-size: 1.35rem;
+      font-weight: 800;
+      line-height: 1.1;
+    }
+
+    .stat-label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      margin-top: 2px;
+    }
+
+    /* Historial de Registros */
+    .history-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .history-title {
+      font-size: 0.95rem;
+      font-weight: 800;
+      color: var(--gris-oscuro);
+    }
+
+    .record-item {
+      border: 1px solid #E6E3DF;
+      border-left: 5px solid var(--gris);
+      border-radius: 10px;
+      padding: 12px;
+      margin-bottom: 10px;
+      background: var(--blanco);
+    }
+
+    .record-item.Pendiente { border-left-color: #E6A100; }
+    .record-item.Sincronizado { border-left-color: var(--verde); }
+    .record-item.Error { border-left-color: var(--rojo); }
+
+    .record-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+    }
+
+    .record-mod {
+      font-weight: 800;
+      font-size: 0.9rem;
+      color: var(--gris-oscuro);
+    }
+
+    .badge {
+      padding: 3px 9px;
+      border-radius: 12px;
+      font-size: 0.72rem;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    .badge-Pendiente { background: #FFF3CD; color: #856404; }
+    .badge-Sincronizado { background: var(--verde-claro); color: var(--verde-oscuro); }
+    .badge-Error { background: var(--rojo-claro); color: var(--rojo); }
+
+    .record-detail {
+      font-size: 0.82rem;
+      color: var(--gris);
+      line-height: 1.4;
+    }
+
+    .record-bottom {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 8px;
+      padding-top: 6px;
+      border-top: 1px dashed #EAE8E4;
+      font-size: 0.82rem;
+    }
+
+    .record-total {
+      font-weight: 800;
+      color: var(--rojo);
+      font-size: 0.95rem;
+    }
+
+    /* Navegación Inferior */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 68px;
+      background: var(--blanco);
+      border-top: 2px solid #E6E3DF;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      z-index: 99;
+      box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+    }
+
+    .nav-btn {
+      flex: 1;
+      height: 100%;
+      background: none;
+      border: none;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      color: var(--gris);
+      font-size: 0.78rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .nav-btn.active {
+      color: var(--rojo);
+      background-color: var(--rojo-claro);
+    }
+
+    .nav-btn svg {
+      width: 22px;
+      height: 22px;
+      stroke: currentColor;
+    }
+
+    .view-section { display: none; }
+    .view-section.active { display: block; }
+
+    /* Toast Flotante */
+    .toast {
+      position: fixed;
+      top: 52px;
+      left: 50%;
+      transform: translateX(-50%) translateY(-20px);
+      background: var(--gris-oscuro);
+      color: var(--blanco);
+      padding: 12px 18px;
+      border-radius: 10px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.25s ease;
+      z-index: 200;
+      max-width: 90%;
+      text-align: center;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    .spin {
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      100% { transform: rotate(360deg); }
     }
   </style>
 </head>
-<body class="min-h-screen flex flex-col justify-between selection:bg-huarmey-green selection:text-white">
+<body>
 
-  <!-- Contenedor principal centrado y responsivo -->
-  <div class="w-full max-w-2xl mx-auto px-4 py-4 sm:py-6 flex-grow">
-    
-    <!-- ENCABEZADO INSTITUCIONAL -->
-    <header class="bg-white rounded-2xl shadow-sm border border-stone-200 p-4 sm:p-6 mb-4 text-center relative overflow-hidden">
-      <!-- Barra superior decorativa institucional -->
-      <div class="absolute top-0 left-0 right-0 h-1.5 flex">
-        <div class="w-1/2 bg-huarmey-red"></div>
-        <div class="w-1/2 bg-huarmey-green"></div>
+  <!-- Barra de estado de conectividad -->
+  <div id="networkBanner" class="status-bar status-online">
+    <div>
+      <span class="status-dot"></span>
+      <span id="networkText">En línea</span>
+    </div>
+    <button type="button" id="btnTopSync" class="btn-mini-sync" onclick="syncManager.syncPending(true)">
+      <svg id="syncIcon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <polyline points="23 4 23 10 17 10"></polyline>
+        <polyline points="1 20 1 14 7 14"></polyline>
+        <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+      </svg>
+      <span id="syncCounterBadge">Sincronizar</span>
+    </button>
+  </div>
+
+  <div id="toast" class="toast"></div>
+
+  <div class="container">
+    <!-- MEMBRETE CORPORATIVO -->
+    <header class="membrete-card">
+      <div class="logo-wrapper">
+        <img src="./LOGO HUARMEY.png" alt="Agrícola Huarmey" onerror="this.style.display='none'" />
       </div>
-
-      <!-- Logotipo Institucional (Intenta cargar LOGO HUARMEY.png y tiene respaldo vectorial exacto) -->
-      <div class="flex justify-center items-center mb-3 mt-1">
-        <img 
-          src="LOGO HUARMEY.png" 
-          alt="Logo Agrícola Huarmey" 
-          class="h-20 sm:h-24 w-auto object-contain"
-          onerror="this.style.display='none'; document.getElementById('logo-svg-fallback').style.display='flex';"
-        />
-        <!-- Respaldo Vectorial fiel al isotipo y tipografía de Agrícola Huarmey -->
-        <div id="logo-svg-fallback" class="hidden flex-col items-center justify-center">
-          <svg class="h-16 w-auto" viewBox="0 0 220 150" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Agrícola Huarmey">
-            <!-- Hoja verde superior -->
-            <path d="M112 42C112 22 132 10 148 12C146 28 130 42 112 42Z" fill="#388E1C"/>
-            <path d="M112 42C122 30 135 20 146 14" stroke="#78BE20" stroke-width="2" stroke-linecap="round"/>
-            <!-- Franjas rojas curvas (fruto) -->
-            <path d="M92 52C108 62 136 58 148 46C145 64 115 74 92 52Z" fill="#DA291C"/>
-            <path d="M84 74C108 88 144 82 158 66C154 90 114 102 84 74Z" fill="#DA291C"/>
-            <path d="M90 98C114 112 142 106 152 92C146 114 112 122 90 98Z" fill="#DA291C"/>
-            <!-- Arcos verdes envolventes -->
-            <path d="M82 32C62 54 64 96 96 118C74 94 72 56 82 32Z" fill="#388E1C"/>
-            <path d="M98 44C76 62 76 98 106 116C84 96 84 64 98 44Z" fill="#5E9816"/>
-          </svg>
-          <span class="text-xl sm:text-2xl font-bold tracking-tight text-huarmey-gray mt-1">Agrícola Huarmey</span>
-        </div>
-      </div>
-
-      <!-- Título y Subtítulo -->
-      <h1 class="text-2xl sm:text-3xl font-extrabold text-stone-900 tracking-tight uppercase">
-        REPORTE DE COSECHADORES
-      </h1>
-      <p class="text-base sm:text-lg font-medium text-huarmey-gray mt-1">
-        Registro para Acopiadores(as)
-      </p>
-
-      <!-- BARRA DE ESTADO DE CONEXIÓN Y DATOS MAESTROS -->
-      <div class="mt-4 pt-3 border-t border-stone-100 flex flex-wrap items-center justify-between gap-2 text-xs sm:text-sm">
-        <!-- Indicador de Red (Texto + Icono + Color) -->
-        <div id="network-badge" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200">
-          <span id="network-icon" aria-hidden="true">🟢</span>
-          <span id="network-text">En línea</span>
-        </div>
-
-        <!-- Estado de Catálogos Maestros -->
-        <div class="flex items-center gap-2 text-stone-600">
-          <span id="masters-status-text" class="text-xs">Maestros: Cargando...</span>
-          <button 
-            type="button" 
-            id="btn-refresh-masters"
-            title="Actualizar listas desde servidor"
-            class="p-2 rounded-lg bg-stone-100 hover:bg-stone-200 active:bg-stone-300 text-stone-700 transition flex items-center gap-1 font-medium text-xs"
-          >
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
-            <span>Actualizar Listas</span>
-          </button>
-        </div>
-      </div>
+      <h1 class="app-title">REPORTE DE COSECHADORES</h1>
+      <p class="app-subtitle">Registro para Acopiadores (as)</p>
     </header>
 
-    <!-- ALERTA / MENSAJE DE FEEDBACK DINÁMICO (Sin uso de alert()) -->
-    <div id="feedback-banner" class="hidden mb-4 p-4 rounded-xl border font-medium text-sm sm:text-base toast-enter" role="alert"></div>
-
-    <!-- PESTAÑAS DE NAVEGACIÓN: FORMULARIO VS REGISTROS LOCALES -->
-    <nav class="grid grid-cols-2 gap-2 bg-stone-200/80 p-1.5 rounded-xl mb-4" aria-label="Vistas principales">
-      <button 
-        type="button" 
-        id="tab-form" 
-        class="py-2.5 px-3 rounded-lg font-bold text-sm sm:text-base bg-white text-stone-900 shadow-sm transition flex items-center justify-center gap-2"
-      >
-        <svg class="w-5 h-5 text-huarmey-red" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
-        <span>Nuevo Registro</span>
-      </button>
-      <button 
-        type="button" 
-        id="tab-records" 
-        class="py-2.5 px-3 rounded-lg font-bold text-sm sm:text-base text-stone-600 hover:text-stone-900 transition flex items-center justify-center gap-2"
-      >
-        <svg class="w-5 h-5 text-huarmey-greenDark" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg>
-        <span>Mis Registros</span>
-        <span id="badge-pending-count" class="px-2 py-0.5 text-xs font-extrabold rounded-full bg-amber-500 text-white">0</span>
-      </button>
-    </nav>
-
     <!-- VISTA 1: FORMULARIO DE REGISTRO -->
-    <main id="view-form" class="bg-white rounded-2xl shadow-sm border border-stone-200 p-5 sm:p-6">
-      <form id="harvest-form" novalidate class="space-y-5">
-        
-        <!-- 1. FECHA REGISTRO -->
-        <div>
-          <label for="fecha_registro" class="flex items-center gap-2 text-sm sm:text-base font-bold text-stone-800 mb-1.5">
-            <svg class="w-5 h-5 text-huarmey-red" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-            <span>FECHA REGISTRO <span class="text-huarmey-red">*</span></span>
+    <main id="viewForm" class="view-section active">
+      <form id="acopiadorForm" class="card" novalidate>
+        <!-- FECHA REGISTRO -->
+        <div class="form-group">
+          <label class="form-label" for="fechaReg">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+            FECHA REGISTRO *
           </label>
-          <input 
-            type="date" 
-            id="fecha_registro" 
-            name="fecha_registro" 
-            required
-            class="w-full px-4 py-3 rounded-xl border-2 border-stone-300 bg-stone-50 focus:bg-white focus:border-huarmey-green focus:outline-none font-semibold text-stone-900 transition"
-          />
-          <p id="err-fecha" class="hidden text-xs font-semibold text-huarmey-red mt-1"></p>
+          <input type="date" id="fechaReg" class="form-control" required />
+          <div class="error-msg">Seleccione una fecha válida.</div>
         </div>
 
-        <!-- 2. SUPERVISOR (Después de FECHA REG.) -->
-        <div>
-          <label for="supervisor" class="flex items-center gap-2 text-sm sm:text-base font-bold text-stone-800 mb-1.5">
-            <svg class="w-5 h-5 text-huarmey-red" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
-            <span>SUPERVISOR <span class="text-huarmey-red">*</span></span>
+        <!-- MODULO -TURNO -->
+        <div class="form-group">
+          <label class="form-label" for="moduloTurno">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
+            MODULO -TURNO *
           </label>
-          <select 
-            id="supervisor" 
-            name="supervisor" 
-            required
-            class="w-full px-4 py-3 rounded-xl border-2 border-stone-300 bg-stone-50 focus:bg-white focus:border-huarmey-green focus:outline-none font-semibold text-stone-900 transition"
-          >
-            <option value="">-- Seleccione Supervisor --</option>
-            <option value="FRANK FARROÑAN">FRANK FARROÑAN</option>
-            <option value="RONI CUBAS">RONI CUBAS</option>
-          </select>
-          <p id="err-supervisor" class="hidden text-xs font-semibold text-huarmey-red mt-1"></p>
-        </div>
-
-        <!-- 3. MODULO - TURNO -->
-        <div>
-          <label for="modulo_turno" class="flex items-center gap-2 text-sm sm:text-base font-bold text-stone-800 mb-1.5">
-            <svg class="w-5 h-5 text-huarmey-greenDark" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-            <span>MODULO - TURNO <span class="text-huarmey-red">*</span></span>
-          </label>
-          <select 
-            id="modulo_turno" 
-            name="modulo_turno" 
-            required
-            class="w-full px-4 py-3 rounded-xl border-2 border-stone-300 bg-stone-50 focus:bg-white focus:border-huarmey-green focus:outline-none font-semibold text-stone-900 transition"
-          >
+          <select id="moduloTurno" class="form-control" required>
             <option value="">-- Seleccione Módulo - Turno --</option>
           </select>
-          <p id="err-modulo" class="hidden text-xs font-semibold text-huarmey-red mt-1"></p>
+          <div class="error-msg">Seleccione un Módulo - Turno.</div>
         </div>
 
-        <!-- 4. DATOS ACOPIADOR -->
-        <div>
-          <label for="datos_acopiador" class="flex items-center gap-2 text-sm sm:text-base font-bold text-stone-800 mb-1.5">
-            <svg class="w-5 h-5 text-huarmey-red" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
-            <span>DATOS ACOPIADOR <span class="text-huarmey-red">*</span></span>
+        <!-- DATOS ACOPIADOR -->
+        <div class="form-group">
+          <label class="form-label" for="datosAcopiador">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+            DATOS ACOPIADOR *
           </label>
-          <select 
-            id="datos_acopiador" 
-            name="datos_acopiador" 
-            required
-            class="w-full px-4 py-3 rounded-xl border-2 border-stone-300 bg-stone-50 focus:bg-white focus:border-huarmey-green focus:outline-none font-semibold text-stone-900 transition"
-          >
-            <option value="">-- Seleccione Acopiador(a) --</option>
+          <select id="datosAcopiador" class="form-control" required>
+            <option value="">-- Seleccione Acopiador (a) --</option>
           </select>
-          <p id="err-acopiador" class="hidden text-xs font-semibold text-huarmey-red mt-1"></p>
+          <div class="error-msg">Seleccione los datos del Acopiador.</div>
         </div>
 
-        <!-- 5. DATOS CAPORAL -->
-        <div>
-          <label for="datos_caporal" class="flex items-center gap-2 text-sm sm:text-base font-bold text-stone-800 mb-1.5">
-            <svg class="w-5 h-5 text-huarmey-grayDark" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-            <span>DATOS CAPORAL <span class="text-huarmey-red">*</span></span>
+        <!-- DATOS CAPORAL -->
+        <div class="form-group">
+          <label class="form-label" for="datosCaporal">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+            DATOS CAPORAL *
           </label>
-          <select 
-            id="datos_caporal" 
-            name="datos_caporal" 
-            required
-            class="w-full px-4 py-3 rounded-xl border-2 border-stone-300 bg-stone-50 focus:bg-white focus:border-huarmey-green focus:outline-none font-semibold text-stone-900 transition"
-          >
+          <select id="datosCaporal" class="form-control" required>
             <option value="">-- Seleccione Caporal --</option>
           </select>
-          <p id="err-caporal" class="hidden text-xs font-semibold text-huarmey-red mt-1"></p>
+          <div class="error-msg">Seleccione los datos del Caporal.</div>
         </div>
 
-        <!-- 6. TOTAL (Entero positivo) -->
-        <div>
-          <label for="total_cosecha" class="flex items-center gap-2 text-sm sm:text-base font-bold text-stone-800 mb-1.5">
-            <svg class="w-5 h-5 text-huarmey-greenDark" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14"></path></svg>
-            <span>TOTAL <span class="text-huarmey-red">*</span></span>
+        <!-- TOTAL -->
+        <div class="form-group">
+          <label class="form-label" for="totalCosechadores">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+            TOTAL (Número Entero) *
           </label>
-          <input 
-            type="number" 
-            id="total_cosecha" 
-            name="total_cosecha" 
-            inputmode="numeric" 
+          <input
+            type="number"
+            id="totalCosechadores"
+            class="form-control input-total"
+            inputmode="numeric"
             pattern="[0-9]*"
-            min="1" 
+            min="1"
+            max="9999"
             step="1"
-            placeholder="Ej: 45"
+            placeholder="0"
             required
-            class="w-full px-4 py-3 rounded-xl border-2 border-stone-300 bg-stone-50 focus:bg-white focus:border-huarmey-green focus:outline-none font-bold text-xl text-stone-900 transition"
           />
-          <p class="text-xs text-stone-500 mt-1">Ingrese solo números enteros positivos (sin decimales).</p>
-          <p id="err-total" class="hidden text-xs font-semibold text-huarmey-red mt-1"></p>
+          <div class="error-msg">Ingrese un número entero mayor a 0.</div>
         </div>
 
-        <!-- ACCIONES PRINCIPALES -->
-        <div class="pt-3 grid grid-cols-1 sm:grid-cols-3 gap-3">
-          <button 
-            type="submit" 
-            id="btn-save"
-            class="sm:col-span-2 py-4 px-6 rounded-xl bg-huarmey-green hover:bg-huarmey-greenDark active:scale-[0.99] text-white font-extrabold text-base sm:text-lg shadow-md transition flex items-center justify-center gap-2"
-          >
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>
-            <span>GUARDAR REGISTRO</span>
-          </button>
+        <button type="submit" class="btn-primary">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+            <polyline points="17 21 17 13 7 13 7 21"></polyline>
+            <polyline points="7 3 7 8 15 8"></polyline>
+          </svg>
+          GUARDAR REGISTRO
+        </button>
 
-          <button 
-            type="button" 
-            id="btn-clear"
-            class="py-4 px-4 rounded-xl bg-stone-200 hover:bg-stone-300 active:scale-[0.99] text-stone-800 font-bold text-sm sm:text-base transition flex items-center justify-center gap-1.5"
-          >
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-            <span>LIMPIAR</span>
-          </button>
-        </div>
+        <button type="button" class="btn-secondary" onclick="actualizarCatalogosDesdeServidor(true)">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="7 10 12 15 17 10"></polyline>
+            <line x1="12" y1="15" x2="12" y2="3"></line>
+          </svg>
+          Actualizar Listas desde Google Sheets
+        </button>
       </form>
     </main>
 
-    <!-- VISTA 2: BANDEJA DE REGISTROS LOCALES Y SINCRONIZACIÓN -->
-    <section id="view-records" class="hidden space-y-4">
-      
-      <!-- Contadores de Estado -->
-      <div class="grid grid-cols-3 gap-2.5">
-        <div class="bg-amber-50 border border-amber-200 rounded-xl p-3 text-center">
-          <div class="text-xs font-bold text-amber-800 uppercase">Pendientes</div>
-          <div id="stat-pending" class="text-2xl font-extrabold text-amber-600 mt-0.5">0</div>
+    <!-- VISTA 2: HISTORIAL Y COLA OFFLINE -->
+    <section id="viewHistory" class="view-section">
+      <div class="card">
+        <div class="stats-grid">
+          <div class="stat-box stat-pendiente">
+            <div class="stat-num" id="countPendiente">0</div>
+            <div class="stat-label">Pendiente</div>
+          </div>
+          <div class="stat-box stat-sincronizado">
+            <div class="stat-num" id="countSincronizado">0</div>
+            <div class="stat-label">Sincronizado</div>
+          </div>
+          <div class="stat-box stat-error">
+            <div class="stat-num" id="countError">0</div>
+            <div class="stat-label">Error</div>
+          </div>
         </div>
-        <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-3 text-center">
-          <div class="text-xs font-bold text-emerald-800 uppercase">Sincronizados</div>
-          <div id="stat-synced" class="text-2xl font-extrabold text-emerald-600 mt-0.5">0</div>
-        </div>
-        <div class="bg-red-50 border border-red-200 rounded-xl p-3 text-center">
-          <div class="text-xs font-bold text-red-800 uppercase">Con Error</div>
-          <div id="stat-error" class="text-2xl font-extrabold text-huarmey-red mt-0.5">0</div>
-        </div>
-      </div>
 
-      <!-- Botón de Sincronización Manual -->
-      <div class="bg-white p-4 rounded-2xl border border-stone-200 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-3">
-        <div class="text-sm text-stone-600">
-          <p class="font-bold text-stone-800">Sincronización con Servidor</p>
-          <p id="sync-subtext" class="text-xs">Los registros pendientes se envían automáticamente al detectar internet.</p>
-        </div>
-        <button 
-          type="button" 
-          id="btn-sync-now"
-          class="w-full sm:w-auto py-3 px-5 rounded-xl bg-huarmey-red hover:bg-huarmey-redDark disabled:opacity-50 text-white font-bold text-sm shadow-sm transition flex items-center justify-center gap-2"
-        >
-          <svg id="sync-spinner" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
-          <span>SINCRONIZAR AHORA</span>
+        <button type="button" class="btn-primary" style="height: 48px; font-size: 0.95rem; margin-bottom: 14px;" onclick="syncManager.syncPending(true)">
+          SINCRONIZAR AHORA CON GOOGLE SHEETS
         </button>
-      </div>
 
-      <!-- Lista de Registros -->
-      <div id="records-list" class="space-y-3">
-        <!-- Renderizado dinámico desde IndexedDB -->
+        <div class="history-header">
+          <span class="history-title">Registros Locales (IndexedDB)</span>
+          <span id="lastCatalogSync" style="font-size: 0.72rem; color: var(--gris);"></span>
+        </div>
+
+        <div id="recordsList"></div>
       </div>
     </section>
-
-    <!-- MODAL/PANEL DE CONFIGURACIÓN RÁPIDA (API URL) -->
-    <details class="mt-6 bg-white rounded-xl border border-stone-200 p-4 text-xs text-stone-600">
-      <summary class="font-bold text-stone-700 cursor-pointer select-none flex items-center justify-between">
-        <span>⚙️ Configuración de Conexión API (Google Apps Script)</span>
-        <span id="api-status-dot" class="text-amber-600 font-semibold">Pendiente configurar URL</span>
-      </summary>
-      <div class="mt-3 pt-3 border-t border-stone-100 space-y-2">
-        <label for="api-url-input" class="block font-semibold text-stone-700">URL de Implementación Web App (Apps Script):</label>
-        <input 
-          type="url" 
-          id="api-url-input" 
-          placeholder="https://script.google.com/macros/s/AKfycb.../exec"
-          class="w-full p-2.5 rounded-lg border border-stone-300 text-xs font-mono bg-stone-50"
-        />
-        <div class="flex justify-between items-center pt-1">
-          <button type="button" id="btn-save-api-url" class="px-4 py-2 bg-stone-800 text-white rounded-lg font-bold hover:bg-stone-900">
-            Guardar URL de API
-          </button>
-          <button type="button" id="btn-install-pwa" class="hidden px-4 py-2 bg-huarmey-green text-white rounded-lg font-bold">
-            📲 Instalar App en Dispositivo
-          </button>
-        </div>
-      </div>
-    </details>
-
   </div>
 
-  <!-- PIE DE PÁGINA -->
-  <footer class="text-center py-4 px-4 text-xs text-huarmey-gray border-t border-stone-200 bg-white/60">
-    <p class="font-semibold">Agrícola Huarmey &copy; <span id="year-copy"></span> — Sistema de Acopio en Campo</p>
-    <p class="mt-0.5">Modo Offline-First Activo • Almacenamiento Seguro IndexedDB</p>
-  </footer>
+  <!-- NAVEGACIÓN INFERIOR -->
+  <nav class="bottom-nav">
+    <button type="button" class="nav-btn active" id="navForm" onclick="switchTab('form')">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2">
+        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+      </svg>
+      Nuevo Registro
+    </button>
+    <button type="button" class="nav-btn" id="navHistory" onclick="switchTab('history')">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2">
+        <line x1="8" y1="6" x2="21" y2="6"></line>
+        <line x1="8" y1="12" x2="21" y2="12"></line>
+        <line x1="8" y1="18" x2="21" y2="18"></line>
+        <line x1="3" y1="6" x2="3.01" y2="6"></line>
+        <line x1="3" y1="12" x2="3.01" y2="12"></line>
+        <line x1="3" y1="18" x2="3.01" y2="18"></line>
+      </svg>
+      Registros (<span id="navBadgeCount">0</span>)
+    </button>
+  </nav>
 
-  <!-- LÓGICA DE APLICACIÓN, INDEXEDDB, SYNC ENGINE Y PWA BOOTSTRAP -->
   <script>
     /**
-     * ============================================================================
-     * CONFIGURACIÓN E INICIALIZACIÓN PWA (MANIFEST + SERVICE WORKER DINÁMICOS)
-     * ============================================================================
+     * CONFIGURACIÓN DE CONEXIÓN A GOOGLE APPS SCRIPT
      */
     const APP_CONFIG = {
-      // Reemplazar con la URL real de Google Apps Script tras desplegar Codigo.gs
-      DEFAULT_API_URL: 'https://script.google.com/macros/s/AKfycbxVYhvDxBEVxJ87SOtKOzl6NsqGeo5OC4nm5CzMNcOOFuwbq7BKNb6lOBnoi97HTjEQ/exec',
-      DB_NAME: 'REGISTRO-PRODUCCION-ACOPIADOR',
-      DB_VERSION: 1,
-      BATCH_SIZE: 25,           // Registros máximos por paquete HTTP
-      MAX_JITTER_MS: 8000,      // Dispersión aleatoria (0-8s) para evitar colisión de 200 usuarios
-      MAX_RETRIES: 5,           // Reintentos máximos con backoff exponencial
-      SUPERVISORES_LIST: ['FRANK FARROÑAN', 'RONI CUBAS']
+      SCRIPT_URL: "<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#DA291C" />
+  <title>Reporte de Cosechadores - Agrícola Huarmey</title>
+  <link rel="manifest" href="./manifest.json" />
+  <link rel="icon" type="image/png" href="./LOGO HUARMEY.png" />
+  <style>
+    :root {
+      --rojo: #DA291C;
+      --rojo-claro: #FDECEA;
+      --rojo-borde: #F5B7B1;
+      --verde: #78BE20;
+      --verde-oscuro: #5A9414;
+      --verde-claro: #F1F8E8;
+      --verde-borde: #C5E1A5;
+      --gris: #8A8178;
+      --gris-oscuro: #4A4540;
+      --gris-claro: #F5F4F2;
+      --fondo: #F7F8F5;
+      --blanco: #FFFFFF;
+      --sombra: 0 4px 14px rgba(74, 69, 64, 0.08);
+      --radio: 14px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    }
+
+    body {
+      background-color: var(--fondo);
+      color: var(--gris-oscuro);
+      min-height: 100vh;
+      padding-bottom: 92px;
+    }
+
+    /* Barra superior de estado de red */
+    .status-bar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 16px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      transition: background-color 0.3s ease;
+    }
+
+    .status-online {
+      background-color: var(--verde-claro);
+      color: var(--verde-oscuro);
+      border-bottom: 1px solid var(--verde-borde);
+    }
+
+    .status-offline {
+      background-color: var(--rojo-claro);
+      color: var(--rojo);
+      border-bottom: 1px solid var(--rojo-borde);
+    }
+
+    .status-dot {
+      display: inline-block;
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      margin-right: 6px;
+    }
+
+    .status-online .status-dot { background-color: var(--verde); }
+    .status-offline .status-dot { background-color: var(--rojo); }
+
+    .btn-mini-sync {
+      background: var(--blanco);
+      border: 1px solid currentColor;
+      color: inherit;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .btn-mini-sync:active { transform: scale(0.96); }
+
+    /* Contenedor Principal */
+    .container {
+      max-width: 560px;
+      margin: 0 auto;
+      padding: 14px;
+    }
+
+    /* Membrete Corporativo */
+    .membrete-card {
+      background: var(--blanco);
+      border-radius: var(--radio);
+      padding: 18px 16px 16px;
+      text-align: center;
+      box-shadow: var(--sombra);
+      border-top: 5px solid var(--rojo);
+      border-bottom: 3px solid var(--verde);
+      margin-bottom: 16px;
+    }
+
+    .logo-wrapper {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .logo-wrapper img {
+      max-height: 82px;
+      width: auto;
+      object-fit: contain;
+    }
+
+    .app-title {
+      font-size: 1.38rem;
+      font-weight: 800;
+      color: var(--rojo);
+      text-align: center;
+      letter-spacing: 0.4px;
+      line-height: 1.2;
+      margin-bottom: 4px;
+      text-transform: uppercase;
+    }
+
+    .app-subtitle {
+      font-size: 0.98rem;
+      font-weight: 600;
+      color: var(--gris);
+      text-align: center;
+    }
+
+    /* Tarjeta de Formulario */
+    .card {
+      background: var(--blanco);
+      border-radius: var(--radio);
+      padding: 18px;
+      box-shadow: var(--sombra);
+      margin-bottom: 16px;
+      border: 1px solid #EAE8E4;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-label {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 0.86rem;
+      font-weight: 700;
+      color: var(--gris-oscuro);
+      margin-bottom: 6px;
+      text-transform: uppercase;
+    }
+
+    .form-label svg {
+      width: 18px;
+      height: 18px;
+      stroke: var(--verde-oscuro);
+      flex-shrink: 0;
+    }
+
+    .form-control {
+      width: 100%;
+      height: 52px;
+      padding: 0 14px;
+      font-size: 1rem;
+      font-weight: 500;
+      color: #222;
+      background-color: var(--gris-claro);
+      border: 2px solid #DDD9D4;
+      border-radius: 10px;
+      transition: all 0.2s ease;
+      appearance: none;
+    }
+
+    select.form-control {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%238A8178' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 14px center;
+      padding-right: 40px;
+    }
+
+    .form-control:focus {
+      outline: none;
+      background-color: var(--blanco);
+      border-color: var(--verde);
+      box-shadow: 0 0 0 3px rgba(120, 190, 32, 0.2);
+    }
+
+    .form-control.invalid {
+      border-color: var(--rojo);
+      background-color: var(--rojo-claro);
+    }
+
+    .input-total {
+      font-size: 1.35rem;
+      font-weight: 800;
+      text-align: center;
+      color: var(--rojo);
+      background-color: var(--verde-claro);
+      border-color: var(--verde-borde);
+    }
+
+    .error-msg {
+      color: var(--rojo);
+      font-size: 0.78rem;
+      font-weight: 600;
+      margin-top: 4px;
+      display: none;
+    }
+
+    .form-control.invalid + .error-msg {
+      display: block;
+    }
+
+    /* Botones Grandes de Campo */
+    .btn-primary {
+      width: 100%;
+      height: 58px;
+      background: linear-gradient(135deg, var(--verde) 0%, var(--verde-oscuro) 100%);
+      color: var(--blanco);
+      border: none;
+      border-radius: 12px;
+      font-size: 1.08rem;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      box-shadow: 0 4px 12px rgba(120, 190, 32, 0.35);
+      transition: transform 0.15s ease;
+    }
+
+    .btn-primary:active { transform: scale(0.98); }
+
+    .btn-secondary {
+      width: 100%;
+      height: 50px;
+      background-color: var(--rojo-claro);
+      color: var(--rojo);
+      border: 2px solid var(--rojo-borde);
+      border-radius: 12px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .btn-secondary:active { transform: scale(0.98); }
+
+    /* Resumen de Estados */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+
+    .stat-box {
+      padding: 10px 6px;
+      border-radius: 10px;
+      text-align: center;
+      border: 1px solid transparent;
+    }
+
+    .stat-pendiente {
+      background-color: #FFF8E7;
+      border-color: #F5D78E;
+      color: #9A6700;
+    }
+
+    .stat-sincronizado {
+      background-color: var(--verde-claro);
+      border-color: var(--verde-borde);
+      color: var(--verde-oscuro);
+    }
+
+    .stat-error {
+      background-color: var(--rojo-claro);
+      border-color: var(--rojo-borde);
+      color: var(--rojo);
+    }
+
+    .stat-num {
+      font-size: 1.35rem;
+      font-weight: 800;
+      line-height: 1.1;
+    }
+
+    .stat-label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      margin-top: 2px;
+    }
+
+    /* Historial de Registros */
+    .history-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .history-title {
+      font-size: 0.95rem;
+      font-weight: 800;
+      color: var(--gris-oscuro);
+    }
+
+    .record-item {
+      border: 1px solid #E6E3DF;
+      border-left: 5px solid var(--gris);
+      border-radius: 10px;
+      padding: 12px;
+      margin-bottom: 10px;
+      background: var(--blanco);
+    }
+
+    .record-item.Pendiente { border-left-color: #E6A100; }
+    .record-item.Sincronizado { border-left-color: var(--verde); }
+    .record-item.Error { border-left-color: var(--rojo); }
+
+    .record-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+    }
+
+    .record-mod {
+      font-weight: 800;
+      font-size: 0.9rem;
+      color: var(--gris-oscuro);
+    }
+
+    .badge {
+      padding: 3px 9px;
+      border-radius: 12px;
+      font-size: 0.72rem;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    .badge-Pendiente { background: #FFF3CD; color: #856404; }
+    .badge-Sincronizado { background: var(--verde-claro); color: var(--verde-oscuro); }
+    .badge-Error { background: var(--rojo-claro); color: var(--rojo); }
+
+    .record-detail {
+      font-size: 0.82rem;
+      color: var(--gris);
+      line-height: 1.4;
+    }
+
+    .record-bottom {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 8px;
+      padding-top: 6px;
+      border-top: 1px dashed #EAE8E4;
+      font-size: 0.82rem;
+    }
+
+    .record-total {
+      font-weight: 800;
+      color: var(--rojo);
+      font-size: 0.95rem;
+    }
+
+    /* Navegación Inferior */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 68px;
+      background: var(--blanco);
+      border-top: 2px solid #E6E3DF;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      z-index: 99;
+      box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+    }
+
+    .nav-btn {
+      flex: 1;
+      height: 100%;
+      background: none;
+      border: none;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      color: var(--gris);
+      font-size: 0.78rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .nav-btn.active {
+      color: var(--rojo);
+      background-color: var(--rojo-claro);
+    }
+
+    .nav-btn svg {
+      width: 22px;
+      height: 22px;
+      stroke: currentColor;
+    }
+
+    .view-section { display: none; }
+    .view-section.active { display: block; }
+
+    /* Toast Flotante */
+    .toast {
+      position: fixed;
+      top: 52px;
+      left: 50%;
+      transform: translateX(-50%) translateY(-20px);
+      background: var(--gris-oscuro);
+      color: var(--blanco);
+      padding: 12px 18px;
+      border-radius: 10px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.25s ease;
+      z-index: 200;
+      max-width: 90%;
+      text-align: center;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    .spin {
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      100% { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Barra de estado de conectividad -->
+  <div id="networkBanner" class="status-bar status-online">
+    <div>
+      <span class="status-dot"></span>
+      <span id="networkText">En línea</span>
+    </div>
+    <button type="button" id="btnTopSync" class="btn-mini-sync" onclick="syncManager.syncPending(true)">
+      <svg id="syncIcon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <polyline points="23 4 23 10 17 10"></polyline>
+        <polyline points="1 20 1 14 7 14"></polyline>
+        <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+      </svg>
+      <span id="syncCounterBadge">Sincronizar</span>
+    </button>
+  </div>
+
+  <div id="toast" class="toast"></div>
+
+  <div class="container">
+    <!-- MEMBRETE CORPORATIVO -->
+    <header class="membrete-card">
+      <div class="logo-wrapper">
+        <img src="./LOGO HUARMEY.png" alt="Agrícola Huarmey" onerror="this.style.display='none'" />
+      </div>
+      <h1 class="app-title">REPORTE DE COSECHADORES</h1>
+      <p class="app-subtitle">Registro para Acopiadores (as)</p>
+    </header>
+
+    <!-- VISTA 1: FORMULARIO DE REGISTRO -->
+    <main id="viewForm" class="view-section active">
+      <form id="acopiadorForm" class="card" novalidate>
+        <!-- FECHA REGISTRO -->
+        <div class="form-group">
+          <label class="form-label" for="fechaReg">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+            FECHA REGISTRO *
+          </label>
+          <input type="date" id="fechaReg" class="form-control" required />
+          <div class="error-msg">Seleccione una fecha válida.</div>
+        </div>
+
+        <!-- MODULO -TURNO -->
+        <div class="form-group">
+          <label class="form-label" for="moduloTurno">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
+            MODULO -TURNO *
+          </label>
+          <select id="moduloTurno" class="form-control" required>
+            <option value="">-- Seleccione Módulo - Turno --</option>
+          </select>
+          <div class="error-msg">Seleccione un Módulo - Turno.</div>
+        </div>
+
+        <!-- DATOS ACOPIADOR -->
+        <div class="form-group">
+          <label class="form-label" for="datosAcopiador">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+            DATOS ACOPIADOR *
+          </label>
+          <select id="datosAcopiador" class="form-control" required>
+            <option value="">-- Seleccione Acopiador (a) --</option>
+          </select>
+          <div class="error-msg">Seleccione los datos del Acopiador.</div>
+        </div>
+
+        <!-- DATOS CAPORAL -->
+        <div class="form-group">
+          <label class="form-label" for="datosCaporal">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+            DATOS CAPORAL *
+          </label>
+          <select id="datosCaporal" class="form-control" required>
+            <option value="">-- Seleccione Caporal --</option>
+          </select>
+          <div class="error-msg">Seleccione los datos del Caporal.</div>
+        </div>
+
+        <!-- TOTAL -->
+        <div class="form-group">
+          <label class="form-label" for="totalCosechadores">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+            TOTAL (Número Entero) *
+          </label>
+          <input
+            type="number"
+            id="totalCosechadores"
+            class="form-control input-total"
+            inputmode="numeric"
+            pattern="[0-9]*"
+            min="1"
+            max="9999"
+            step="1"
+            placeholder="0"
+            required
+          />
+          <div class="error-msg">Ingrese un número entero mayor a 0.</div>
+        </div>
+
+        <button type="submit" class="btn-primary">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+            <polyline points="17 21 17 13 7 13 7 21"></polyline>
+            <polyline points="7 3 7 8 15 8"></polyline>
+          </svg>
+          GUARDAR REGISTRO
+        </button>
+
+        <button type="button" class="btn-secondary" onclick="actualizarCatalogosDesdeServidor(true)">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="7 10 12 15 17 10"></polyline>
+            <line x1="12" y1="15" x2="12" y2="3"></line>
+          </svg>
+          Actualizar Listas desde Google Sheets
+        </button>
+      </form>
+    </main>
+
+    <!-- VISTA 2: HISTORIAL Y COLA OFFLINE -->
+    <section id="viewHistory" class="view-section">
+      <div class="card">
+        <div class="stats-grid">
+          <div class="stat-box stat-pendiente">
+            <div class="stat-num" id="countPendiente">0</div>
+            <div class="stat-label">Pendiente</div>
+          </div>
+          <div class="stat-box stat-sincronizado">
+            <div class="stat-num" id="countSincronizado">0</div>
+            <div class="stat-label">Sincronizado</div>
+          </div>
+          <div class="stat-box stat-error">
+            <div class="stat-num" id="countError">0</div>
+            <div class="stat-label">Error</div>
+          </div>
+        </div>
+
+        <button type="button" class="btn-primary" style="height: 48px; font-size: 0.95rem; margin-bottom: 14px;" onclick="syncManager.syncPending(true)">
+          SINCRONIZAR AHORA CON GOOGLE SHEETS
+        </button>
+
+        <div class="history-header">
+          <span class="history-title">Registros Locales (IndexedDB)</span>
+          <span id="lastCatalogSync" style="font-size: 0.72rem; color: var(--gris);"></span>
+        </div>
+
+        <div id="recordsList"></div>
+      </div>
+    </section>
+  </div>
+
+  <!-- NAVEGACIÓN INFERIOR -->
+  <nav class="bottom-nav">
+    <button type="button" class="nav-btn active" id="navForm" onclick="switchTab('form')">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2">
+        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+      </svg>
+      Nuevo Registro
+    </button>
+    <button type="button" class="nav-btn" id="navHistory" onclick="switchTab('history')">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2">
+        <line x1="8" y1="6" x2="21" y2="6"></line>
+        <line x1="8" y1="12" x2="21" y2="12"></line>
+        <line x1="8" y1="18" x2="21" y2="18"></line>
+        <line x1="3" y1="6" x2="3.01" y2="6"></line>
+        <line x1="3" y1="12" x2="3.01" y2="12"></line>
+        <line x1="3" y1="18" x2="3.01" y2="18"></line>
+      </svg>
+      Registros (<span id="navBadgeCount">0</span>)
+    </button>
+  </nav>
+
+  <script>
+    /**
+     * CONFIGURACIÓN DE CONEXIÓN A GOOGLE APPS SCRIPT
+     */
+    const APP_CONFIG = {
+      SCRIPT_URL: "<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#DA291C" />
+  <title>Reporte de Cosechadores - Agrícola Huarmey</title>
+  <link rel="manifest" href="./manifest.json" />
+  <link rel="icon" type="image/png" href="./LOGO HUARMEY.png" />
+  <style>
+    :root {
+      --rojo: #DA291C;
+      --rojo-claro: #FDECEA;
+      --rojo-borde: #F5B7B1;
+      --verde: #78BE20;
+      --verde-oscuro: #5A9414;
+      --verde-claro: #F1F8E8;
+      --verde-borde: #C5E1A5;
+      --gris: #8A8178;
+      --gris-oscuro: #4A4540;
+      --gris-claro: #F5F4F2;
+      --fondo: #F7F8F5;
+      --blanco: #FFFFFF;
+      --sombra: 0 4px 14px rgba(74, 69, 64, 0.08);
+      --radio: 14px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    }
+
+    body {
+      background-color: var(--fondo);
+      color: var(--gris-oscuro);
+      min-height: 100vh;
+      padding-bottom: 92px;
+    }
+
+    /* Barra superior de estado de red */
+    .status-bar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 16px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      transition: background-color 0.3s ease;
+    }
+
+    .status-online {
+      background-color: var(--verde-claro);
+      color: var(--verde-oscuro);
+      border-bottom: 1px solid var(--verde-borde);
+    }
+
+    .status-offline {
+      background-color: var(--rojo-claro);
+      color: var(--rojo);
+      border-bottom: 1px solid var(--rojo-borde);
+    }
+
+    .status-dot {
+      display: inline-block;
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      margin-right: 6px;
+    }
+
+    .status-online .status-dot { background-color: var(--verde); }
+    .status-offline .status-dot { background-color: var(--rojo); }
+
+    .btn-mini-sync {
+      background: var(--blanco);
+      border: 1px solid currentColor;
+      color: inherit;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .btn-mini-sync:active { transform: scale(0.96); }
+
+    /* Contenedor Principal */
+    .container {
+      max-width: 560px;
+      margin: 0 auto;
+      padding: 14px;
+    }
+
+    /* Membrete Corporativo */
+    .membrete-card {
+      background: var(--blanco);
+      border-radius: var(--radio);
+      padding: 18px 16px 16px;
+      text-align: center;
+      box-shadow: var(--sombra);
+      border-top: 5px solid var(--rojo);
+      border-bottom: 3px solid var(--verde);
+      margin-bottom: 16px;
+    }
+
+    .logo-wrapper {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .logo-wrapper img {
+      max-height: 82px;
+      width: auto;
+      object-fit: contain;
+    }
+
+    .app-title {
+      font-size: 1.38rem;
+      font-weight: 800;
+      color: var(--rojo);
+      text-align: center;
+      letter-spacing: 0.4px;
+      line-height: 1.2;
+      margin-bottom: 4px;
+      text-transform: uppercase;
+    }
+
+    .app-subtitle {
+      font-size: 0.98rem;
+      font-weight: 600;
+      color: var(--gris);
+      text-align: center;
+    }
+
+    /* Tarjeta de Formulario */
+    .card {
+      background: var(--blanco);
+      border-radius: var(--radio);
+      padding: 18px;
+      box-shadow: var(--sombra);
+      margin-bottom: 16px;
+      border: 1px solid #EAE8E4;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-label {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 0.86rem;
+      font-weight: 700;
+      color: var(--gris-oscuro);
+      margin-bottom: 6px;
+      text-transform: uppercase;
+    }
+
+    .form-label svg {
+      width: 18px;
+      height: 18px;
+      stroke: var(--verde-oscuro);
+      flex-shrink: 0;
+    }
+
+    .form-control {
+      width: 100%;
+      height: 52px;
+      padding: 0 14px;
+      font-size: 1rem;
+      font-weight: 500;
+      color: #222;
+      background-color: var(--gris-claro);
+      border: 2px solid #DDD9D4;
+      border-radius: 10px;
+      transition: all 0.2s ease;
+      appearance: none;
+    }
+
+    select.form-control {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%238A8178' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 14px center;
+      padding-right: 40px;
+    }
+
+    .form-control:focus {
+      outline: none;
+      background-color: var(--blanco);
+      border-color: var(--verde);
+      box-shadow: 0 0 0 3px rgba(120, 190, 32, 0.2);
+    }
+
+    .form-control.invalid {
+      border-color: var(--rojo);
+      background-color: var(--rojo-claro);
+    }
+
+    .input-total {
+      font-size: 1.35rem;
+      font-weight: 800;
+      text-align: center;
+      color: var(--rojo);
+      background-color: var(--verde-claro);
+      border-color: var(--verde-borde);
+    }
+
+    .error-msg {
+      color: var(--rojo);
+      font-size: 0.78rem;
+      font-weight: 600;
+      margin-top: 4px;
+      display: none;
+    }
+
+    .form-control.invalid + .error-msg {
+      display: block;
+    }
+
+    /* Botones Grandes de Campo */
+    .btn-primary {
+      width: 100%;
+      height: 58px;
+      background: linear-gradient(135deg, var(--verde) 0%, var(--verde-oscuro) 100%);
+      color: var(--blanco);
+      border: none;
+      border-radius: 12px;
+      font-size: 1.08rem;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      box-shadow: 0 4px 12px rgba(120, 190, 32, 0.35);
+      transition: transform 0.15s ease;
+    }
+
+    .btn-primary:active { transform: scale(0.98); }
+
+    .btn-secondary {
+      width: 100%;
+      height: 50px;
+      background-color: var(--rojo-claro);
+      color: var(--rojo);
+      border: 2px solid var(--rojo-borde);
+      border-radius: 12px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .btn-secondary:active { transform: scale(0.98); }
+
+    /* Resumen de Estados */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+
+    .stat-box {
+      padding: 10px 6px;
+      border-radius: 10px;
+      text-align: center;
+      border: 1px solid transparent;
+    }
+
+    .stat-pendiente {
+      background-color: #FFF8E7;
+      border-color: #F5D78E;
+      color: #9A6700;
+    }
+
+    .stat-sincronizado {
+      background-color: var(--verde-claro);
+      border-color: var(--verde-borde);
+      color: var(--verde-oscuro);
+    }
+
+    .stat-error {
+      background-color: var(--rojo-claro);
+      border-color: var(--rojo-borde);
+      color: var(--rojo);
+    }
+
+    .stat-num {
+      font-size: 1.35rem;
+      font-weight: 800;
+      line-height: 1.1;
+    }
+
+    .stat-label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      margin-top: 2px;
+    }
+
+    /* Historial de Registros */
+    .history-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .history-title {
+      font-size: 0.95rem;
+      font-weight: 800;
+      color: var(--gris-oscuro);
+    }
+
+    .record-item {
+      border: 1px solid #E6E3DF;
+      border-left: 5px solid var(--gris);
+      border-radius: 10px;
+      padding: 12px;
+      margin-bottom: 10px;
+      background: var(--blanco);
+    }
+
+    .record-item.Pendiente { border-left-color: #E6A100; }
+    .record-item.Sincronizado { border-left-color: var(--verde); }
+    .record-item.Error { border-left-color: var(--rojo); }
+
+    .record-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+    }
+
+    .record-mod {
+      font-weight: 800;
+      font-size: 0.9rem;
+      color: var(--gris-oscuro);
+    }
+
+    .badge {
+      padding: 3px 9px;
+      border-radius: 12px;
+      font-size: 0.72rem;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    .badge-Pendiente { background: #FFF3CD; color: #856404; }
+    .badge-Sincronizado { background: var(--verde-claro); color: var(--verde-oscuro); }
+    .badge-Error { background: var(--rojo-claro); color: var(--rojo); }
+
+    .record-detail {
+      font-size: 0.82rem;
+      color: var(--gris);
+      line-height: 1.4;
+    }
+
+    .record-bottom {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 8px;
+      padding-top: 6px;
+      border-top: 1px dashed #EAE8E4;
+      font-size: 0.82rem;
+    }
+
+    .record-total {
+      font-weight: 800;
+      color: var(--rojo);
+      font-size: 0.95rem;
+    }
+
+    /* Navegación Inferior */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 68px;
+      background: var(--blanco);
+      border-top: 2px solid #E6E3DF;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      z-index: 99;
+      box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+    }
+
+    .nav-btn {
+      flex: 1;
+      height: 100%;
+      background: none;
+      border: none;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      color: var(--gris);
+      font-size: 0.78rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .nav-btn.active {
+      color: var(--rojo);
+      background-color: var(--rojo-claro);
+    }
+
+    .nav-btn svg {
+      width: 22px;
+      height: 22px;
+      stroke: currentColor;
+    }
+
+    .view-section { display: none; }
+    .view-section.active { display: block; }
+
+    /* Toast Flotante */
+    .toast {
+      position: fixed;
+      top: 52px;
+      left: 50%;
+      transform: translateX(-50%) translateY(-20px);
+      background: var(--gris-oscuro);
+      color: var(--blanco);
+      padding: 12px 18px;
+      border-radius: 10px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.25s ease;
+      z-index: 200;
+      max-width: 90%;
+      text-align: center;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    .spin {
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      100% { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Barra de estado de conectividad -->
+  <div id="networkBanner" class="status-bar status-online">
+    <div>
+      <span class="status-dot"></span>
+      <span id="networkText">En línea</span>
+    </div>
+    <button type="button" id="btnTopSync" class="btn-mini-sync" onclick="syncManager.syncPending(true)">
+      <svg id="syncIcon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <polyline points="23 4 23 10 17 10"></polyline>
+        <polyline points="1 20 1 14 7 14"></polyline>
+        <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+      </svg>
+      <span id="syncCounterBadge">Sincronizar</span>
+    </button>
+  </div>
+
+  <div id="toast" class="toast"></div>
+
+  <div class="container">
+    <!-- MEMBRETE CORPORATIVO -->
+    <header class="membrete-card">
+      <div class="logo-wrapper">
+        <img src="./LOGO HUARMEY.png" alt="Agrícola Huarmey" onerror="this.style.display='none'" />
+      </div>
+      <h1 class="app-title">REPORTE DE COSECHADORES</h1>
+      <p class="app-subtitle">Registro para Acopiadores (as)</p>
+    </header>
+
+    <!-- VISTA 1: FORMULARIO DE REGISTRO -->
+    <main id="viewForm" class="view-section active">
+      <form id="acopiadorForm" class="card" novalidate>
+        <!-- FECHA REGISTRO -->
+        <div class="form-group">
+          <label class="form-label" for="fechaReg">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+            FECHA REGISTRO *
+          </label>
+          <input type="date" id="fechaReg" class="form-control" required />
+          <div class="error-msg">Seleccione una fecha válida.</div>
+        </div>
+
+        <!-- MODULO -TURNO -->
+        <div class="form-group">
+          <label class="form-label" for="moduloTurno">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
+            MODULO -TURNO *
+          </label>
+          <select id="moduloTurno" class="form-control" required>
+            <option value="">-- Seleccione Módulo - Turno --</option>
+          </select>
+          <div class="error-msg">Seleccione un Módulo - Turno.</div>
+        </div>
+
+        <!-- DATOS ACOPIADOR -->
+        <div class="form-group">
+          <label class="form-label" for="datosAcopiador">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+            DATOS ACOPIADOR *
+          </label>
+          <select id="datosAcopiador" class="form-control" required>
+            <option value="">-- Seleccione Acopiador (a) --</option>
+          </select>
+          <div class="error-msg">Seleccione los datos del Acopiador.</div>
+        </div>
+
+        <!-- DATOS CAPORAL -->
+        <div class="form-group">
+          <label class="form-label" for="datosCaporal">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+            DATOS CAPORAL *
+          </label>
+          <select id="datosCaporal" class="form-control" required>
+            <option value="">-- Seleccione Caporal --</option>
+          </select>
+          <div class="error-msg">Seleccione los datos del Caporal.</div>
+        </div>
+
+        <!-- TOTAL -->
+        <div class="form-group">
+          <label class="form-label" for="totalCosechadores">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+            TOTAL (Número Entero) *
+          </label>
+          <input
+            type="number"
+            id="totalCosechadores"
+            class="form-control input-total"
+            inputmode="numeric"
+            pattern="[0-9]*"
+            min="1"
+            max="9999"
+            step="1"
+            placeholder="0"
+            required
+          />
+          <div class="error-msg">Ingrese un número entero mayor a 0.</div>
+        </div>
+
+        <button type="submit" class="btn-primary">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+            <polyline points="17 21 17 13 7 13 7 21"></polyline>
+            <polyline points="7 3 7 8 15 8"></polyline>
+          </svg>
+          GUARDAR REGISTRO
+        </button>
+
+        <button type="button" class="btn-secondary" onclick="actualizarCatalogosDesdeServidor(true)">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="7 10 12 15 17 10"></polyline>
+            <line x1="12" y1="15" x2="12" y2="3"></line>
+          </svg>
+          Actualizar Listas desde Google Sheets
+        </button>
+      </form>
+    </main>
+
+    <!-- VISTA 2: HISTORIAL Y COLA OFFLINE -->
+    <section id="viewHistory" class="view-section">
+      <div class="card">
+        <div class="stats-grid">
+          <div class="stat-box stat-pendiente">
+            <div class="stat-num" id="countPendiente">0</div>
+            <div class="stat-label">Pendiente</div>
+          </div>
+          <div class="stat-box stat-sincronizado">
+            <div class="stat-num" id="countSincronizado">0</div>
+            <div class="stat-label">Sincronizado</div>
+          </div>
+          <div class="stat-box stat-error">
+            <div class="stat-num" id="countError">0</div>
+            <div class="stat-label">Error</div>
+          </div>
+        </div>
+
+        <button type="button" class="btn-primary" style="height: 48px; font-size: 0.95rem; margin-bottom: 14px;" onclick="syncManager.syncPending(true)">
+          SINCRONIZAR AHORA CON GOOGLE SHEETS
+        </button>
+
+        <div class="history-header">
+          <span class="history-title">Registros Locales (IndexedDB)</span>
+          <span id="lastCatalogSync" style="font-size: 0.72rem; color: var(--gris);"></span>
+        </div>
+
+        <div id="recordsList"></div>
+      </div>
+    </section>
+  </div>
+
+  <!-- NAVEGACIÓN INFERIOR -->
+  <nav class="bottom-nav">
+    <button type="button" class="nav-btn active" id="navForm" onclick="switchTab('form')">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2">
+        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+      </svg>
+      Nuevo Registro
+    </button>
+    <button type="button" class="nav-btn" id="navHistory" onclick="switchTab('history')">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2">
+        <line x1="8" y1="6" x2="21" y2="6"></line>
+        <line x1="8" y1="12" x2="21" y2="12"></line>
+        <line x1="8" y1="18" x2="21" y2="18"></line>
+        <line x1="3" y1="6" x2="3.01" y2="6"></line>
+        <line x1="3" y1="12" x2="3.01" y2="12"></line>
+        <line x1="3" y1="18" x2="3.01" y2="18"></line>
+      </svg>
+      Registros (<span id="navBadgeCount">0</span>)
+    </button>
+  </nav>
+
+  <script>
+    /**
+     * CONFIGURACIÓN DE CONEXIÓN A GOOGLE APPS SCRIPT
+     */
+    const APP_CONFIG = {
+      SCRIPT_URL: "PEGAR_AQUI_TU_URL_DE_GOOGLE_APPS_SCRIPT",
+      API_TOKEN: "AH_ACOPIADOR_2026_SEC_TOKEN_9841",
+      DB_NAME: "AgricolaHuarmey_AcopiadorDB",
+      DB_VERSION: 1
     };
 
-    // Generar Icono SVG Data URI para el Manifest
-    const ICON_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><rect width="512" height="512" rx="96" fill="#ffffff"/><path d="M262 135c0-55 55-88 98-82-6 44-50 82-98 82z" fill="#388E1C"/><path d="M208 162c44 27 120 16 152-16-8 49-89 76-152 16z" fill="#DA291C"/><path d="M186 221c65 38 163 22 201-21-11 65-119 98-201 21z" fill="#DA291C"/><path d="M202 286c65 38 141 22 168-16-16 60-108 81-168 16z" fill="#DA291C"/><path d="M181 108c-54 59-49 173 38 232-60-65-65-167-38-232z" fill="#388E1C"/></svg>`;
-    const ICON_URL = 'data:image/svg+xml;base64,' + btoa(ICON_SVG);
-
-    // Inyectar manifest.json dinámicamente para cumplir requisitos de instalación PWA
-    (function setupManifest() {
-      const manifest = {
-        name: 'REPORTE DE COSECHADORES - Agrícola Huarmey',
-        short_name: 'Cosechadores',
-        description: 'Registro diario offline-first para Acopiadores(as) de Agrícola Huarmey',
-        start_url: './',
-        display: 'standalone',
-        background_color: '#F6F5F3',
-        theme_color: '#DA291C',
-        orientation: 'portrait',
-        icons: [
-          { src: ICON_URL, sizes: '192x192', type: 'image/svg+xml', purpose: 'any maskable' },
-          { src: ICON_URL, sizes: '512x512', type: 'image/svg+xml', purpose: 'any maskable' }
-        ]
-      };
-      const blob = new Blob([JSON.stringify(manifest)], { type: 'application/json' });
-      const link = document.createElement('link');
-      link.rel = 'manifest';
-      link.href = URL.createObjectURL(blob);
-      document.head.appendChild(link);
-    })();
-
-    // Registrar Service Worker para caché offline de la interfaz
-    (function registerSW() {
-      if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {
-        const swCode = `
-          const CACHE_NAME = 'huarmey-pwa-v2';
-          const ASSETS = ['./', 'https://cdn.tailwindcss.com'];
-          self.addEventListener('install', (e) => {
-            e.waitUntil(caches.open(CACHE_NAME).then(c => c.addAll(ASSETS)).catch(() => {}));
-            self.skipWaiting();
-          });
-          self.addEventListener('activate', (e) => {
-            e.waitUntil(self.clients.claim());
-          });
-          self.addEventListener('fetch', (e) => {
-            if (e.request.method !== 'GET') return;
-            e.respondWith(
-              fetch(e.request)
-                .then(res => {
-                  const clone = res.clone();
-                  caches.open(CACHE_NAME).then(c => c.put(e.request, clone));
-                  return res;
-                })
-                .catch(() => caches.match(e.request))
-            );
-          });
-        `;
-        const swBlob = new Blob([swCode], { type: 'application/javascript' });
-        navigator.serviceWorker.register(URL.createObjectURL(swBlob)).catch(err => {
-          console.warn('SW registro omitido en entorno sandbox:', err.message);
-        });
-      }
-    })();
+    /**
+     * CATÁLOGOS SEMILLA OFFLINE (Respaldo inmediato sin internet basado en REGISTRO-PRODUCCION-ACOPIADOR.xlsx)
+     */
+    const DEFAULT_CATALOGS = {
+      modulos: [
+        "MODULO 1 TURNO 1", "MODULO 1 TURNO 2", "MODULO 1 TURNO 3", "MODULO 1 TURNO 4", "MODULO 1 TURNO 5",
+        "MODULO 2 TURNO 1", "MODULO 2 TURNO 2", "MODULO 2 TURNO 3", "MODULO 2 TURNO 4", "MODULO 2 TURNO 5",
+        "MODULO 3 TURNO 1", "MODULO 3 TURNO 2", "MODULO 3 TURNO 3", "MODULO 3 TURNO 4", "MODULO 3 TURNO 5",
+        "MODULO 4 TURNO 1", "MODULO 4 TURNO 2", "MODULO 4 TURNO 3", "MODULO 4 TURNO 4", "MODULO 4 TURNO 5",
+        "MODULO 5 TURNO 1", "MODULO 5 TURNO 2", "MODULO 5 TURNO 3", "MODULO 5 TURNO 4", "MODULO 5 TURNO 5",
+        "MODULO 6 TURNO 1", "MODULO 6 TURNO 2A", "MODULO 6 TURNO 2B", "MODULO 6 TURNO 3", "MODULO 6 TURNO 4", "MODULO 6 TURNO 5",
+        "MODULO 7 TURNO 1", "MODULO 7 TURNO 2", "MODULO 7 TURNO 3", "MODULO 7 TURNO 4", "MODULO 7 TURNO 5",
+        "MODULO 8 TURNO 1", "MODULO 8 TURNO 2", "MODULO 8 TURNO 3", "MODULO 8 TURNO 4", "MODULO 8 TURNO 5",
+        "MODULO 9 TURNO 1", "MODULO 9 TURNO 2", "MODULO 9 TURNO 3", "MODULO 9 TURNO 4", "MODULO 9 TURNO 5"
+      ],
+      acopiadores: [
+        "ALISON TATIANA COLINA CUEVA", "ANALI ALEGRIA TIQUILLAHUANCA", "ANGHELA IBET SERRATO RODRIGUEZ",
+        "ANNI MARIA BENITES MENESES", "ANSHELA ABIGAIL SUXE SAAVEDRA", "ASUSENA DIAZ SAAVEDRA",
+        "CIELO CRUZ VILLEGAS ANGULO", "ELIANA YAJAIRA SAMAME CACERES", "ELIZABETH CORDOVA GARCIA",
+        "EVELIN BENAVIDES DIAZ", "FLOR NUÑEZ HERRERA", "JHOSTIN SEBASTIAN CORMAN MEDINA",
+        "LESLYE ANTONELA GISSEL LOZANO LANCHA", "LILIANA ELIZABETH INOÑAN TEJADA", "LISETH SANTOYO NAVARRO",
+        "MAYTE ZARAHI ALVARADO FERNANDEZ", "PRISCILA BRIGHITT CARMEN FARFAN", "ROXANA DIAZ SAAVEDRA",
+        "YOSELIN YUDIT FERNANDEZ HURTADO", "YULI MIREILY VASQUEZ PEREZ"
+      ],
+      caporales: [
+        "ALEXANDER EMANUEL RODRIGUEZ CHAVEZ", "ARACELY LIZBETH VASQUEZ ARAUJO", "CARLOS DERIAN RIOS SHIMARA",
+        "CARMEN DE JESUS TIGLLA VILCHEZ", "CRISANTO CIEZA SANDY", "EDWIN JHUNIOR FERNANDEZ JULCAHUANGA",
+        "ELGAR JESUS CASTRO SANDOVAL", "EMILY AZUCENA LOZADA SALDARRIAGA", "ENILSON CERCADO BUSTAMANTE",
+        "GILMER ESMITH MEDINA FERNANDEZ", "JAVIER MARTIN ÑIQUEN MENDOZA", "JEREMÍAS PALOMINO MONDRAGÓN",
+        "JESSARELA YOLANDA MEDINA INGA", "JOHAN RICARDO MURRIETA HUAYA", "JOHN NER TAPULLIMA VALLEJOS",
+        "JOSE ELDER PEREZ VASQUEZ", "KATHERINE IMAN HUAMAN", "LINDAURA DIAZ DE LA CRUZ",
+        "LUCERO LOZANO LANCHA", "LUIS ALBERTO ESPINOZA GOMEZ", "LUZ CLARITA TORO SANCHEZ",
+        "MARIA CHUNGA JUAREZ", "MARÍA ELENA MONTENEGRO MONTEZA", "MARIBEL TERAN DIAZ",
+        "MARY CARMEN AGUILAR CARRANZA", "MAXIMILIANO ISIQUE SERRANO", "MERCEDES NAYELY MORALES GARCIA",
+        "MICHAEL ISAI HUACHEZ ROMERO", "MIGUEL ANGEL CALDERON YTURREGUI", "NAYELI NIKOL DE LA CRUZ DIAZ",
+        "NICOLAS SMITH MORALES PERICHE", "RICHAR BRUNO BAQUEDANO BARBOZA", "ROCIO DEL PILAR MONTENEGRO MANAYAN",
+        "RUTH MELISA MORALES PAQUIRACHI", "SILVIA ANGELICA BARREDA MALHABER", "TERESA ROMAN GARCIA",
+        "WILDER SAUL MENDOZA MEDINA", "YANET DEL ROCIO MENDOZA LLONTOP", "YESICA MORALES PAQUIRACHI",
+        "YULISA RINZA HUAMAN"
+      ]
+    };
 
     /**
-     * ============================================================================
-     * CAPA DE PERSISTENCIA LOCAL (INDEXEDDB)
-     * ============================================================================
+     * CAPA DE BASE DE DATOS LOCAL: IndexedDB
      */
-    const DB = {
-      instance: null,
+    class LocalDatabase {
+      constructor() {
+        this.db = null;
+      }
 
       async open() {
-        if (this.instance) return this.instance;
+        if (this.db) return this.db;
         return new Promise((resolve, reject) => {
-          const req = indexedDB.open(APP_CONFIG.DB_NAME, APP_CONFIG.DB_VERSION);
-          req.onupgradeneeded = (e) => {
-            const db = e.target.result;
-            // Almacén para catálogos maestros
-            if (!db.objectStoreNames.contains('maestros')) {
-              db.createObjectStore('maestros', { keyPath: 'id' });
+          const request = indexedDB.open(APP_CONFIG.DB_NAME, APP_CONFIG.DB_VERSION);
+
+          request.onupgradeneeded = (event) => {
+            const db = event.target.result;
+            if (!db.objectStoreNames.contains("registros")) {
+              const store = db.createObjectStore("registros", { keyPath: "uuid" });
+              store.createIndex("estado", "estado", { unique: false });
+              store.createIndex("createdAt", "createdAt", { unique: false });
             }
-            // Almacén para registros de cosecha con índice por estado
-            if (!db.objectStoreNames.contains('registros')) {
-              const store = db.createObjectStore('registros', { keyPath: 'uuid' });
-              store.createIndex('estado', 'estado', { unique: false });
-              store.createIndex('createdAt', 'createdAt', { unique: false });
+            if (!db.objectStoreNames.contains("catalogos")) {
+              db.createObjectStore("catalogos", { keyPath: "key" });
             }
           };
-          req.onsuccess = (e) => {
-            this.instance = e.target.result;
-            resolve(this.instance);
+
+          request.onsuccess = (event) => {
+            this.db = event.target.result;
+            resolve(this.db);
           };
-          req.onerror = (e) => reject(e.target.error);
-        });
-      },
 
-      async saveMaestros(data) {
+          request.onerror = (event) => reject(event.target.error);
+        });
+      }
+
+      async saveRegistro(registro) {
         const db = await this.open();
         return new Promise((resolve, reject) => {
-          const tx = db.transaction('maestros', 'readwrite');
-          tx.objectStore('maestros').put({
-            id: 'catalogos',
-            supervisores: data.supervisores && data.supervisores.length ? data.supervisores : APP_CONFIG.SUPERVISORES_LIST,
-            modulos: data.modulos || [],
-            acopiadores: data.acopiadores || [],
-            caporales: data.caporales || [],
-            updatedAt: new Date().toISOString()
-          });
-          tx.oncomplete = () => resolve();
-          tx.onerror = (e) => reject(e.target.error);
-        });
-      },
-
-      async getMaestros() {
-        const db = await this.open();
-        return new Promise((resolve, reject) => {
-          const tx = db.transaction('maestros', 'readonly');
-          const req = tx.objectStore('maestros').get('catalogos');
-          req.onsuccess = () => resolve(req.result || null);
-          req.onerror = (e) => reject(e.target.error);
-        });
-      },
-
-      async putRegistro(registro) {
-        const db = await this.open();
-        return new Promise((resolve, reject) => {
-          const tx = db.transaction('registros', 'readwrite');
-          tx.objectStore('registros').put(registro);
+          const tx = db.transaction("registros", "readwrite");
+          tx.objectStore("registros").put(registro);
           tx.oncomplete = () => resolve(registro);
-          tx.onerror = (e) => reject(e.target.error);
+          tx.onerror = () => reject(tx.error);
         });
-      },
+      }
 
       async getAllRegistros() {
         const db = await this.open();
         return new Promise((resolve, reject) => {
-          const tx = db.transaction('registros', 'readonly');
-          const req = tx.objectStore('registros').getAll();
+          const tx = db.transaction("registros", "readonly");
+          const req = tx.objectStore("registros").getAll();
           req.onsuccess = () => {
-            const list = req.result || [];
-            // Ordenar del más reciente al más antiguo
-            list.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-            resolve(list);
+            const sorted = (req.result || []).sort((a, b) => b.createdAt - a.createdAt);
+            resolve(sorted);
           };
-          req.onerror = (e) => reject(e.target.error);
+          req.onerror = () => reject(req.error);
         });
       }
-    };
+
+      async getPendientesOError() {
+        const all = await this.getAllRegistros();
+        return all.filter(r => r.estado === "Pendiente" || r.estado === "Error");
+      }
+
+      async saveCatalog(key, items) {
+        const db = await this.open();
+        return new Promise((resolve, reject) => {
+          const tx = db.transaction("catalogos", "readwrite");
+          tx.objectStore("catalogos").put({ key, items, updatedAt: new Date().toISOString() });
+          tx.oncomplete = () => resolve();
+          tx.onerror = () => reject(tx.error);
+        });
+      }
+
+      async getCatalog(key) {
+        const db = await this.open();
+        return new Promise((resolve, reject) => {
+          const tx = db.transaction("catalogos", "readonly");
+          const req = tx.objectStore("catalogos").get(key);
+          req.onsuccess = () => resolve(req.result ? req.result.items : null);
+          req.onerror = () => reject(req.error);
+        });
+      }
+    }
+
+    const localDB = new LocalDatabase();
 
     /**
-     * ============================================================================
-     * UTILIDADES Y VALIDACIONES
-     * ============================================================================
+     * GESTOR DE SINCRONIZACIÓN OFFLINE-FIRST (Concurrencia 200+ usuarios)
      */
-    function generateUUID() {
+    class SyncManager {
+      constructor() {
+        this.isSyncing = false;
+      }
+
+      async syncPending(manual = false) {
+        if (this.isSyncing) return;
+        if (!navigator.onLine) {
+          if (manual) showToast("Sin conexión. Los datos permanecen seguros en el equipo.");
+          return;
+        }
+        if (APP_CONFIG.SCRIPT_URL.includes("PEGAR_AQUI")) {
+          if (manual) showToast("Configure la URL de Google Apps Script en index.html");
+          return;
+        }
+
+        const pendientes = await localDB.getPendientesOError();
+        if (pendientes.length === 0) {
+          if (manual) showToast("Todos los registros ya están sincronizados.");
+          return;
+        }
+
+        this.isSyncing = true;
+        document.getElementById("syncIcon").classList.add("spin");
+
+        try {
+          // Jitter aleatorio (0 a 1200ms) para escalonar peticiones si 200 usuarios recuperan señal juntos
+          await new Promise(r => setTimeout(r, Math.floor(Math.random() * 1200)));
+
+          // Envío en lotes de hasta 25 registros
+          const batch = pendientes.slice(0, 25);
+
+          const response = await fetch(APP_CONFIG.SCRIPT_URL, {
+            method: "POST",
+            headers: { "Content-Type": "text/plain;charset=utf-8" }, // Evita preflight CORS en Apps Script
+            body: JSON.stringify({
+              token: APP_CONFIG.API_TOKEN,
+              records: batch
+            })
+          });
+
+          const result = await response.json();
+
+          if (result.status === "ok" && Array.isArray(result.processed)) {
+            const processedSet = new Set(result.processed);
+            for (const reg of batch) {
+              if (processedSet.has(reg.uuid)) {
+                reg.estado = "Sincronizado";
+                reg.errorDetail = "";
+                reg.syncedAt = new Date().toISOString();
+                await localDB.saveRegistro(reg);
+              }
+            }
+            showToast(`Sincronizados ${result.processed.length} registro(s) con Google Sheets.`);
+          } else if (result.status === "retry") {
+            // El servidor pidió reintentar por cola de 200 usuarios
+            setTimeout(() => this.syncPending(false), 3000 + Math.random() * 2000);
+          } else {
+            throw new Error(result.message || "Error desconocido en el servidor");
+          }
+        } catch (err) {
+          console.error("Error de sincronización:", err);
+          for (const reg of pendientes.slice(0, 25)) {
+            reg.estado = "Error";
+            reg.errorDetail = err.message;
+            await localDB.saveRegistro(reg);
+          }
+          if (manual) showToast("Error al sincronizar. Se reintentará automáticamente.");
+        } finally {
+          this.isSyncing = false;
+          document.getElementById("syncIcon").classList.remove("spin");
+          await renderHistory();
+        }
+      }
+    }
+
+    const syncManager = new SyncManager();
+
+    /**
+     * UTILIDADES Y FLUJO DE APLICACIÓN
+     */
+    function generarUUID() {
       if (crypto && crypto.randomUUID) return crypto.randomUUID();
       return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
         const r = Math.random() * 16 | 0;
@@ -547,518 +2176,1185 @@
       });
     }
 
-    function getTodayLocalISO() {
-      const now = new Date();
-      const offset = now.getTimezoneOffset() * 60000;
-      return new Date(now - offset).toISOString().split('T')[0];
+    function showToast(msg) {
+      const toast = document.getElementById("toast");
+      toast.textContent = msg;
+      toast.classList.add("show");
+      clearTimeout(window._toastTimer);
+      window._toastTimer = setTimeout(() => toast.classList.remove("show"), 3200);
     }
 
-    function getApiUrl() {
-      return localStorage.getItem('HUARMEY_API_URL') || APP_CONFIG.DEFAULT_API_URL;
-    }
-
-    function isApiConfigured() {
-      const url = getApiUrl();
-      return url && url.startsWith('https://script.google.com/') && !url.includes('REEMPLAZAR_CON_TU_ID');
-    }
-
-    function showFeedback(message, type = 'success') {
-      const banner = document.getElementById('feedback-banner');
-      banner.classList.remove('hidden', 'bg-emerald-50', 'border-emerald-300', 'text-emerald-900', 'bg-red-50', 'border-red-300', 'text-red-900', 'bg-amber-50', 'border-amber-300', 'text-amber-900');
-      
-      if (type === 'success') {
-        banner.classList.add('bg-emerald-50', 'border-emerald-300', 'text-emerald-900');
-        banner.innerHTML = `✅ ${message}`;
-      } else if (type === 'error') {
-        banner.classList.add('bg-red-50', 'border-red-300', 'text-red-900');
-        banner.innerHTML = `⚠️ ${message}`;
+    function updateNetworkUI() {
+      const banner = document.getElementById("networkBanner");
+      const text = document.getElementById("networkText");
+      if (navigator.onLine) {
+        banner.className = "status-bar status-online";
+        text.textContent = "Conectado (Sincronización activa)";
+        syncManager.syncPending(false);
       } else {
-        banner.classList.add('bg-amber-50', 'border-amber-300', 'text-amber-900');
-        banner.innerHTML = `ℹ️ ${message}`;
+        banner.className = "status-bar status-offline";
+        text.textContent = "Modo Offline (Guardado local activo)";
       }
-
-      clearTimeout(window._feedbackTimer);
-      window._feedbackTimer = setTimeout(() => {
-        banner.classList.add('hidden');
-      }, 6000);
     }
 
-    /**
-     * ============================================================================
-     * GESTIÓN DE DATOS MAESTROS (ONLINE + RESPALDO OFFLINE)
-     * ============================================================================
-     */
-    function populateSelect(selectId, items, placeholder) {
+    function setFechaHoy() {
+      const now = new Date();
+      const offset = now.getTimezoneOffset();
+      const localDate = new Date(now.getTime() - (offset * 60 * 1000));
+      document.getElementById("fechaReg").value = localDate.toISOString().split("T")[0];
+    }
+
+    function poblarSelect(selectId, items, placeholder) {
       const select = document.getElementById(selectId);
-      const currentVal = select.value;
-      // Limpiar, eliminar vacíos y deduplicar manteniendo orden
-      const cleanItems = [...new Set((items || []).map(v => String(v).trim()).filter(Boolean))];
-      
+      const currentValue = select.value;
       select.innerHTML = `<option value="">${placeholder}</option>`;
-      cleanItems.forEach(item => {
-        const opt = document.createElement('option');
+      items.forEach(item => {
+        const opt = document.createElement("option");
         opt.value = item;
         opt.textContent = item;
         select.appendChild(opt);
       });
+      if (items.includes(currentValue)) select.value = currentValue;
+    }
 
-      if (cleanItems.includes(currentVal)) {
-        select.value = currentVal;
+    async function cargarCatalogosIniciales() {
+      let modulos = await localDB.getCatalog("modulos");
+      let acopiadores = await localDB.getCatalog("acopiadores");
+      let caporales = await localDB.getCatalog("caporales");
+
+      if (!modulos || !acopiadores || !caporales) {
+        modulos = DEFAULT_CATALOGS.modulos;
+        acopiadores = DEFAULT_CATALOGS.acopiadores;
+        caporales = DEFAULT_CATALOGS.caporales;
+        await localDB.saveCatalog("modulos", modulos);
+        await localDB.saveCatalog("acopiadores", acopiadores);
+        await localDB.saveCatalog("caporales", caporales);
+      }
+
+      poblarSelect("moduloTurno", modulos, "-- Seleccione Módulo - Turno --");
+      poblarSelect("datosAcopiador", acopiadores, "-- Seleccione Acopiador (a) --");
+      poblarSelect("datosCaporal", caporales, "-- Seleccione Caporal --");
+
+      // Intentar actualizar silenciosamente desde Google Sheets si hay conexión
+      if (navigator.onLine && !APP_CONFIG.SCRIPT_URL.includes("PEGAR_AQUI")) {
+        actualizarCatalogosDesdeServidor(false);
       }
     }
 
-    async function loadMastersFromCache() {
-      // Asegurar que la lista SUPERVISOR siempre esté disponible localmente desde el primer segundo
-      populateSelect('supervisor', APP_CONFIG.SUPERVISORES_LIST, '-- Seleccione Supervisor --');
-
-      const cached = await DB.getMaestros();
-      const statusEl = document.getElementById('masters-status-text');
-      
-      if (cached) {
-        const supList = (cached.supervisores && cached.supervisores.length) ? cached.supervisores : APP_CONFIG.SUPERVISORES_LIST;
-        populateSelect('supervisor', supList, '-- Seleccione Supervisor --');
-        populateSelect('modulo_turno', cached.modulos, '-- Seleccione Módulo - Turno --');
-        populateSelect('datos_acopiador', cached.acopiadores, '-- Seleccione Acopiador(a) --');
-        populateSelect('datos_caporal', cached.caporales, '-- Seleccione Caporal --');
-        
-        const dateObj = new Date(cached.updatedAt);
-        const formatted = dateObj.toLocaleDateString('es-PE') + ' ' + dateObj.toLocaleTimeString('es-PE', { hour: '2-digit', minute: '2-digit' });
-        statusEl.textContent = `Listas locales: ${formatted}`;
-        return true;
-      } else {
-        statusEl.textContent = 'Sin datos maestros locales';
-        return false;
-      }
-    }
-
-    async function fetchMastersFromServer(manual = false) {
+    async function actualizarCatalogosDesdeServidor(manual = false) {
       if (!navigator.onLine) {
-        if (manual) showFeedback('Sin conexión a internet. Usando listas guardadas en el dispositivo.', 'warning');
+        if (manual) showToast("Sin internet. Usando listas guardadas localmente.");
         return;
       }
-      if (!isApiConfigured()) {
-        if (manual) showFeedback('Configure primero la URL de Google Apps Script en la parte inferior.', 'warning');
+      if (APP_CONFIG.SCRIPT_URL.includes("PEGAR_AQUI")) {
+        if (manual) showToast("Configure primero la URL de Google Apps Script.");
         return;
       }
-
-      const btn = document.getElementById('btn-refresh-masters');
-      btn.disabled = true;
-      btn.classList.add('opacity-50');
 
       try {
-        const url = `${getApiUrl()}?action=getMaestros&t=${Date.now()}`;
-        const response = await fetch(url, { method: 'GET', redirect: 'follow' });
-        if (!response.ok) throw new Error(`HTTP ${response.status}`);
-        
-        const rawText = await response.text();
-        let result;
-        try {
-          result = JSON.parse(rawText);
-        } catch (parseErr) {
-          throw new Error('Google devolvió HTML en vez de JSON. Verifica que el despliegue tenga acceso para "Cualquier usuario" y termine en /exec.');
-        }
+        if (manual) showToast("Descargando listas maestras de Google Sheets...");
+        const url = `${APP_CONFIG.SCRIPT_URL}?action=getMaestros&token=${encodeURIComponent(APP_CONFIG.API_TOKEN)}`;
+        const resp = await fetch(url);
+        const json = await resp.json();
 
-        if (result.status !== 'ok') throw new Error(result.message || 'Error al obtener maestros');
-
-        await DB.saveMaestros(result.data);
-        await loadMastersFromCache();
-        if (manual) showFeedback('Listas maestras actualizadas correctamente.', 'success');
-      } catch (err) {
-        console.error('Error cargando maestros:', err);
-        if (manual) showFeedback(`No se pudieron descargar las listas: ${err.message}`, 'error');
-      } finally {
-        btn.disabled = false;
-        btn.classList.remove('opacity-50');
-      }
-    }
-
-    /**
-     * ============================================================================
-     * MOTOR DE SINCRONIZACIÓN CON JITTER, BATCHING E IDEMPOTENCIA
-     * ============================================================================
-     */
-    let isSyncing = false;
-
-    async function syncPendingRecords(isManual = false) {
-      if (isSyncing) return;
-      if (!navigator.onLine) {
-        if (isManual) showFeedback('No hay conexión a internet. Los registros siguen seguros en el teléfono.', 'warning');
-        return;
-      }
-      if (!isApiConfigured()) {
-        if (isManual) showFeedback('Falta configurar la URL del servidor Google Apps Script.', 'error');
-        return;
-      }
-
-      const all = await DB.getAllRegistros();
-      const pending = all.filter(r => r.estado === 'PENDIENTE' || (r.estado === 'ERROR' && (r.retries || 0) < APP_CONFIG.MAX_RETRIES));
-
-      if (pending.length === 0) {
-        if (isManual) showFeedback('Todos los registros ya están sincronizados.', 'success');
-        return;
-      }
-
-      isSyncing = true;
-      const btnSync = document.getElementById('btn-sync-now');
-      const spinner = document.getElementById('sync-spinner');
-      btnSync.disabled = true;
-      spinner.classList.add('animate-spin');
-
-      try {
-        // Si es sincronización automática tras volver señal, aplicar dispersión aleatoria (Jitter)
-        // Esto evita que 200 celulares golpeen Google Apps Script en el mismo segundo.
-        if (!isManual) {
-          const jitterDelay = Math.floor(Math.random() * APP_CONFIG.MAX_JITTER_MS);
-          document.getElementById('sync-subtext').textContent = `Esperando turno de red (${Math.round(jitterDelay/1000)}s) para evitar saturación...`;
-          await new Promise(res => setTimeout(res, jitterDelay));
-        }
-
-        document.getElementById('sync-subtext').textContent = 'Enviando registros al servidor...';
-
-        // Procesar en lotes (Batching) de hasta 25 registros
-        for (let i = 0; i < pending.length; i += APP_CONFIG.BATCH_SIZE) {
-          const batch = pending.slice(i, i + APP_CONFIG.BATCH_SIZE);
-          
-          const payload = {
-            action: 'syncBatch',
-            records: batch.map(r => ({
-              uuid: r.uuid,
-              fechaRegistro: r.fechaRegistro,
-              supervisor: r.supervisor || '',
-              moduloTurno: r.moduloTurno,
-              datosAcopiador: r.datosAcopiador,
-              datosCaporal: r.datosCaporal,
-              total: r.total
-            }))
-          };
-
-          // Envío usando text/plain para evitar preflight CORS complejo en Apps Script
-          const response = await fetch(getApiUrl(), {
-            method: 'POST',
-            redirect: 'follow',
-            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-            body: JSON.stringify(payload)
-          });
-
-          if (!response.ok) throw new Error(`Error HTTP ${response.status}`);
-          const result = await response.json();
-
-          if (result.status === 'ok' && Array.isArray(result.results)) {
-            for (const itemRes of result.results) {
-              const original = batch.find(b => b.uuid === itemRes.uuid);
-              if (!original) continue;
-
-              if (itemRes.status === 'SYNCED' || itemRes.status === 'DUPLICATE_IGNORED') {
-                original.estado = 'SINCRONIZADO';
-                original.syncedAt = new Date().toISOString();
-                original.errorMsg = null;
-              } else {
-                original.estado = 'ERROR';
-                original.retries = (original.retries || 0) + 1;
-                original.errorMsg = itemRes.message || 'Rechazado por validación del servidor';
-              }
-              await DB.putRegistro(original);
-            }
-          } else {
-            throw new Error(result.message || 'Respuesta inválida del servidor');
+        if (json.status === "ok" && json.data) {
+          if (json.data.modulos?.length) {
+            await localDB.saveCatalog("modulos", json.data.modulos);
+            poblarSelect("moduloTurno", json.data.modulos, "-- Seleccione Módulo - Turno --");
           }
+          if (json.data.acopiadores?.length) {
+            await localDB.saveCatalog("acopiadores", json.data.acopiadores);
+            poblarSelect("datosAcopiador", json.data.acopiadores, "-- Seleccione Acopiador (a) --");
+          }
+          if (json.data.caporales?.length) {
+            await localDB.saveCatalog("caporales", json.data.caporales);
+            poblarSelect("datosCaporal", json.data.caporales, "-- Seleccione Caporal --");
+          }
+          if (manual) showToast("Listas maestras actualizadas correctamente.");
         }
-
-        await renderRecordsUI();
-        if (isManual) showFeedback('Sincronización completada con éxito.', 'success');
-      } catch (err) {
-        console.error('Fallo en sincronización:', err);
-        // Marcar intento fallido manteniendo estado PENDIENTE/ERROR sin borrar datos
-        for (const r of pending) {
-          r.retries = (r.retries || 0) + 1;
-          r.errorMsg = `Fallo de red/servidor: ${err.message}`;
-          if (r.retries >= APP_CONFIG.MAX_RETRIES) r.estado = 'ERROR';
-          await DB.putRegistro(r);
-        }
-        await renderRecordsUI();
-        if (isManual) showFeedback('No se pudo completar el envío. Los datos siguen guardados localmente.', 'error');
-      } finally {
-        isSyncing = false;
-        btnSync.disabled = false;
-        spinner.classList.remove('animate-spin');
-        document.getElementById('sync-subtext').textContent = 'Los registros pendientes se envían automáticamente al detectar internet.';
+      } catch (e) {
+        if (manual) showToast("No se pudo conectar con Google Sheets. Usando caché local.");
       }
     }
 
-    /**
-     * ============================================================================
-     * INTERFAZ DE USUARIO Y MANEJO DE FORMULARIO
-     * ============================================================================
-     */
-    function clearValidationErrors() {
-      ['err-fecha', 'err-supervisor', 'err-modulo', 'err-acopiador', 'err-caporal', 'err-total'].forEach(id => {
-        const el = document.getElementById(id);
-        el.textContent = '';
-        el.classList.add('hidden');
-      });
-    }
-
-    function showFieldError(id, msg) {
-      const el = document.getElementById(id);
-      el.textContent = msg;
-      el.classList.remove('hidden');
-    }
-
-    function resetFormForNextEntry() {
-      // Mantiene la fecha actual y limpia los demás campos para agilizar captura en campo
-      document.getElementById('fecha_registro').value = getTodayLocalISO();
-      document.getElementById('supervisor').value = '';
-      document.getElementById('modulo_turno').value = '';
-      document.getElementById('datos_acopiador').value = '';
-      document.getElementById('datos_caporal').value = '';
-      document.getElementById('total_cosecha').value = '';
-      clearValidationErrors();
-    }
-
-    async function handleFormSubmit(e) {
+    // Validación y Guardado del Formulario
+    document.getElementById("acopiadorForm").addEventListener("submit", async (e) => {
       e.preventDefault();
-      clearValidationErrors();
 
-      const fecha = document.getElementById('fecha_registro').value.trim();
-      const supervisor = document.getElementById('supervisor').value.trim();
-      const modulo = document.getElementById('modulo_turno').value.trim();
-      const acopiador = document.getElementById('datos_acopiador').value.trim();
-      const caporal = document.getElementById('datos_caporal').value.trim();
-      const totalRaw = document.getElementById('total_cosecha').value.trim();
+      const fechaEl = document.getElementById("fechaReg");
+      const moduloEl = document.getElementById("moduloTurno");
+      const acopiadorEl = document.getElementById("datosAcopiador");
+      const caporalEl = document.getElementById("datosCaporal");
+      const totalEl = document.getElementById("totalCosechadores");
 
-      let hasError = false;
+      let valid = true;
+      [fechaEl, moduloEl, acopiadorEl, caporalEl].forEach(el => {
+        if (!el.value.trim()) {
+          el.classList.add("invalid");
+          valid = false;
+        } else {
+          el.classList.remove("invalid");
+        }
+      });
 
-      if (!fecha) {
-        showFieldError('err-fecha', 'Seleccione una fecha de registro válida.');
-        hasError = true;
-      }
-      if (!supervisor) {
-        showFieldError('err-supervisor', 'Debe seleccionar un Supervisor.');
-        hasError = true;
-      }
-      if (!modulo) {
-        showFieldError('err-modulo', 'Debe seleccionar un Módulo - Turno.');
-        hasError = true;
-      }
-      if (!acopiador) {
-        showFieldError('err-acopiador', 'Debe seleccionar un Acopiador(a).');
-        hasError = true;
-      }
-      if (!caporal) {
-        showFieldError('err-caporal', 'Debe seleccionar un Caporal.');
-        hasError = true;
+      const totalVal = Number(totalEl.value);
+      if (!totalEl.value || !Number.isInteger(totalVal) || totalVal <= 0) {
+        totalEl.classList.add("invalid");
+        valid = false;
+      } else {
+        totalEl.classList.remove("invalid");
       }
 
-      // Validación estricta de entero positivo
-      const totalNum = Number(totalRaw);
-      if (!totalRaw || !Number.isInteger(totalNum) || totalNum <= 0 || totalRaw.includes('.') || totalRaw.includes(',')) {
-        showFieldError('err-total', 'Ingrese un número entero positivo mayor a 0 (ej. 15).');
-        hasError = true;
-      }
-
-      if (hasError) {
-        showFeedback('Por favor corrija los campos marcados antes de guardar.', 'error');
+      if (!valid) {
+        showToast("Por favor complete todos los campos obligatorios correctamente.");
         return;
       }
 
-      const newRecord = {
-        uuid: generateUUID(),
-        fechaRegistro: fecha,
-        supervisor: supervisor,
-        moduloTurno: modulo,
-        datosAcopiador: acopiador,
-        datosCaporal: caporal,
-        total: totalNum,
-        estado: 'PENDIENTE',
-        retries: 0,
-        createdAt: new Date().toISOString(),
-        syncedAt: null,
-        errorMsg: null
+      const nuevoRegistro = {
+        uuid: generarUUID(),
+        fecha: fechaEl.value,
+        modulo: moduloEl.value.trim(),
+        acopiador: acopiadorEl.value.trim(),
+        caporal: caporalEl.value.trim(),
+        total: totalVal,
+        estado: "Pendiente",
+        createdAt: Date.now()
       };
 
-      try {
-        await DB.putRegistro(newRecord);
-        await renderRecordsUI();
-        resetFormForNextEntry();
+      await localDB.saveRegistro(nuevoRegistro);
 
-        if (navigator.onLine) {
-          showFeedback('Registro guardado localmente. Sincronizando con servidor...', 'success');
-          syncPendingRecords(false);
-        } else {
-          showFeedback('Guardado en el teléfono (Sin internet). Se enviará al recuperar señal.', 'warning');
-        }
-      } catch (err) {
-        showFeedback('Error crítico al guardar en memoria local: ' + err.message, 'error');
+      // Limpiar solo el campo TOTAL y CAPORAL para agilizar registros consecutivos en campo
+      totalEl.value = "";
+      caporalEl.value = "";
+
+      showToast(navigator.onLine ? "Guardado. Sincronizando..." : "Guardado en modo Offline (Pendiente).");
+      await renderHistory();
+
+      if (navigator.onLine) {
+        syncManager.syncPending(false);
+      } else if ("serviceWorker" in navigator && "SyncManager" in window) {
+        const reg = await navigator.serviceWorker.ready;
+        reg.sync.register("sync-acopiador-records").catch(() => {});
       }
-    }
+    });
 
-    async function renderRecordsUI() {
-      const records = await DB.getAllRegistros();
-      const listEl = document.getElementById('records-list');
+    // Renderizar historial y contadores
+    async function renderHistory() {
+      const registros = await localDB.getAllRegistros();
+      let pendientes = 0, sincronizados = 0, errores = 0;
 
-      const pendingCount = records.filter(r => r.estado === 'PENDIENTE').length;
-      const syncedCount = records.filter(r => r.estado === 'SINCRONIZADO').length;
-      const errorCount = records.filter(r => r.estado === 'ERROR').length;
+      registros.forEach(r => {
+        if (r.estado === "Pendiente") pendientes++;
+        else if (r.estado === "Sincronizado") sincronizados++;
+        else if (r.estado === "Error") errores++;
+      });
 
-      document.getElementById('stat-pending').textContent = pendingCount;
-      document.getElementById('stat-synced').textContent = syncedCount;
-      document.getElementById('stat-error').textContent = errorCount;
-      document.getElementById('badge-pending-count').textContent = pendingCount + errorCount;
+      document.getElementById("countPendiente").textContent = pendientes;
+      document.getElementById("countSincronizado").textContent = sincronizados;
+      document.getElementById("countError").textContent = errores;
+      document.getElementById("navBadgeCount").textContent = registros.length;
 
-      if (records.length === 0) {
-        listEl.innerHTML = `
-          <div class="bg-white rounded-2xl border border-stone-200 p-8 text-center text-stone-500">
-            <p class="font-bold text-stone-700 text-base">Aún no hay registros en este dispositivo</p>
-            <p class="text-sm mt-1">Los reportes que guardes aparecerán aquí con su estado de envío.</p>
-          </div>
-        `;
+      const badgeTop = document.getElementById("syncCounterBadge");
+      badgeTop.textContent = (pendientes + errores) > 0 ? `Sincronizar (${pendientes + errores})` : "Al día";
+
+      const listContainer = document.getElementById("recordsList");
+      if (registros.length === 0) {
+        listContainer.innerHTML = `<p style="text-align:center; color:var(--gris); padding:20px 0; font-size:0.9rem;">Aún no hay registros guardados en este dispositivo.</p>`;
         return;
       }
 
-      listEl.innerHTML = records.map(r => {
-        let badgeHtml = '';
-        if (r.estado === 'SINCRONIZADO') {
-          badgeHtml = `<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-extrabold bg-emerald-100 text-emerald-800">✅ SINCRONIZADO</span>`;
-        } else if (r.estado === 'ERROR') {
-          badgeHtml = `<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-extrabold bg-red-100 text-huarmey-red">❌ ERROR</span>`;
-        } else {
-          badgeHtml = `<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-extrabold bg-amber-100 text-amber-800">⏳ PENDIENTE</span>`;
-        }
-
+      listContainer.innerHTML = registros.map(r => {
+        const parts = r.fecha.split("-");
+        const fechaFormat = parts.length === 3 ? `${parts[2]}/${parts[1]}/${parts[0]}` : r.fecha;
         return `
-          <article class="bg-white rounded-xl border border-stone-200 p-4 shadow-sm">
-            <div class="flex items-start justify-between gap-2 border-b border-stone-100 pb-2.5 mb-2.5">
-              <div>
-                <span class="text-xs font-bold text-stone-400 block">FECHA: ${r.fechaRegistro}</span>
-                <h3 class="font-extrabold text-stone-900 text-base">${r.datosAcopiador}</h3>
-              </div>
-              <div class="text-right">
-                ${badgeHtml}
-                <div class="text-lg font-black text-huarmey-greenDark mt-1">Total: ${r.total}</div>
-              </div>
+          <div class="record-item ${r.estado}">
+            <div class="record-top">
+              <span class="record-mod">${r.modulo}</span>
+              <span class="badge badge-${r.estado}">${r.estado}</span>
             </div>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-1 text-xs text-stone-600">
-              <div><strong class="text-stone-800">Supervisor:</strong> ${r.supervisor || '-'}</div>
-              <div><strong class="text-stone-800">Módulo-Turno:</strong> ${r.moduloTurno}</div>
-              <div class="sm:col-span-2"><strong class="text-stone-800">Caporal:</strong> ${r.datosCaporal}</div>
+            <div class="record-detail">
+              <div><strong>Acopiador:</strong> ${r.acopiador}</div>
+              <div><strong>Caporal:</strong> ${r.caporal}</div>
+              ${r.errorDetail ? `<div style="color:var(--rojo); margin-top:3px;"><strong>Detalle:</strong> ${r.errorDetail}</div>` : ""}
             </div>
-            ${r.errorMsg ? `<div class="mt-2 p-2 rounded-lg bg-red-50 text-huarmey-red text-xs font-semibold">${r.errorMsg}</div>` : ''}
-          </article>
+            <div class="record-bottom">
+              <span style="color:var(--gris); font-weight:600;">Fecha: ${fechaFormat}</span>
+              <span class="record-total">TOTAL: ${r.total}</span>
+            </div>
+          </div>
         `;
-      }).join('');
+      }).join("");
     }
 
-    function updateNetworkStatusUI() {
-      const badge = document.getElementById('network-badge');
-      const icon = document.getElementById('network-icon');
-      const text = document.getElementById('network-text');
+    function switchTab(tab) {
+      document.getElementById("viewForm").classList.toggle("active", tab === "form");
+      document.getElementById("viewHistory").classList.toggle("active", tab === "history");
+      document.getElementById("navForm").classList.toggle("active", tab === "form");
+      document.getElementById("navHistory").classList.toggle("active", tab === "history");
+      if (tab === "history") renderHistory();
+    }
 
-      if (navigator.onLine) {
-        badge.className = 'inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200';
-        icon.textContent = '🟢';
-        text.textContent = 'En línea';
-        // Disparar sincronización automática al recuperar internet
-        syncPendingRecords(false);
-      } else {
-        badge.className = 'inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full font-semibold bg-amber-50 text-amber-900 border border-amber-300';
-        icon.textContent = '🟠';
-        text.textContent = 'Sin conexión (Modo Offline)';
+    // Inicialización al cargar la PWA
+    window.addEventListener("online", updateNetworkUI);
+    window.addEventListener("offline", updateNetworkUI);
+
+    window.addEventListener("DOMContentLoaded", async () => {
+      setFechaHoy();
+      updateNetworkUI();
+      await cargarCatalogosIniciales();
+      await renderHistory();
+
+      // Sincronización periódica cada 45 segundos si hay pendientes
+      setInterval(() => {
+        if (navigator.onLine) syncManager.syncPending(false);
+      }, 45000);
+
+      if ("serviceWorker" in navigator) {
+        navigator.serviceWorker.register("./service-worker.js").catch(err => console.warn("SW:", err));
+        navigator.serviceWorker.addEventListener("message", (event) => {
+          if (event.data && event.data.type === "TRIGGER_SYNC") {
+            syncManager.syncPending(false);
+          }
+        });
       }
-    }
+    });
+  </script>
+</body>
+</html>",
+      API_TOKEN: "AH_ACOPIADOR_2026_SEC_TOKEN_9841",
+      DB_NAME: "AgricolaHuarmey_AcopiadorDB",
+      DB_VERSION: 1
+    };
 
     /**
-     * ============================================================================
-     * INICIALIZACIÓN DE EVENTOS AL CARGAR EL DOM
-     * ============================================================================
+     * CATÁLOGOS SEMILLA OFFLINE (Respaldo inmediato sin internet basado en REGISTRO-PRODUCCION-ACOPIADOR.xlsx)
      */
-    window.addEventListener('DOMContentLoaded', async () => {
-      document.getElementById('year-copy').textContent = new Date().getFullYear();
-      document.getElementById('fecha_registro').value = getTodayLocalISO();
+    const DEFAULT_CATALOGS = {
+      modulos: [
+        "MODULO 1 TURNO 1", "MODULO 1 TURNO 2", "MODULO 1 TURNO 3", "MODULO 1 TURNO 4", "MODULO 1 TURNO 5",
+        "MODULO 2 TURNO 1", "MODULO 2 TURNO 2", "MODULO 2 TURNO 3", "MODULO 2 TURNO 4", "MODULO 2 TURNO 5",
+        "MODULO 3 TURNO 1", "MODULO 3 TURNO 2", "MODULO 3 TURNO 3", "MODULO 3 TURNO 4", "MODULO 3 TURNO 5",
+        "MODULO 4 TURNO 1", "MODULO 4 TURNO 2", "MODULO 4 TURNO 3", "MODULO 4 TURNO 4", "MODULO 4 TURNO 5",
+        "MODULO 5 TURNO 1", "MODULO 5 TURNO 2", "MODULO 5 TURNO 3", "MODULO 5 TURNO 4", "MODULO 5 TURNO 5",
+        "MODULO 6 TURNO 1", "MODULO 6 TURNO 2A", "MODULO 6 TURNO 2B", "MODULO 6 TURNO 3", "MODULO 6 TURNO 4", "MODULO 6 TURNO 5",
+        "MODULO 7 TURNO 1", "MODULO 7 TURNO 2", "MODULO 7 TURNO 3", "MODULO 7 TURNO 4", "MODULO 7 TURNO 5",
+        "MODULO 8 TURNO 1", "MODULO 8 TURNO 2", "MODULO 8 TURNO 3", "MODULO 8 TURNO 4", "MODULO 8 TURNO 5",
+        "MODULO 9 TURNO 1", "MODULO 9 TURNO 2", "MODULO 9 TURNO 3", "MODULO 9 TURNO 4", "MODULO 9 TURNO 5"
+      ],
+      acopiadores: [
+        "ALISON TATIANA COLINA CUEVA", "ANALI ALEGRIA TIQUILLAHUANCA", "ANGHELA IBET SERRATO RODRIGUEZ",
+        "ANNI MARIA BENITES MENESES", "ANSHELA ABIGAIL SUXE SAAVEDRA", "ASUSENA DIAZ SAAVEDRA",
+        "CIELO CRUZ VILLEGAS ANGULO", "ELIANA YAJAIRA SAMAME CACERES", "ELIZABETH CORDOVA GARCIA",
+        "EVELIN BENAVIDES DIAZ", "FLOR NUÑEZ HERRERA", "JHOSTIN SEBASTIAN CORMAN MEDINA",
+        "LESLYE ANTONELA GISSEL LOZANO LANCHA", "LILIANA ELIZABETH INOÑAN TEJADA", "LISETH SANTOYO NAVARRO",
+        "MAYTE ZARAHI ALVARADO FERNANDEZ", "PRISCILA BRIGHITT CARMEN FARFAN", "ROXANA DIAZ SAAVEDRA",
+        "YOSELIN YUDIT FERNANDEZ HURTADO", "YULI MIREILY VASQUEZ PEREZ"
+      ],
+      caporales: [
+        "ALEXANDER EMANUEL RODRIGUEZ CHAVEZ", "ARACELY LIZBETH VASQUEZ ARAUJO", "CARLOS DERIAN RIOS SHIMARA",
+        "CARMEN DE JESUS TIGLLA VILCHEZ", "CRISANTO CIEZA SANDY", "EDWIN JHUNIOR FERNANDEZ JULCAHUANGA",
+        "ELGAR JESUS CASTRO SANDOVAL", "EMILY AZUCENA LOZADA SALDARRIAGA", "ENILSON CERCADO BUSTAMANTE",
+        "GILMER ESMITH MEDINA FERNANDEZ", "JAVIER MARTIN ÑIQUEN MENDOZA", "JEREMÍAS PALOMINO MONDRAGÓN",
+        "JESSARELA YOLANDA MEDINA INGA", "JOHAN RICARDO MURRIETA HUAYA", "JOHN NER TAPULLIMA VALLEJOS",
+        "JOSE ELDER PEREZ VASQUEZ", "KATHERINE IMAN HUAMAN", "LINDAURA DIAZ DE LA CRUZ",
+        "LUCERO LOZANO LANCHA", "LUIS ALBERTO ESPINOZA GOMEZ", "LUZ CLARITA TORO SANCHEZ",
+        "MARIA CHUNGA JUAREZ", "MARÍA ELENA MONTENEGRO MONTEZA", "MARIBEL TERAN DIAZ",
+        "MARY CARMEN AGUILAR CARRANZA", "MAXIMILIANO ISIQUE SERRANO", "MERCEDES NAYELY MORALES GARCIA",
+        "MICHAEL ISAI HUACHEZ ROMERO", "MIGUEL ANGEL CALDERON YTURREGUI", "NAYELI NIKOL DE LA CRUZ DIAZ",
+        "NICOLAS SMITH MORALES PERICHE", "RICHAR BRUNO BAQUEDANO BARBOZA", "ROCIO DEL PILAR MONTENEGRO MANAYAN",
+        "RUTH MELISA MORALES PAQUIRACHI", "SILVIA ANGELICA BARREDA MALHABER", "TERESA ROMAN GARCIA",
+        "WILDER SAUL MENDOZA MEDINA", "YANET DEL ROCIO MENDOZA LLONTOP", "YESICA MORALES PAQUIRACHI",
+        "YULISA RINZA HUAMAN"
+      ]
+    };
 
-      // Cargar configuración de API guardada
-      const savedUrl = localStorage.getItem('HUARMEY_API_URL');
-      if (savedUrl) {
-        document.getElementById('api-url-input').value = savedUrl;
+    /**
+     * CAPA DE BASE DE DATOS LOCAL: IndexedDB
+     */
+    class LocalDatabase {
+      constructor() {
+        this.db = null;
       }
-      if (isApiConfigured()) {
-        const dot = document.getElementById('api-status-dot');
-        dot.textContent = '✅ URL Configurada';
-        dot.className = 'text-emerald-700 font-semibold';
+
+      async open() {
+        if (this.db) return this.db;
+        return new Promise((resolve, reject) => {
+          const request = indexedDB.open(APP_CONFIG.DB_NAME, APP_CONFIG.DB_VERSION);
+
+          request.onupgradeneeded = (event) => {
+            const db = event.target.result;
+            if (!db.objectStoreNames.contains("registros")) {
+              const store = db.createObjectStore("registros", { keyPath: "uuid" });
+              store.createIndex("estado", "estado", { unique: false });
+              store.createIndex("createdAt", "createdAt", { unique: false });
+            }
+            if (!db.objectStoreNames.contains("catalogos")) {
+              db.createObjectStore("catalogos", { keyPath: "key" });
+            }
+          };
+
+          request.onsuccess = (event) => {
+            this.db = event.target.result;
+            resolve(this.db);
+          };
+
+          request.onerror = (event) => reject(event.target.error);
+        });
       }
 
-      // Cargar datos desde IndexedDB primero (instantáneo) y luego actualizar en segundo plano
-      await loadMastersFromCache();
-      await renderRecordsUI();
-      updateNetworkStatusUI();
-      fetchMastersFromServer(false);
+      async saveRegistro(registro) {
+        const db = await this.open();
+        return new Promise((resolve, reject) => {
+          const tx = db.transaction("registros", "readwrite");
+          tx.objectStore("registros").put(registro);
+          tx.oncomplete = () => resolve(registro);
+          tx.onerror = () => reject(tx.error);
+        });
+      }
 
-      // Listeners de conectividad
-      window.addEventListener('online', updateNetworkStatusUI);
-      window.addEventListener('offline', updateNetworkStatusUI);
+      async getAllRegistros() {
+        const db = await this.open();
+        return new Promise((resolve, reject) => {
+          const tx = db.transaction("registros", "readonly");
+          const req = tx.objectStore("registros").getAll();
+          req.onsuccess = () => {
+            const sorted = (req.result || []).sort((a, b) => b.createdAt - a.createdAt);
+            resolve(sorted);
+          };
+          req.onerror = () => reject(req.error);
+        });
+      }
 
-      // Navegación entre pestañas
-      const tabForm = document.getElementById('tab-form');
-      const tabRecords = document.getElementById('tab-records');
-      const viewForm = document.getElementById('view-form');
-      const viewRecords = document.getElementById('view-records');
+      async getPendientesOError() {
+        const all = await this.getAllRegistros();
+        return all.filter(r => r.estado === "Pendiente" || r.estado === "Error");
+      }
 
-      tabForm.addEventListener('click', () => {
-        viewForm.classList.remove('hidden');
-        viewRecords.classList.add('hidden');
-        tabForm.className = 'py-2.5 px-3 rounded-lg font-bold text-sm sm:text-base bg-white text-stone-900 shadow-sm transition flex items-center justify-center gap-2';
-        tabRecords.className = 'py-2.5 px-3 rounded-lg font-bold text-sm sm:text-base text-stone-600 hover:text-stone-900 transition flex items-center justify-center gap-2';
-      });
+      async saveCatalog(key, items) {
+        const db = await this.open();
+        return new Promise((resolve, reject) => {
+          const tx = db.transaction("catalogos", "readwrite");
+          tx.objectStore("catalogos").put({ key, items, updatedAt: new Date().toISOString() });
+          tx.oncomplete = () => resolve();
+          tx.onerror = () => reject(tx.error);
+        });
+      }
 
-      tabRecords.addEventListener('click', async () => {
-        viewRecords.classList.remove('hidden');
-        viewForm.classList.add('hidden');
-        tabRecords.className = 'py-2.5 px-3 rounded-lg font-bold text-sm sm:text-base bg-white text-stone-900 shadow-sm transition flex items-center justify-center gap-2';
-        tabForm.className = 'py-2.5 px-3 rounded-lg font-bold text-sm sm:text-base text-stone-600 hover:text-stone-900 transition flex items-center justify-center gap-2';
-        await renderRecordsUI();
-      });
+      async getCatalog(key) {
+        const db = await this.open();
+        return new Promise((resolve, reject) => {
+          const tx = db.transaction("catalogos", "readonly");
+          const req = tx.objectStore("catalogos").get(key);
+          req.onsuccess = () => resolve(req.result ? req.result.items : null);
+          req.onerror = () => reject(req.error);
+        });
+      }
+    }
 
-      // Formulario
-      document.getElementById('harvest-form').addEventListener('submit', handleFormSubmit);
-      document.getElementById('btn-clear').addEventListener('click', () => {
-        resetFormForNextEntry();
-        showFeedback('Formulario limpiado.', 'info');
-      });
+    const localDB = new LocalDatabase();
 
-      // Sincronización y Maestros
-      document.getElementById('btn-refresh-masters').addEventListener('click', () => fetchMastersFromServer(true));
-      document.getElementById('btn-sync-now').addEventListener('click', () => syncPendingRecords(true));
+    /**
+     * GESTOR DE SINCRONIZACIÓN OFFLINE-FIRST (Concurrencia 200+ usuarios)
+     */
+    class SyncManager {
+      constructor() {
+        this.isSyncing = false;
+      }
 
-      // Guardar URL de API
-      document.getElementById('btn-save-api-url').addEventListener('click', () => {
-        const val = document.getElementById('api-url-input').value.trim();
-        if (!val.startsWith('https://script.google.com/')) {
-          showFeedback('La URL debe comenzar con https://script.google.com/', 'error');
+      async syncPending(manual = false) {
+        if (this.isSyncing) return;
+        if (!navigator.onLine) {
+          if (manual) showToast("Sin conexión. Los datos permanecen seguros en el equipo.");
           return;
         }
-        localStorage.setItem('HUARMEY_API_URL', val);
-        const dot = document.getElementById('api-status-dot');
-        dot.textContent = '✅ URL Configurada';
-        dot.className = 'text-emerald-700 font-semibold';
-        showFeedback('URL de servidor guardada. Descargando listas maestras...', 'success');
-        fetchMastersFromServer(true);
+        if (APP_CONFIG.SCRIPT_URL.includes("PEGAR_AQUI")) {
+          if (manual) showToast("Configure la URL de Google Apps Script en index.html");
+          return;
+        }
+
+        const pendientes = await localDB.getPendientesOError();
+        if (pendientes.length === 0) {
+          if (manual) showToast("Todos los registros ya están sincronizados.");
+          return;
+        }
+
+        this.isSyncing = true;
+        document.getElementById("syncIcon").classList.add("spin");
+
+        try {
+          // Jitter aleatorio (0 a 1200ms) para escalonar peticiones si 200 usuarios recuperan señal juntos
+          await new Promise(r => setTimeout(r, Math.floor(Math.random() * 1200)));
+
+          // Envío en lotes de hasta 25 registros
+          const batch = pendientes.slice(0, 25);
+
+          const response = await fetch(APP_CONFIG.SCRIPT_URL, {
+            method: "POST",
+            headers: { "Content-Type": "text/plain;charset=utf-8" }, // Evita preflight CORS en Apps Script
+            body: JSON.stringify({
+              token: APP_CONFIG.API_TOKEN,
+              records: batch
+            })
+          });
+
+          const result = await response.json();
+
+          if (result.status === "ok" && Array.isArray(result.processed)) {
+            const processedSet = new Set(result.processed);
+            for (const reg of batch) {
+              if (processedSet.has(reg.uuid)) {
+                reg.estado = "Sincronizado";
+                reg.errorDetail = "";
+                reg.syncedAt = new Date().toISOString();
+                await localDB.saveRegistro(reg);
+              }
+            }
+            showToast(`Sincronizados ${result.processed.length} registro(s) con Google Sheets.`);
+          } else if (result.status === "retry") {
+            // El servidor pidió reintentar por cola de 200 usuarios
+            setTimeout(() => this.syncPending(false), 3000 + Math.random() * 2000);
+          } else {
+            throw new Error(result.message || "Error desconocido en el servidor");
+          }
+        } catch (err) {
+          console.error("Error de sincronización:", err);
+          for (const reg of pendientes.slice(0, 25)) {
+            reg.estado = "Error";
+            reg.errorDetail = err.message;
+            await localDB.saveRegistro(reg);
+          }
+          if (manual) showToast("Error al sincronizar. Se reintentará automáticamente.");
+        } finally {
+          this.isSyncing = false;
+          document.getElementById("syncIcon").classList.remove("spin");
+          await renderHistory();
+        }
+      }
+    }
+
+    const syncManager = new SyncManager();
+
+    /**
+     * UTILIDADES Y FLUJO DE APLICACIÓN
+     */
+    function generarUUID() {
+      if (crypto && crypto.randomUUID) return crypto.randomUUID();
+      return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
+        const r = Math.random() * 16 | 0;
+        return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+      });
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById("toast");
+      toast.textContent = msg;
+      toast.classList.add("show");
+      clearTimeout(window._toastTimer);
+      window._toastTimer = setTimeout(() => toast.classList.remove("show"), 3200);
+    }
+
+    function updateNetworkUI() {
+      const banner = document.getElementById("networkBanner");
+      const text = document.getElementById("networkText");
+      if (navigator.onLine) {
+        banner.className = "status-bar status-online";
+        text.textContent = "Conectado (Sincronización activa)";
+        syncManager.syncPending(false);
+      } else {
+        banner.className = "status-bar status-offline";
+        text.textContent = "Modo Offline (Guardado local activo)";
+      }
+    }
+
+    function setFechaHoy() {
+      const now = new Date();
+      const offset = now.getTimezoneOffset();
+      const localDate = new Date(now.getTime() - (offset * 60 * 1000));
+      document.getElementById("fechaReg").value = localDate.toISOString().split("T")[0];
+    }
+
+    function poblarSelect(selectId, items, placeholder) {
+      const select = document.getElementById(selectId);
+      const currentValue = select.value;
+      select.innerHTML = `<option value="">${placeholder}</option>`;
+      items.forEach(item => {
+        const opt = document.createElement("option");
+        opt.value = item;
+        opt.textContent = item;
+        select.appendChild(opt);
+      });
+      if (items.includes(currentValue)) select.value = currentValue;
+    }
+
+    async function cargarCatalogosIniciales() {
+      let modulos = await localDB.getCatalog("modulos");
+      let acopiadores = await localDB.getCatalog("acopiadores");
+      let caporales = await localDB.getCatalog("caporales");
+
+      if (!modulos || !acopiadores || !caporales) {
+        modulos = DEFAULT_CATALOGS.modulos;
+        acopiadores = DEFAULT_CATALOGS.acopiadores;
+        caporales = DEFAULT_CATALOGS.caporales;
+        await localDB.saveCatalog("modulos", modulos);
+        await localDB.saveCatalog("acopiadores", acopiadores);
+        await localDB.saveCatalog("caporales", caporales);
+      }
+
+      poblarSelect("moduloTurno", modulos, "-- Seleccione Módulo - Turno --");
+      poblarSelect("datosAcopiador", acopiadores, "-- Seleccione Acopiador (a) --");
+      poblarSelect("datosCaporal", caporales, "-- Seleccione Caporal --");
+
+      // Intentar actualizar silenciosamente desde Google Sheets si hay conexión
+      if (navigator.onLine && !APP_CONFIG.SCRIPT_URL.includes("PEGAR_AQUI")) {
+        actualizarCatalogosDesdeServidor(false);
+      }
+    }
+
+    async function actualizarCatalogosDesdeServidor(manual = false) {
+      if (!navigator.onLine) {
+        if (manual) showToast("Sin internet. Usando listas guardadas localmente.");
+        return;
+      }
+      if (APP_CONFIG.SCRIPT_URL.includes("PEGAR_AQUI")) {
+        if (manual) showToast("Configure primero la URL de Google Apps Script.");
+        return;
+      }
+
+      try {
+        if (manual) showToast("Descargando listas maestras de Google Sheets...");
+        const url = `${APP_CONFIG.SCRIPT_URL}?action=getMaestros&token=${encodeURIComponent(APP_CONFIG.API_TOKEN)}`;
+        const resp = await fetch(url);
+        const json = await resp.json();
+
+        if (json.status === "ok" && json.data) {
+          if (json.data.modulos?.length) {
+            await localDB.saveCatalog("modulos", json.data.modulos);
+            poblarSelect("moduloTurno", json.data.modulos, "-- Seleccione Módulo - Turno --");
+          }
+          if (json.data.acopiadores?.length) {
+            await localDB.saveCatalog("acopiadores", json.data.acopiadores);
+            poblarSelect("datosAcopiador", json.data.acopiadores, "-- Seleccione Acopiador (a) --");
+          }
+          if (json.data.caporales?.length) {
+            await localDB.saveCatalog("caporales", json.data.caporales);
+            poblarSelect("datosCaporal", json.data.caporales, "-- Seleccione Caporal --");
+          }
+          if (manual) showToast("Listas maestras actualizadas correctamente.");
+        }
+      } catch (e) {
+        if (manual) showToast("No se pudo conectar con Google Sheets. Usando caché local.");
+      }
+    }
+
+    // Validación y Guardado del Formulario
+    document.getElementById("acopiadorForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const fechaEl = document.getElementById("fechaReg");
+      const moduloEl = document.getElementById("moduloTurno");
+      const acopiadorEl = document.getElementById("datosAcopiador");
+      const caporalEl = document.getElementById("datosCaporal");
+      const totalEl = document.getElementById("totalCosechadores");
+
+      let valid = true;
+      [fechaEl, moduloEl, acopiadorEl, caporalEl].forEach(el => {
+        if (!el.value.trim()) {
+          el.classList.add("invalid");
+          valid = false;
+        } else {
+          el.classList.remove("invalid");
+        }
       });
 
-      // Soporte de instalación PWA nativa
-      let deferredPrompt;
-      const btnInstall = document.getElementById('btn-install-pwa');
-      window.addEventListener('beforeinstallprompt', (e) => {
-        e.preventDefault();
-        deferredPrompt = e;
-        btnInstall.classList.remove('hidden');
+      const totalVal = Number(totalEl.value);
+      if (!totalEl.value || !Number.isInteger(totalVal) || totalVal <= 0) {
+        totalEl.classList.add("invalid");
+        valid = false;
+      } else {
+        totalEl.classList.remove("invalid");
+      }
+
+      if (!valid) {
+        showToast("Por favor complete todos los campos obligatorios correctamente.");
+        return;
+      }
+
+      const nuevoRegistro = {
+        uuid: generarUUID(),
+        fecha: fechaEl.value,
+        modulo: moduloEl.value.trim(),
+        acopiador: acopiadorEl.value.trim(),
+        caporal: caporalEl.value.trim(),
+        total: totalVal,
+        estado: "Pendiente",
+        createdAt: Date.now()
+      };
+
+      await localDB.saveRegistro(nuevoRegistro);
+
+      // Limpiar solo el campo TOTAL y CAPORAL para agilizar registros consecutivos en campo
+      totalEl.value = "";
+      caporalEl.value = "";
+
+      showToast(navigator.onLine ? "Guardado. Sincronizando..." : "Guardado en modo Offline (Pendiente).");
+      await renderHistory();
+
+      if (navigator.onLine) {
+        syncManager.syncPending(false);
+      } else if ("serviceWorker" in navigator && "SyncManager" in window) {
+        const reg = await navigator.serviceWorker.ready;
+        reg.sync.register("sync-acopiador-records").catch(() => {});
+      }
+    });
+
+    // Renderizar historial y contadores
+    async function renderHistory() {
+      const registros = await localDB.getAllRegistros();
+      let pendientes = 0, sincronizados = 0, errores = 0;
+
+      registros.forEach(r => {
+        if (r.estado === "Pendiente") pendientes++;
+        else if (r.estado === "Sincronizado") sincronizados++;
+        else if (r.estado === "Error") errores++;
       });
 
-      btnInstall.addEventListener('click', async () => {
-        if (!deferredPrompt) return;
-        deferredPrompt.prompt();
-        const { outcome } = await deferredPrompt.userChoice;
-        if (outcome === 'accepted') btnInstall.classList.add('hidden');
-        deferredPrompt = null;
+      document.getElementById("countPendiente").textContent = pendientes;
+      document.getElementById("countSincronizado").textContent = sincronizados;
+      document.getElementById("countError").textContent = errores;
+      document.getElementById("navBadgeCount").textContent = registros.length;
+
+      const badgeTop = document.getElementById("syncCounterBadge");
+      badgeTop.textContent = (pendientes + errores) > 0 ? `Sincronizar (${pendientes + errores})` : "Al día";
+
+      const listContainer = document.getElementById("recordsList");
+      if (registros.length === 0) {
+        listContainer.innerHTML = `<p style="text-align:center; color:var(--gris); padding:20px 0; font-size:0.9rem;">Aún no hay registros guardados en este dispositivo.</p>`;
+        return;
+      }
+
+      listContainer.innerHTML = registros.map(r => {
+        const parts = r.fecha.split("-");
+        const fechaFormat = parts.length === 3 ? `${parts[2]}/${parts[1]}/${parts[0]}` : r.fecha;
+        return `
+          <div class="record-item ${r.estado}">
+            <div class="record-top">
+              <span class="record-mod">${r.modulo}</span>
+              <span class="badge badge-${r.estado}">${r.estado}</span>
+            </div>
+            <div class="record-detail">
+              <div><strong>Acopiador:</strong> ${r.acopiador}</div>
+              <div><strong>Caporal:</strong> ${r.caporal}</div>
+              ${r.errorDetail ? `<div style="color:var(--rojo); margin-top:3px;"><strong>Detalle:</strong> ${r.errorDetail}</div>` : ""}
+            </div>
+            <div class="record-bottom">
+              <span style="color:var(--gris); font-weight:600;">Fecha: ${fechaFormat}</span>
+              <span class="record-total">TOTAL: ${r.total}</span>
+            </div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function switchTab(tab) {
+      document.getElementById("viewForm").classList.toggle("active", tab === "form");
+      document.getElementById("viewHistory").classList.toggle("active", tab === "history");
+      document.getElementById("navForm").classList.toggle("active", tab === "form");
+      document.getElementById("navHistory").classList.toggle("active", tab === "history");
+      if (tab === "history") renderHistory();
+    }
+
+    // Inicialización al cargar la PWA
+    window.addEventListener("online", updateNetworkUI);
+    window.addEventListener("offline", updateNetworkUI);
+
+    window.addEventListener("DOMContentLoaded", async () => {
+      setFechaHoy();
+      updateNetworkUI();
+      await cargarCatalogosIniciales();
+      await renderHistory();
+
+      // Sincronización periódica cada 45 segundos si hay pendientes
+      setInterval(() => {
+        if (navigator.onLine) syncManager.syncPending(false);
+      }, 45000);
+
+      if ("serviceWorker" in navigator) {
+        navigator.serviceWorker.register("./service-worker.js").catch(err => console.warn("SW:", err));
+        navigator.serviceWorker.addEventListener("message", (event) => {
+          if (event.data && event.data.type === "TRIGGER_SYNC") {
+            syncManager.syncPending(false);
+          }
+        });
+      }
+    });
+  </script>
+</body>
+</html>",
+      API_TOKEN: "AH_ACOPIADOR_2026_SEC_TOKEN_9841",
+      DB_NAME: "AgricolaHuarmey_AcopiadorDB",
+      DB_VERSION: 1
+    };
+
+    /**
+     * CATÁLOGOS SEMILLA OFFLINE (Respaldo inmediato sin internet basado en REGISTRO-PRODUCCION-ACOPIADOR.xlsx)
+     */
+    const DEFAULT_CATALOGS = {
+      modulos: [
+        "MODULO 1 TURNO 1", "MODULO 1 TURNO 2", "MODULO 1 TURNO 3", "MODULO 1 TURNO 4", "MODULO 1 TURNO 5",
+        "MODULO 2 TURNO 1", "MODULO 2 TURNO 2", "MODULO 2 TURNO 3", "MODULO 2 TURNO 4", "MODULO 2 TURNO 5",
+        "MODULO 3 TURNO 1", "MODULO 3 TURNO 2", "MODULO 3 TURNO 3", "MODULO 3 TURNO 4", "MODULO 3 TURNO 5",
+        "MODULO 4 TURNO 1", "MODULO 4 TURNO 2", "MODULO 4 TURNO 3", "MODULO 4 TURNO 4", "MODULO 4 TURNO 5",
+        "MODULO 5 TURNO 1", "MODULO 5 TURNO 2", "MODULO 5 TURNO 3", "MODULO 5 TURNO 4", "MODULO 5 TURNO 5",
+        "MODULO 6 TURNO 1", "MODULO 6 TURNO 2A", "MODULO 6 TURNO 2B", "MODULO 6 TURNO 3", "MODULO 6 TURNO 4", "MODULO 6 TURNO 5",
+        "MODULO 7 TURNO 1", "MODULO 7 TURNO 2", "MODULO 7 TURNO 3", "MODULO 7 TURNO 4", "MODULO 7 TURNO 5",
+        "MODULO 8 TURNO 1", "MODULO 8 TURNO 2", "MODULO 8 TURNO 3", "MODULO 8 TURNO 4", "MODULO 8 TURNO 5",
+        "MODULO 9 TURNO 1", "MODULO 9 TURNO 2", "MODULO 9 TURNO 3", "MODULO 9 TURNO 4", "MODULO 9 TURNO 5"
+      ],
+      acopiadores: [
+        "ALISON TATIANA COLINA CUEVA", "ANALI ALEGRIA TIQUILLAHUANCA", "ANGHELA IBET SERRATO RODRIGUEZ",
+        "ANNI MARIA BENITES MENESES", "ANSHELA ABIGAIL SUXE SAAVEDRA", "ASUSENA DIAZ SAAVEDRA",
+        "CIELO CRUZ VILLEGAS ANGULO", "ELIANA YAJAIRA SAMAME CACERES", "ELIZABETH CORDOVA GARCIA",
+        "EVELIN BENAVIDES DIAZ", "FLOR NUÑEZ HERRERA", "JHOSTIN SEBASTIAN CORMAN MEDINA",
+        "LESLYE ANTONELA GISSEL LOZANO LANCHA", "LILIANA ELIZABETH INOÑAN TEJADA", "LISETH SANTOYO NAVARRO",
+        "MAYTE ZARAHI ALVARADO FERNANDEZ", "PRISCILA BRIGHITT CARMEN FARFAN", "ROXANA DIAZ SAAVEDRA",
+        "YOSELIN YUDIT FERNANDEZ HURTADO", "YULI MIREILY VASQUEZ PEREZ"
+      ],
+      caporales: [
+        "ALEXANDER EMANUEL RODRIGUEZ CHAVEZ", "ARACELY LIZBETH VASQUEZ ARAUJO", "CARLOS DERIAN RIOS SHIMARA",
+        "CARMEN DE JESUS TIGLLA VILCHEZ", "CRISANTO CIEZA SANDY", "EDWIN JHUNIOR FERNANDEZ JULCAHUANGA",
+        "ELGAR JESUS CASTRO SANDOVAL", "EMILY AZUCENA LOZADA SALDARRIAGA", "ENILSON CERCADO BUSTAMANTE",
+        "GILMER ESMITH MEDINA FERNANDEZ", "JAVIER MARTIN ÑIQUEN MENDOZA", "JEREMÍAS PALOMINO MONDRAGÓN",
+        "JESSARELA YOLANDA MEDINA INGA", "JOHAN RICARDO MURRIETA HUAYA", "JOHN NER TAPULLIMA VALLEJOS",
+        "JOSE ELDER PEREZ VASQUEZ", "KATHERINE IMAN HUAMAN", "LINDAURA DIAZ DE LA CRUZ",
+        "LUCERO LOZANO LANCHA", "LUIS ALBERTO ESPINOZA GOMEZ", "LUZ CLARITA TORO SANCHEZ",
+        "MARIA CHUNGA JUAREZ", "MARÍA ELENA MONTENEGRO MONTEZA", "MARIBEL TERAN DIAZ",
+        "MARY CARMEN AGUILAR CARRANZA", "MAXIMILIANO ISIQUE SERRANO", "MERCEDES NAYELY MORALES GARCIA",
+        "MICHAEL ISAI HUACHEZ ROMERO", "MIGUEL ANGEL CALDERON YTURREGUI", "NAYELI NIKOL DE LA CRUZ DIAZ",
+        "NICOLAS SMITH MORALES PERICHE", "RICHAR BRUNO BAQUEDANO BARBOZA", "ROCIO DEL PILAR MONTENEGRO MANAYAN",
+        "RUTH MELISA MORALES PAQUIRACHI", "SILVIA ANGELICA BARREDA MALHABER", "TERESA ROMAN GARCIA",
+        "WILDER SAUL MENDOZA MEDINA", "YANET DEL ROCIO MENDOZA LLONTOP", "YESICA MORALES PAQUIRACHI",
+        "YULISA RINZA HUAMAN"
+      ]
+    };
+
+    /**
+     * CAPA DE BASE DE DATOS LOCAL: IndexedDB
+     */
+    class LocalDatabase {
+      constructor() {
+        this.db = null;
+      }
+
+      async open() {
+        if (this.db) return this.db;
+        return new Promise((resolve, reject) => {
+          const request = indexedDB.open(APP_CONFIG.DB_NAME, APP_CONFIG.DB_VERSION);
+
+          request.onupgradeneeded = (event) => {
+            const db = event.target.result;
+            if (!db.objectStoreNames.contains("registros")) {
+              const store = db.createObjectStore("registros", { keyPath: "uuid" });
+              store.createIndex("estado", "estado", { unique: false });
+              store.createIndex("createdAt", "createdAt", { unique: false });
+            }
+            if (!db.objectStoreNames.contains("catalogos")) {
+              db.createObjectStore("catalogos", { keyPath: "key" });
+            }
+          };
+
+          request.onsuccess = (event) => {
+            this.db = event.target.result;
+            resolve(this.db);
+          };
+
+          request.onerror = (event) => reject(event.target.error);
+        });
+      }
+
+      async saveRegistro(registro) {
+        const db = await this.open();
+        return new Promise((resolve, reject) => {
+          const tx = db.transaction("registros", "readwrite");
+          tx.objectStore("registros").put(registro);
+          tx.oncomplete = () => resolve(registro);
+          tx.onerror = () => reject(tx.error);
+        });
+      }
+
+      async getAllRegistros() {
+        const db = await this.open();
+        return new Promise((resolve, reject) => {
+          const tx = db.transaction("registros", "readonly");
+          const req = tx.objectStore("registros").getAll();
+          req.onsuccess = () => {
+            const sorted = (req.result || []).sort((a, b) => b.createdAt - a.createdAt);
+            resolve(sorted);
+          };
+          req.onerror = () => reject(req.error);
+        });
+      }
+
+      async getPendientesOError() {
+        const all = await this.getAllRegistros();
+        return all.filter(r => r.estado === "Pendiente" || r.estado === "Error");
+      }
+
+      async saveCatalog(key, items) {
+        const db = await this.open();
+        return new Promise((resolve, reject) => {
+          const tx = db.transaction("catalogos", "readwrite");
+          tx.objectStore("catalogos").put({ key, items, updatedAt: new Date().toISOString() });
+          tx.oncomplete = () => resolve();
+          tx.onerror = () => reject(tx.error);
+        });
+      }
+
+      async getCatalog(key) {
+        const db = await this.open();
+        return new Promise((resolve, reject) => {
+          const tx = db.transaction("catalogos", "readonly");
+          const req = tx.objectStore("catalogos").get(key);
+          req.onsuccess = () => resolve(req.result ? req.result.items : null);
+          req.onerror = () => reject(req.error);
+        });
+      }
+    }
+
+    const localDB = new LocalDatabase();
+
+    /**
+     * GESTOR DE SINCRONIZACIÓN OFFLINE-FIRST (Concurrencia 200+ usuarios)
+     */
+    class SyncManager {
+      constructor() {
+        this.isSyncing = false;
+      }
+
+      async syncPending(manual = false) {
+        if (this.isSyncing) return;
+        if (!navigator.onLine) {
+          if (manual) showToast("Sin conexión. Los datos permanecen seguros en el equipo.");
+          return;
+        }
+        if (APP_CONFIG.SCRIPT_URL.includes("PEGAR_AQUI")) {
+          if (manual) showToast("Configure la URL de Google Apps Script en index.html");
+          return;
+        }
+
+        const pendientes = await localDB.getPendientesOError();
+        if (pendientes.length === 0) {
+          if (manual) showToast("Todos los registros ya están sincronizados.");
+          return;
+        }
+
+        this.isSyncing = true;
+        document.getElementById("syncIcon").classList.add("spin");
+
+        try {
+          // Jitter aleatorio (0 a 1200ms) para escalonar peticiones si 200 usuarios recuperan señal juntos
+          await new Promise(r => setTimeout(r, Math.floor(Math.random() * 1200)));
+
+          // Envío en lotes de hasta 25 registros
+          const batch = pendientes.slice(0, 25);
+
+          const response = await fetch(APP_CONFIG.SCRIPT_URL, {
+            method: "POST",
+            headers: { "Content-Type": "text/plain;charset=utf-8" }, // Evita preflight CORS en Apps Script
+            body: JSON.stringify({
+              token: APP_CONFIG.API_TOKEN,
+              records: batch
+            })
+          });
+
+          const result = await response.json();
+
+          if (result.status === "ok" && Array.isArray(result.processed)) {
+            const processedSet = new Set(result.processed);
+            for (const reg of batch) {
+              if (processedSet.has(reg.uuid)) {
+                reg.estado = "Sincronizado";
+                reg.errorDetail = "";
+                reg.syncedAt = new Date().toISOString();
+                await localDB.saveRegistro(reg);
+              }
+            }
+            showToast(`Sincronizados ${result.processed.length} registro(s) con Google Sheets.`);
+          } else if (result.status === "retry") {
+            // El servidor pidió reintentar por cola de 200 usuarios
+            setTimeout(() => this.syncPending(false), 3000 + Math.random() * 2000);
+          } else {
+            throw new Error(result.message || "Error desconocido en el servidor");
+          }
+        } catch (err) {
+          console.error("Error de sincronización:", err);
+          for (const reg of pendientes.slice(0, 25)) {
+            reg.estado = "Error";
+            reg.errorDetail = err.message;
+            await localDB.saveRegistro(reg);
+          }
+          if (manual) showToast("Error al sincronizar. Se reintentará automáticamente.");
+        } finally {
+          this.isSyncing = false;
+          document.getElementById("syncIcon").classList.remove("spin");
+          await renderHistory();
+        }
+      }
+    }
+
+    const syncManager = new SyncManager();
+
+    /**
+     * UTILIDADES Y FLUJO DE APLICACIÓN
+     */
+    function generarUUID() {
+      if (crypto && crypto.randomUUID) return crypto.randomUUID();
+      return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
+        const r = Math.random() * 16 | 0;
+        return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
       });
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById("toast");
+      toast.textContent = msg;
+      toast.classList.add("show");
+      clearTimeout(window._toastTimer);
+      window._toastTimer = setTimeout(() => toast.classList.remove("show"), 3200);
+    }
+
+    function updateNetworkUI() {
+      const banner = document.getElementById("networkBanner");
+      const text = document.getElementById("networkText");
+      if (navigator.onLine) {
+        banner.className = "status-bar status-online";
+        text.textContent = "Conectado (Sincronización activa)";
+        syncManager.syncPending(false);
+      } else {
+        banner.className = "status-bar status-offline";
+        text.textContent = "Modo Offline (Guardado local activo)";
+      }
+    }
+
+    function setFechaHoy() {
+      const now = new Date();
+      const offset = now.getTimezoneOffset();
+      const localDate = new Date(now.getTime() - (offset * 60 * 1000));
+      document.getElementById("fechaReg").value = localDate.toISOString().split("T")[0];
+    }
+
+    function poblarSelect(selectId, items, placeholder) {
+      const select = document.getElementById(selectId);
+      const currentValue = select.value;
+      select.innerHTML = `<option value="">${placeholder}</option>`;
+      items.forEach(item => {
+        const opt = document.createElement("option");
+        opt.value = item;
+        opt.textContent = item;
+        select.appendChild(opt);
+      });
+      if (items.includes(currentValue)) select.value = currentValue;
+    }
+
+    async function cargarCatalogosIniciales() {
+      let modulos = await localDB.getCatalog("modulos");
+      let acopiadores = await localDB.getCatalog("acopiadores");
+      let caporales = await localDB.getCatalog("caporales");
+
+      if (!modulos || !acopiadores || !caporales) {
+        modulos = DEFAULT_CATALOGS.modulos;
+        acopiadores = DEFAULT_CATALOGS.acopiadores;
+        caporales = DEFAULT_CATALOGS.caporales;
+        await localDB.saveCatalog("modulos", modulos);
+        await localDB.saveCatalog("acopiadores", acopiadores);
+        await localDB.saveCatalog("caporales", caporales);
+      }
+
+      poblarSelect("moduloTurno", modulos, "-- Seleccione Módulo - Turno --");
+      poblarSelect("datosAcopiador", acopiadores, "-- Seleccione Acopiador (a) --");
+      poblarSelect("datosCaporal", caporales, "-- Seleccione Caporal --");
+
+      // Intentar actualizar silenciosamente desde Google Sheets si hay conexión
+      if (navigator.onLine && !APP_CONFIG.SCRIPT_URL.includes("PEGAR_AQUI")) {
+        actualizarCatalogosDesdeServidor(false);
+      }
+    }
+
+    async function actualizarCatalogosDesdeServidor(manual = false) {
+      if (!navigator.onLine) {
+        if (manual) showToast("Sin internet. Usando listas guardadas localmente.");
+        return;
+      }
+      if (APP_CONFIG.SCRIPT_URL.includes("PEGAR_AQUI")) {
+        if (manual) showToast("Configure primero la URL de Google Apps Script.");
+        return;
+      }
+
+      try {
+        if (manual) showToast("Descargando listas maestras de Google Sheets...");
+        const url = `${APP_CONFIG.SCRIPT_URL}?action=getMaestros&token=${encodeURIComponent(APP_CONFIG.API_TOKEN)}`;
+        const resp = await fetch(url);
+        const json = await resp.json();
+
+        if (json.status === "ok" && json.data) {
+          if (json.data.modulos?.length) {
+            await localDB.saveCatalog("modulos", json.data.modulos);
+            poblarSelect("moduloTurno", json.data.modulos, "-- Seleccione Módulo - Turno --");
+          }
+          if (json.data.acopiadores?.length) {
+            await localDB.saveCatalog("acopiadores", json.data.acopiadores);
+            poblarSelect("datosAcopiador", json.data.acopiadores, "-- Seleccione Acopiador (a) --");
+          }
+          if (json.data.caporales?.length) {
+            await localDB.saveCatalog("caporales", json.data.caporales);
+            poblarSelect("datosCaporal", json.data.caporales, "-- Seleccione Caporal --");
+          }
+          if (manual) showToast("Listas maestras actualizadas correctamente.");
+        }
+      } catch (e) {
+        if (manual) showToast("No se pudo conectar con Google Sheets. Usando caché local.");
+      }
+    }
+
+    // Validación y Guardado del Formulario
+    document.getElementById("acopiadorForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const fechaEl = document.getElementById("fechaReg");
+      const moduloEl = document.getElementById("moduloTurno");
+      const acopiadorEl = document.getElementById("datosAcopiador");
+      const caporalEl = document.getElementById("datosCaporal");
+      const totalEl = document.getElementById("totalCosechadores");
+
+      let valid = true;
+      [fechaEl, moduloEl, acopiadorEl, caporalEl].forEach(el => {
+        if (!el.value.trim()) {
+          el.classList.add("invalid");
+          valid = false;
+        } else {
+          el.classList.remove("invalid");
+        }
+      });
+
+      const totalVal = Number(totalEl.value);
+      if (!totalEl.value || !Number.isInteger(totalVal) || totalVal <= 0) {
+        totalEl.classList.add("invalid");
+        valid = false;
+      } else {
+        totalEl.classList.remove("invalid");
+      }
+
+      if (!valid) {
+        showToast("Por favor complete todos los campos obligatorios correctamente.");
+        return;
+      }
+
+      const nuevoRegistro = {
+        uuid: generarUUID(),
+        fecha: fechaEl.value,
+        modulo: moduloEl.value.trim(),
+        acopiador: acopiadorEl.value.trim(),
+        caporal: caporalEl.value.trim(),
+        total: totalVal,
+        estado: "Pendiente",
+        createdAt: Date.now()
+      };
+
+      await localDB.saveRegistro(nuevoRegistro);
+
+      // Limpiar solo el campo TOTAL y CAPORAL para agilizar registros consecutivos en campo
+      totalEl.value = "";
+      caporalEl.value = "";
+
+      showToast(navigator.onLine ? "Guardado. Sincronizando..." : "Guardado en modo Offline (Pendiente).");
+      await renderHistory();
+
+      if (navigator.onLine) {
+        syncManager.syncPending(false);
+      } else if ("serviceWorker" in navigator && "SyncManager" in window) {
+        const reg = await navigator.serviceWorker.ready;
+        reg.sync.register("sync-acopiador-records").catch(() => {});
+      }
+    });
+
+    // Renderizar historial y contadores
+    async function renderHistory() {
+      const registros = await localDB.getAllRegistros();
+      let pendientes = 0, sincronizados = 0, errores = 0;
+
+      registros.forEach(r => {
+        if (r.estado === "Pendiente") pendientes++;
+        else if (r.estado === "Sincronizado") sincronizados++;
+        else if (r.estado === "Error") errores++;
+      });
+
+      document.getElementById("countPendiente").textContent = pendientes;
+      document.getElementById("countSincronizado").textContent = sincronizados;
+      document.getElementById("countError").textContent = errores;
+      document.getElementById("navBadgeCount").textContent = registros.length;
+
+      const badgeTop = document.getElementById("syncCounterBadge");
+      badgeTop.textContent = (pendientes + errores) > 0 ? `Sincronizar (${pendientes + errores})` : "Al día";
+
+      const listContainer = document.getElementById("recordsList");
+      if (registros.length === 0) {
+        listContainer.innerHTML = `<p style="text-align:center; color:var(--gris); padding:20px 0; font-size:0.9rem;">Aún no hay registros guardados en este dispositivo.</p>`;
+        return;
+      }
+
+      listContainer.innerHTML = registros.map(r => {
+        const parts = r.fecha.split("-");
+        const fechaFormat = parts.length === 3 ? `${parts[2]}/${parts[1]}/${parts[0]}` : r.fecha;
+        return `
+          <div class="record-item ${r.estado}">
+            <div class="record-top">
+              <span class="record-mod">${r.modulo}</span>
+              <span class="badge badge-${r.estado}">${r.estado}</span>
+            </div>
+            <div class="record-detail">
+              <div><strong>Acopiador:</strong> ${r.acopiador}</div>
+              <div><strong>Caporal:</strong> ${r.caporal}</div>
+              ${r.errorDetail ? `<div style="color:var(--rojo); margin-top:3px;"><strong>Detalle:</strong> ${r.errorDetail}</div>` : ""}
+            </div>
+            <div class="record-bottom">
+              <span style="color:var(--gris); font-weight:600;">Fecha: ${fechaFormat}</span>
+              <span class="record-total">TOTAL: ${r.total}</span>
+            </div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function switchTab(tab) {
+      document.getElementById("viewForm").classList.toggle("active", tab === "form");
+      document.getElementById("viewHistory").classList.toggle("active", tab === "history");
+      document.getElementById("navForm").classList.toggle("active", tab === "form");
+      document.getElementById("navHistory").classList.toggle("active", tab === "history");
+      if (tab === "history") renderHistory();
+    }
+
+    // Inicialización al cargar la PWA
+    window.addEventListener("online", updateNetworkUI);
+    window.addEventListener("offline", updateNetworkUI);
+
+    window.addEventListener("DOMContentLoaded", async () => {
+      setFechaHoy();
+      updateNetworkUI();
+      await cargarCatalogosIniciales();
+      await renderHistory();
+
+      // Sincronización periódica cada 45 segundos si hay pendientes
+      setInterval(() => {
+        if (navigator.onLine) syncManager.syncPending(false);
+      }, 45000);
+
+      if ("serviceWorker" in navigator) {
+        navigator.serviceWorker.register("./service-worker.js").catch(err => console.warn("SW:", err));
+        navigator.serviceWorker.addEventListener("message", (event) => {
+          if (event.data && event.data.type === "TRIGGER_SYNC") {
+            syncManager.syncPending(false);
+          }
+        });
+      }
     });
   </script>
 </body>
